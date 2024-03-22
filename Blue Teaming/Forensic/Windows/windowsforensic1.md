@@ -4,6 +4,11 @@ TryHackMe Raum [Windows-Forensic1](https://tryhackme.com/room/windowsforensics1)
 Der einfachhalt haber fangen ich mit dem Aufgabenblatt 2 an, da sich in dem ersten Blatt nur infos zu Microsoft<br>
 an sich befinden und das sie den größten teil des Desktop marktes besitzen.
 
+# Windows-Registry:
+Die Windows-Registry ist eine Sammlung von Datenbanken, die die Konfigurationsdaten des Systems enthalten. Diese Konfigurationsdaten können Informationen über Hardware, Software oder Benutzer enthalten. Darüber hinaus umfassen sie Daten zu zuletzt verwendeten Dateien, verwendeten Programmen oder mit dem System verbundenen Geräten. Es ist offensichtlich, dass diese Daten aus forensischer Sicht von großem Nutzen sind. In diesem Bereich werden wir Methoden erlernen, um diese Daten zu lesen und die benötigten Informationen über das System zu extrahieren. Sie können die Registry mithilfe von regedit.exe anzeigen, einem integrierten Windows-Dienstprogramm zum Anzeigen und Bearbeiten der Registry. In den kommenden Aufgaben werden wir uns mit anderen Tools beschäftigen, um mehr über die Registrierung zu erfahren. <br>
+<br>
+Die Windows-Registry besteht aus Schlüsseln und Werten. Wenn Sie das Dienstprogramm regedit.exe öffnen, um die Registry anzuzeigen, zeigen die angezeigten Ordner die Registryschlüssel an. Registrywerte sind die Daten, die in diesen Registryschlüsseln gespeichert sind. Eine Registrystruktur ist eine Gruppe von Schlüsseln, Unterschlüsseln und Werten, die in einer einzelnen Datei auf der Festplatte gespeichert sind.
+
 ## Registry Datenbank
 Die Registry-Anwendung ist eine Datenbank aus Nutzerdaten und Systemdaten. Diese dient dazu um einstellung zu speichern<br>
 und Die Registry-Anwendung dient dazu um es aufzulisten
