@@ -23,7 +23,7 @@ Auf jedem Windows System befinden sich diese Fünf Root-Verzeichnise:<br>
 4. HKEY_CLASSES_ROOT
 5. HKEY_CURRENT_CONFIG 
 <br>
-So definiert Microsoft jeden dieser Root-Schlüssel. Weitere Einzelheiten und Informationen zu den folgenden Windows-Registrierungsschlüsseln finden Sie in der Dokumentation von [Microsoft](https://learn.microsoft.com/en-US/troubleshoot/windows-server/performance/windows-registry-advanced-users):<br>
+So definiert Microsoft jeden dieser Root-Schlüssel. Weitere Einzelheiten und Informationen zu den folgenden Windows-Registrierungsschlüsseln finden Sie in der Dokumentation von [Microsoft](https://learn.microsoft.com/en-US/troubleshoot/windows-server/performance/windows-registry-advanced-users) :<br>
 
 | Verzeichnisse | Beschreibung |
 | --- | --- |
