@@ -34,3 +34,42 @@ Bei der Aufklärunf geht es darum informationen über das Ziel zu sammeln, wie S
 6. **E-Mail Harvesting**: **E-Mail Harvesting** umfasst den Prozess des sammelns von E-Mail addressen der Orginisation oder der Privat-Person. Diese können dann für Phishing-Angriffe verwendet werden.
 
 ## Task 3 - Weaponization (Bewaffnung): Zusammenfassung
+### Was passiert in der Bewaffnungs Phase?:
+In der Bewaffnungs Phase ist es von entscheidener bedeutung die richtigen tools, exploits und Techniken aus zu suchen um auf dem System Fuß zu fassen.
+
+### Was währe der Ablauf der Technik wahl?:
+1. Als erstes gibt es da die Infektions Techniken       darunter zählen: Microsoft Office-Dokumente mit schädlichen Makros - VBA-Scripte, USB-Laufwerk implantierte Viren und Keystroke-Injection-Tools: meist als USB-Sticks getarnt wie ein Rubber ducky.
+2. Als nächstes würde sich ein Angreifer um  Command-and-Control-Techniken kümmern, um Befehler auf dem Ziel System aus zu führen und weiter Payloads auf dem Ziel system zu bekommen. Informationen hierzu gibt es hier: [MITRE ATT&CK ](https://attack.mitre.org/tactics/TA0011/).
+3. Als letztes würde ein Angreifer sich um eine Backdoor instalation kümmern.
+
+## Task 4 - Delivery (Lieferung): Zusammenfassung
+### Was passiert in der Liferungs Phase?:
+In der Lieferungs Phase entscheidet sich der Angreifer wie er die Malware auf das Ziel System bekommt.
+
+### Welche Techniken stehen dem Angreifer zu verfügung?:
+1. Phishing E-Mails
+2. Bad USB-Sticks
+3. Watering-Hole-Attack
+
+## Task 5 - Exploitation (Angriff): Zusammenfassung
+### Was passiert in der Angriff
+In der Angriffs Phase bekommt der Angreifer zugriff auf das system
+
+## Task 6 - Installation (Installation)
+### Was passiert in der Installations Phase?:
+In der Installations Phase kümmert sich der Angreifer um das installieren eines permanten zugangs, auch genannt [Backdoor](https://www.trendmicro.com/vinfo/us/security/definition/backdoor). Dadurch bekommt der Angreifer permanent zugriff auf das System.
+
+## Task 7 - Command & Control (Kommand und Kontrolle): Zusammenfassung
+### Was passiert in der Command & Control Phase?:
+In der 7 Phase der Cyber Kill chain führt der Angreifer Befehle auf dem Ziel System aus und hat kontroller über das System.
+
+## Task 8 - Action of Target (Exfiltration) / Aktionen auf Ziele (Exfiltration): Zusammenfassung
+### Was passiet in der Exfiltratons Phase?:
+Die Exfiltrations Phase umfasst alles von sammlung bis hinzu änderung an daten, hier ein Liste dazu:
+1. Sammeln von Nutzer/Anmelde Daten.
+2. Rechte erweitern.
+3. Interne Softwareschwachstellen ausnutzen.
+4. Durch das Netzwerk bewegen.
+5. Sammeln und Filtern von Daten.
+6. Löschen der Backups und Shadow Kopien von Microsoft Windows.
+7. Daten überschreiben oder beschädigen.
