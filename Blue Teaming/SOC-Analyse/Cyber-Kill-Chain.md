@@ -13,7 +13,7 @@ Eine "Kill Chain" ist ein Militärisches Konzept, das sich auf die Struktur eine
 4. **Exploitation (Ausnutzung)**: Der Angreifer nutzt Schwachstellen im System, um Zugriff zu erhalten oder die Ausführung des schädlichen Codes zu ermöglichen.
 5. **Installation (Installation)**: In diesem Punk wird auf dem Ziel-System Schädliche Software ausgeführt, oft um dauerhaften Zugriff zu ermöglichen.
 6. **Command and Control (Befehl und Kontrolle)**: Bei diesem Punkt wird eine Verbindung zwischen dem Angreifer und dem Ziel hergestellt, um Befehle zu senden und Daten zu emfangen.
-7. **Actions on Objectives (Aktionen auf Ziele)**: Hier wird der das Ziel des Angriffs erreicht, wie z.B. Datenextraktion, Manipulation oder Zerstörung.
+7. **Actions on Objectives (Aktionen auf Ziele)**: Hier wird das Ziel des Angriffs erreicht, wie z.B. Datenextraktion, Manipulation oder Zerstörung.
 
 ### Wer hat die Cyber Kill Chain entwickelt?:
 Die Erfindung der Modernen Cyber Kill Chain im bereich Cyber Sicherheit verdanken wir Lockheed Martin, ein globales Sicherheits- und Luft- und Raumfahrtunternehme.
