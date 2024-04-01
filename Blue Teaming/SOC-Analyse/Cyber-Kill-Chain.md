@@ -23,7 +23,7 @@ Die Erfindung der Modernen Cyber Kill Chain im bereich Cyber Sicherheit verdanke
 Bei der Aufklärunf geht es darum informationen über das Ziel zu sammeln, wie System Informationen oder auch Informationen über den Besitzer des Systems, um dadurch den volgenden Angriff besser durch zu führen.
 
 ### Welche Techniken werden zur aufklärung genutzt?:
-**OSINT** (Open-Source Intelligence) ist eine der belibtesteb und verbreitesten Techniken, dies bentzen potentielle Angreiffer am Häufigsten um informationen über das Ziel herrauszu finden.   
+**OSINT** (Open-Source Intelligence) ist eine der belibtesteb und verbreitesten Techniken, dies benutzen potentielle Angreiffer am Häufigsten um informationen über das Ziel herrauszu finden.   
 
 ### Was genau fällt und OSINT?:
 1. **Passive Reconnaissance (Passive Aufklärung)**: Dies beinhaltet Informationen zusammeln die öffentlich zugänglich sind, wie Blog, Kommentare, Accounts und Websits. Kurz gesagt alles was keine direkte Interaktion mit dem Ziel vorrausetzt fällt unter **Passive Reconnaissance**.
