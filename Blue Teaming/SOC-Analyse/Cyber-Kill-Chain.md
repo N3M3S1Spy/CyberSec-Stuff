@@ -47,13 +47,14 @@ In der Bewaffnungs Phase ist es von entscheidener bedeutung die richtigen tools,
 In der Lieferungs Phase entscheidet sich der Angreifer wie er die Malware auf das Ziel System bekommt.
 
 ### Welche Techniken stehen dem Angreifer zu verfügung?:
-1. Phishing E-Mails
-2. Bad USB-Sticks
-3. Watering-Hole-Attack
+1. **Phishing E-Mails**: eine scheinbar echte E-Mail an das Ziel senden, in der jedoch schädliche Links- und oder Malware platziert ist.
+2. **Bad USB-Sticks**: Ein USB-Stick auf dem Viren sind die beim einstecken in ein USB-Laufwerk ausgeführt werden.
+3. **Keystroke-Injection**: Ein USB-Stick oder Ladekabel welches eine Programmierte Tastatur beinhaltet.
+4. **Watering-Hole-Attack**: Das infizieren einer Website auf dem die Ziel-Gruppe zugreift um über drive-by downlaods zugriff zu bekommen.
 
 ## Task 5 - Exploitation (Angriff): Zusammenfassung
-### Was passiert in der Angriff
-In der Angriffs Phase bekommt der Angreifer zugriff auf das system
+### Was passiert in der Angriff Phase
+In der Angriffs Phase bekommt der Angreifer zugriff auf das System.
 
 ## Task 6 - Installation (Installation)
 ### Was passiert in der Installations Phase?:
