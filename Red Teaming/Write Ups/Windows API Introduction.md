@@ -17,3 +17,6 @@ Vor Beginn dieses Kurses ist es hilfreich, ein grundlegendes Verständnis der Be
 Dieser Kurs soll die Grundlagen der Windows-API vermitteln. Wir werden kurz die Implementierungen der Win32-API ansprechen, uns aber darauf konzentrieren, warum und wo API-Aufrufe verwendet werden.
 
 # Task 2 - Subsystem und Hardware Interaktion
+Programme müssen oft auf Windows-Subsysteme (z.B. Dateisysteme, Netzwerkdienste, Prozess- und Thread-Verwaltung, Sicherheitsdienste, Gerätemanagement) oder Hardware zugreifen oder diese ändern, sind jedoch eingeschränkt, um die Stabilität des Computers zu gewährleisten. Um dieses Problem zu lösen, hat Microsoft die Win32-API veröffentlicht, eine Bibliothek, die eine Schnittstelle zwischen Benutzeranwendungen und dem Kernel bietet.
+
+Windows unterscheidet den Hardwarezugriff durch zwei verschiedene Modi: **Benutzer**- und **Kernelmodus**. Diese Modi bestimmen, auf welche Hardware, Kernel und Speicher eine Anwendung oder ein Treiber zugreifen darf. API- oder Systemaufrufe dienen als Schnittstelle zwischen diesen Modi und senden Informationen an das System, die im Kernelmodus (z.B. Verwaltung von Hardwarezugriffen, Speicherverwaltung, Prozessscheduling) verarbeitet werden.
