@@ -16,9 +16,9 @@ Das CompTIA Pentest+ Zertifikat wurde mir von TryHackMe verliehen und bescheinig
 
 Dieses Zertifikat ist besonders wertvoll für IT-Sicherheitsexperten, Penetrationstester, Sicherheitsanalysten und alle, die in der Cybersecurity-Branche tätig sind und ihre Fähigkeiten im Bereich der Netzwerksicherheit und Schwachstellenmanagement vertiefen möchten.
 
-### Zertifikat 2
+### Complete Beginner Zertifikat
 
-![Data Science Specialization](path/to/image2.jpg)
+![Complete-Beginner](Complete-Beginner)
 Dieses Zertifikat bedeutet, dass ich die "Data Science Specialization" auf Coursera erfolgreich abgeschlossen habe. Es deckt alle wesentlichen Aspekte der Datenwissenschaft ab, einschließlich Datenreinigung, Analyse und maschinellem Lernen.
 
 ### Zertifikat 3
