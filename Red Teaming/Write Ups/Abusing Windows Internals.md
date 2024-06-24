@@ -6,13 +6,13 @@ Windows-Internals sind entscheidend für die Funktionsweise des Windows-Betriebs
 
 Der Begriff Windows-Internals umfasst jede Komponente, die auf der Backend-Seite des Windows-Betriebssystems gefunden werden kann. Dazu gehören Prozesse, Dateiformate, COM (Component Object Model), Taskplanung, I/O-System usw. Dieser Raum wird sich darauf konzentrieren, Prozesse und ihre Komponenten, DLLs (Dynamic Link Libraries) sowie das PE (Portable Executable) Format zu missbrauchen und auszunutzen.
 
-Lernziele:
+### Lernziele:
 
 - Verständnis dafür entwickeln, wie interne Komponenten angreifbar sind
 - Erlernen, wie man Schwachstellen in Windows-Internals ausnutzt und missbraucht
 - Verständnis für Maßnahmen zur Minderung und Erkennung dieser Techniken entwickeln
 - Anwendung der erlernten Techniken auf eine Fallstudie aus der realen Welt
 
-Bevor Sie mit diesem Raum beginnen, machen Sie sich mit der grundlegenden Nutzung und Funktionalität von Windows vertraut. Wir empfehlen, den Raum zu Windows-Internals zu absolvieren. Grundlegende Programmierkenntnisse in C++ und PowerShell werden ebenfalls empfohlen, sind aber nicht zwingend erforderlich.
+Bevor Sie mit diesem Raum beginnen, machen Sie sich mit der grundlegenden Nutzung und Funktionalität von Windows vertraut. Es ist empfelendwert, den Raum zu [Windows-Internals](https://tryhackme.com/r/room/windowsinternals) zu absolvieren. Grundlegende Programmierkenntnisse in C++ und PowerShell werden ebenfalls empfohlen, sind aber nicht zwingend erforderlich.
 
-Wir haben eine grundlegende Windows-Maschine mit den erforderlichen Dateien bereitgestellt, um diesen Raum abzuschließen. Sie können auf die Maschine direkt im Browser zugreifen oder über RDP mit den unten angegebenen Anmeldedaten.
+# Task 2 - Prozesse ausnutzen
