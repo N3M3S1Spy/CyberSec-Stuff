@@ -29,6 +29,7 @@ Windows unterscheidet den Hardwarezugriff durch zwei verschiedene Modi: **Benutz
 Für mehr informationen zum Thema Speicher Management ( Memory Management ) ist der [TryHackMe Windows Internals](https://tryhackme.com/r/room/windowsinternals) Raum geeignet
 
 Nachfolgend ist eine Darstellung, wie eine Benutzeranwendung API-Aufrufe nutzen kann, um Kernel-Komponenten zu verändern:
+![Alt-Text](Red Teaming/Write Ups/Bilder/2024-06-24-Windows-API-Introduction-VisualAPIUsage.png)
 1. User Application: Eine Benutzeranwendung läuft im Benutzermodus/Userland.
 2. API (Win32 API): Die Benutzeranwendung verwendet die Win32 API, um Systemfunktionen aufzurufen.
 3. Switching Point: An diesem Punkt erfolgt der Wechsel vom Benutzermodus in den Kernelmodus.
