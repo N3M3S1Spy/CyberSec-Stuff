@@ -9,13 +9,13 @@ Dieser Ordner speichert alle meine Zertifikate. Er ist nur für meine private Nu
 
 ## Zertifikate anzeigen
 
-Eine detaillierte Liste meiner Zertifikate und deren Bedeutungen finden Sie in der Datei [Zertifikate.md](Zertifikate.md).
+Eine detaillierte Liste meiner Zertifikate und deren Bedeutungen finden Sie in der Datei [Zertifikate.md](ZERTIFIKATE.md).
 
 ## Beispielbild
 
 Hier ist ein Beispielbild eines Zertifikats:
 
-![Beispielzertifikat](Bilder/beispielzertifikat.jpg)
+![Beispielzertifikat](Complete-Beginner.png)
 
 ## Lizenz
 
