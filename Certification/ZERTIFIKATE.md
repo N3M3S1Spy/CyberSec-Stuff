@@ -7,7 +7,14 @@ In diesem Dokument liste ich alle meine Zertifikate auf und erkläre kurz ihre B
 ### CompTIA-Pentest+ Zertifikat
 
 ![CompTIA-Pentest+](CompTIA-Pentest+)
-Dieses Zertifikat bedeutet, dass ich den Kurs "Python Programming" auf Coursera erfolgreich abgeschlossen habe. Es bestätigt meine Kenntnisse in der Programmierung mit Python und den Umgang mit grundlegenden Datenstrukturen und Algorithmen.
+Das CompTIA Pentest+ Zertifikat wurde mir von TryHackMe verliehen und bescheinigt fortgeschrittene Kenntnisse und Fähigkeiten im Bereich der Penetrationstests und Schwachstellenbewertungen. Inhaber dieses Zertifikats haben nachgewiesen, dass sie in der Lage sind:
+
+- **Penetrationstests durchzuführen**: Systeme, Netzwerke und Anwendungen auf Schwachstellen zu prüfen und zu analysieren.
+- **Schwachstellen zu identifizieren**: Sicherheitslücken und potenzielle Angriffsvektoren zu erkennen.
+- **Risikobewertungen vorzunehmen**: Risiken zu bewerten und Empfehlungen zur Sicherheitsverbesserung zu geben.
+- **Berichterstattung und Dokumentation**: Ergebnisse klar und präzise zu dokumentieren und Berichte zu erstellen.
+
+Dieses Zertifikat ist besonders wertvoll für IT-Sicherheitsexperten, Penetrationstester, Sicherheitsanalysten und alle, die in der Cybersecurity-Branche tätig sind und ihre Fähigkeiten im Bereich der Netzwerksicherheit und Schwachstellenmanagement vertiefen möchten.
 
 ### Zertifikat 2
 
