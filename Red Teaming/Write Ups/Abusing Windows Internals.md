@@ -39,3 +39,39 @@ Prozessinjektion wird häufig als Oberbegriff verwendet, um das Einschleusen von
 | Portable Executable Injection     | Ein PE-Image selbst in einen Zielprozess einschleusen, das auf eine schädliche Funktion zeigt |
 
 Es gibt viele andere Formen der Prozessinjektion, die von MITRE im Rahmen der T1055 beschrieben werden. [MITRE T1055](https://attack.mitre.org/techniques/T1055/)
+
+Auf der grundlegendsten Ebene nimmt die Prozessinjektion die Form der Shellcode-Injektion an.
+
+Auf einer höheren Ebene kann die Shellcode-Injektion in vier Schritte unterteilt werden:
+
+1. Öffnen eines Zielprozesses mit allen Zugriffsrechten.
+2. Allozieren von Speicher im Zielprozess für den Shellcode.
+3. Schreiben des Shellcodes in den allozierten Speicher im Zielprozess.
+4. Ausführen des Shellcodes mithilfe eines Remote-Threads.
+
+Die Schritte können auch grafisch dargestellt werden, um zu zeigen, wie Windows-API-Aufrufe mit dem Prozessspeicher interagieren.
+
+![Shellcode Injection Prozess Darstellung](Bilder/2024-06-24-Shellcode_Injection_Prozess_Darstellung.png)
+
+# Erklärung der Shellcode-Injektionsgrafik
+
+Diese Grafik zeigt die Schritte der Shellcode-Injektion in einem Zielprozess durch einen bösartigen Prozess und wie Windows-API-Aufrufe dabei interagieren. Hier ist eine Erklärung der einzelnen Schritte und Komponenten:
+
+1. **OpenProcess**:
+   - Der bösartige Prozess (unten links) verwendet die API-Funktion `OpenProcess`, um den Zielprozess (oben links) mit allen erforderlichen Zugriffsrechten zu öffnen. Dies ermöglicht dem bösartigen Prozess, auf den Speicher des Zielprozesses zuzugreifen.
+
+2. **VirtualAlloc**:
+   - Der bösartige Prozess verwendet die API-Funktion `VirtualAlloc`, um einen Speicherbereich im Zielprozess zu allozieren. Dieser Schritt bereitet den Speicher vor, in den der Shellcode geschrieben werden soll.
+
+3. **WriteProcessMemory**:
+   - Der bösartige Prozess verwendet die API-Funktion `WriteProcessMemory`, um den Shellcode in den zuvor allokierten Speicherbereich im Zielprozess zu schreiben.
+
+4. **CreateRemoteThread**:
+   - Der bösartige Prozess verwendet die API-Funktion `CreateRemoteThread`, um einen neuen Thread im Zielprozess zu erstellen, der den Shellcode ausführt. Dies ermöglicht es dem bösartigen Code, innerhalb des Kontextes des Zielprozesses ausgeführt zu werden.
+
+## Prozessspeicherregionen
+
+- Die verschiedenen Speicherregionen des Zielprozesses sind in blau dargestellt, einschließlich DLLs, Register, Prozess-Heap, Thread-Stack und allgemeine Prozessspeicherregionen.
+- Die "Malicious Memory Region" (bösartige Speicherregion) ist der Bereich, in dem der Shellcode eingefügt und ausgeführt wird.
+
+Durch diese Schritte wird der Shellcode in den Speicher des Zielprozesses injiziert und ausgeführt, was dem Angreifer die Möglichkeit gibt, Kontrolle über den Zielprozess zu erlangen und bösartige Aktivitäten durchzuführen.
