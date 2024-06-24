@@ -7,23 +7,9 @@ Dieser Ordner speichert alle meine Zertifikate. Er ist nur für meine private Nu
 - **Speichern von Zertifikaten**: Hier speichere ich alle meine Zertifikate.
 - **Ordnung halten**: Ich werde die Zertifikate klar benennen und in passenden Unterordnern organisieren, falls notwendig.
 
-## Dateibenennung
+## Zertifikate anzeigen
 
-Um die Zertifikate leicht auffindbar und identifizierbar zu machen, werde ich folgende Namenskonventionen verwenden:
-
-- **Zertifikatsname**: Der Name des Zertifikats.
-- **Institution**: Die ausstellende Institution.
-- **Jahr**: Das Jahr der Ausstellung.
-
-Beispiel: `Python_Programming_Certificate-Coursera-2024.pdf`
-
-## Unterordner
-
-Falls notwendig, werde ich Unterordner für verschiedene Arten von Zertifikaten erstellen, um sie besser zu organisieren. Beispiele für Unterordner können sein:
-
-- `Programmierkurse`
-- `Sprachkurse`
-- `Berufliche Weiterbildung`
+Eine detaillierte Liste meiner Zertifikate und deren Bedeutungen finden Sie in der Datei [Zertifikate.md](Zertifikate.md).
 
 ## Beispielbild
 
@@ -34,4 +20,3 @@ Hier ist ein Beispielbild eines Zertifikats:
 ## Lizenz
 
 Da dieser Ordner nur für meine private Nutzung gedacht ist, gibt es keine speziellen Lizenzanforderungen.
-
