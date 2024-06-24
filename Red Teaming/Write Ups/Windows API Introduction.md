@@ -63,4 +63,17 @@ Lassen Sie uns die Win32-API durch einen top-down Ansatz aufschlüsseln. Wir neh
 | API-Aufrufe | Der in einem Programm verwendete API-Aufruf, bei dem die Funktionsadressen über Zeiger erhalten werden. |
 | Ein-/Aus-Parameter | Die durch die Aufrufstrukturen definierten Parameterwerte. |
 
-.
+Lassen Sie uns diese Definitionen erweitern; in der nächsten Aufgabe werden wir das Importieren von Bibliotheken, die Kern-Headerdatei und die Aufrufstruktur besprechen. In Aufgabe 4 werden wir tiefer in die Aufrufe eintauchen und verstehen, wo und wie die Aufrufparameter und Varianten verarbeitet werden.
+
+### Fragen:
+Welche Headerdatei importiert und definiert die User32-DLL und deren Struktur?: (Benötigt externe rescherche)
+```
+winuser.h - google nach User32-DLL dann stößt man auf die Wiki seite **Microsoft Windows library files** und dort unter User32-DLL steht geschrieben das es von windows user importiert wird.
+```
+Welche übergeordnete Headerdatei enthält alle anderen erforderlichen untergeordneten und Kern-Headerdateien?
+```
+windows.h
+```
+
+# Task 4 - OS Libraries
+Jeder API-Aufruf der Win32-Bibliothek befindet sich im Speicher und benötigt einen Zeiger auf eine Speicheradresse. Der Prozess des Erhaltens von Zeigern auf diese Funktionen wird durch die Implementierungen der ASLR (Address Space Layout Randomization) verschleiert; jede Programmiersprache oder jedes Paket hat ein einzigartiges Verfahren, um ASLR zu überwinden. In diesem Abschnitt werden wir die zwei beliebtesten Implementierungen besprechen: [P/Invoke](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke) und die [Windows-Headerdatei](https://learn.microsoft.com/en-us/windows/win32/winprog/using-the-windows-headers).
