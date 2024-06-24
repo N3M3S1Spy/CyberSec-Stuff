@@ -25,5 +25,42 @@ Windows unterscheidet den Hardwarezugriff durch zwei verschiedene Modi: **Benutz
 | -------------- | ----------- |
 | Kein Direkter Hardware zugriff | Direkter Hardware zugriff |
 | Zugriff auf "eigene" Speicherplätze | Zugriff auf den gesamten physischen Speicher |
-| --- | --- |
-Für mehr informationen zum Thema Speicher Management ( Memory Management ) ist der [Windows Internals](https://tryhackme.com/r/room/windowsinternals) Raum geeignet
+
+Für mehr informationen zum Thema Speicher Management ( Memory Management ) ist der [TryHackMe Windows Internals](https://tryhackme.com/r/room/windowsinternals) Raum geeignet
+
+Nachfolgend ist eine Darstellung, wie eine Benutzeranwendung API-Aufrufe nutzen kann, um Kernel-Komponenten zu verändern:
+1. User Application: Eine Benutzeranwendung läuft im Benutzermodus/Userland.
+2. API (Win32 API): Die Benutzeranwendung verwendet die Win32 API, um Systemfunktionen aufzurufen.
+3. Switching Point: An diesem Punkt erfolgt der Wechsel vom Benutzermodus in den Kernelmodus.
+4. System Calls: Die API-Aufrufe werden in Systemaufrufe umgewandelt.
+5. Kernel: Die Systemaufrufe interagieren mit dem Kernel, der die Kernfunktionen des Betriebssystems steuert.
+6. Physical Memory: Der Kernel verwaltet den physischen Speicher.
+7. Hardware: Der Kernel steuert die Hardware-Komponenten des Systems.
+
+Wenn man sieht, wie Programmiersprachen mit der Win32-API arbeiten, wird der Prozess komplexer: Die Anwendung geht zuerst durch die Laufzeitumgebung der Programmiersprache, bevor sie die API verwendet.
+
+### Fragen:
+Hat ein Prozess im Benutzermodus direkten Hardwarezugriff? (Ja/Nein)
+```
+Nein, das Bedriebssystem verhindert dies.
+```
+Wird ein Prozess im Kernelmodus geöffnet, wenn man eine Anwendung als Administrator startet? (Ja/Nein)
+```
+Nein, der Kernal Modus wird nur bei Funktionen aufgerufen die diesen Modus benötigen. Dazu muss man die Anwendung auch nicht als Administrator starten.
+```
+
+# Task 3 - Komponenten der Windows API
+Die Win32-API, allgemein bekannt als die Windows-API, umfasst mehrere abhängige Komponenten, die verwendet werden, um die Struktur und Organisation der API zu definieren.
+
+Lassen Sie uns die Win32-API durch einen top-down Ansatz aufschlüsseln. Wir nehmen an, dass die API die oberste Ebene ist und die Parameter, die einen spezifischen Aufruf ausmachen, die unterste Ebene sind. In der folgenden Tabelle beschreiben wir die top-down Struktur auf hoher Ebene und gehen später ins Detail.
+| Ebene | Erläurterung |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------- |
+| API   | Ein oberster/allgemeiner Begriff oder Theorie, der verwendet wird, um jeden Aufruf in der Win32-API-Struktur zu beschreiben. |
+| Headerdateien oder Imports | Definiert Bibliotheken, die zur Laufzeit importiert werden, festgelegt durch Headerdateien oder Bibliotheksimporte. Verwendet Zeiger, um die Funktionsadresse zu erhalten. |
+| Kern-DLLs | Eine Gruppe von vier DLLs, die Aufrufstrukturen definieren (KERNEL32, USER32 und ADVAPI32). Diese DLLs definieren Kernel- und Benutzerdienste, die nicht in einem einzigen Subsystem enthalten sind. |
+| Ergänzende DLLs | Andere DLLs, die als Teil der Windows-API definiert sind. Steuern separate Subsysteme des Windows-Betriebssystems. Etwa 36 weitere definierte DLLs (NTDLL, COM, FVEAPI usw.). |
+| Aufrufstrukturen | Definiert den API-Aufruf selbst und die Parameter des Aufrufs. |
+| API-Aufrufe | Der in einem Programm verwendete API-Aufruf, bei dem die Funktionsadressen über Zeiger erhalten werden. |
+| Ein-/Aus-Parameter | Die durch die Aufrufstrukturen definierten Parameterwerte. |
+
+.
