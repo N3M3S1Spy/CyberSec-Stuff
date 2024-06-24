@@ -72,7 +72,7 @@ winuser.h - google nach User32-DLL dann stößt man auf die Wiki seite **Microso
 ```
 Welche übergeordnete Headerdatei enthält alle anderen erforderlichen untergeordneten und Kern-Headerdateien?
 ```
-windows.h
+windows.h - windows.h wird standart mäßig importiert wenn man mit der Windows-API arbeiten möchte
 ```
 
 # Task 4 - OS Libraries
