@@ -19,7 +19,13 @@ Dieses Zertifikat ist besonders wertvoll für IT-Sicherheitsexperten, Penetratio
 ### Complete Beginner Zertifikat
 
 ![Complete-Beginner](Complete-Beginner.png)
-Dieses Zertifikat bedeutet, dass ich die "Data Science Specialization" auf Coursera erfolgreich abgeschlossen habe. Es deckt alle wesentlichen Aspekte der Datenwissenschaft ab, einschließlich Datenreinigung, Analyse und maschinellem Lernen.
+Das Complete Beginner Zertifikat wird von TryHackMe verliehen und richtet sich an Einsteiger in die Welt der Cybersecurity und des Ethical Hackings. Inhaber dieses Zertifikats haben grundlegende Kenntnisse und Fähigkeiten erworben, um:
+
+- **Einführung in Cybersecurity**: Grundlegende Konzepte und Prinzipien der Cybersecurity verstehen.
+- **Grundlagen des Ethical Hackings**: Einführung in Werkzeuge und Techniken für ethisches Hacking.
+- **Praktische Übungen**: Durchführung von praktischen Herausforderungen und Übungen auf der TryHackMe-Plattform.
+
+Dieses Zertifikat ist ideal für alle, die ihre ersten Schritte in der Cybersecurity machen möchten und sich mit den Grundlagen von Hacking und Sicherheitskonzepten vertraut machen wollen.
 
 ### Zertifikat 3
 
