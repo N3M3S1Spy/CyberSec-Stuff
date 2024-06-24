@@ -4,9 +4,9 @@ In diesem Dokument liste ich alle meine Zertifikate auf und erkläre kurz ihre B
 
 ## Zertifikate
 
-### Zertifikat 1
+### CompTIA-Pentest+ Zertifikat
 
-![Python Programming Certificate](path/to/image1.jpg)
+![CompTIA-Pentest+](CompTIA-Pentest+)
 Dieses Zertifikat bedeutet, dass ich den Kurs "Python Programming" auf Coursera erfolgreich abgeschlossen habe. Es bestätigt meine Kenntnisse in der Programmierung mit Python und den Umgang mit grundlegenden Datenstrukturen und Algorithmen.
 
 ### Zertifikat 2
