@@ -27,9 +27,9 @@ Das Complete Beginner Zertifikat wird von TryHackMe verliehen und richtet sich a
 
 Dieses Zertifikat ist ideal für alle, die ihre ersten Schritte in der Cybersecurity machen möchten und sich mit den Grundlagen von Hacking und Sicherheitskonzepten vertraut machen wollen.
 
-### Cyber Defense Zertifikat
+### Cyber Defence Zertifikat
 
-<a href="Cyber-Defense.png">Cyber Defense</a>
+<a href="Cyber-Defence.png">Cyber Defence</a>
 Das Cyber Defense Zertifikat wird von TryHackMe verliehen und ist für Sicherheitsexperten und IT-Profis konzipiert, die ihre Fähigkeiten im Bereich der Netzwerkverteidigung und Incident Response weiterentwickeln möchten. Inhaber dieses Zertifikats haben Kenntnisse und Fähigkeiten erworben, um:
 
 - **Netzwerkverteidigung**: Aufbau und Wartung sicherer Netzwerkinfrastrukturen.
