@@ -6,7 +6,7 @@ In diesem Dokument liste ich alle meine Zertifikate auf und erkläre kurz ihre B
 
 ### CompTIA-Pentest+ Zertifikat
 
-![CompTIA-Pentest+](CompTIA-Pentest+)
+![CompTIA-Pentest+](CompTIA-Pentest+.png)
 Das CompTIA Pentest+ Zertifikat wurde mir von TryHackMe verliehen und bescheinigt fortgeschrittene Kenntnisse und Fähigkeiten im Bereich der Penetrationstests und Schwachstellenbewertungen. Inhaber dieses Zertifikats haben nachgewiesen, dass sie in der Lage sind:
 
 - **Penetrationstests durchzuführen**: Systeme, Netzwerke und Anwendungen auf Schwachstellen zu prüfen und zu analysieren.
@@ -18,7 +18,7 @@ Dieses Zertifikat ist besonders wertvoll für IT-Sicherheitsexperten, Penetratio
 
 ### Complete Beginner Zertifikat
 
-![Complete-Beginner](Complete-Beginner)
+![Complete-Beginner](Complete-Beginner.png)
 Dieses Zertifikat bedeutet, dass ich die "Data Science Specialization" auf Coursera erfolgreich abgeschlossen habe. Es deckt alle wesentlichen Aspekte der Datenwissenschaft ab, einschließlich Datenreinigung, Analyse und maschinellem Lernen.
 
 ### Zertifikat 3
