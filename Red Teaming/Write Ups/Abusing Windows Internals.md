@@ -131,7 +131,7 @@ Shellcode-Injektion ist die grundlegendste Form der Prozessinjektion; in der nä
 
 Identifizieren Sie eine PID eines Prozesses, der als THM-Attacker ausgeführt wird, um diesen zu zielen. Sobald die PID identifiziert ist, geben Sie die PID als Argument an, um shellcode-injector.exe im Verzeichnis Injectors auf dem Desktop auszuführen.
 ```
-Gehe auf dem TaskManager und gehe unter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax shellcode-injector.exe <PID>
+Starte den Task Manager und gehe zu den Reiter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax shellcode-injector.exe <PID>
 ```
 
 Welche Flagge wird nach dem Einspritzen des Shellcodes erhalten?
@@ -139,4 +139,16 @@ Welche Flagge wird nach dem Einspritzen des Shellcodes erhalten?
 THM{1nj3c710n_15_fun!}
 ```
 
-# Task 3 -
+# Task 3 - Erweiterung des Prozessmissbrauchs
+Im vorherigen Task haben wir besprochen, wie wir Shellcode-Injection verwenden können, um bösartigen Code in einen legitimen Prozess einzuschleusen. In diesem Task werden wir Process Hollowing behandeln. Ähnlich wie bei der Shellcode-Injection bietet diese Technik die Möglichkeit, eine komplette bösartige Datei in einen Prozess einzuschleusen. Dies wird erreicht, indem der Prozess „ausgehöhlt“ oder entmappt wird und spezifische PE (Portable Executable) Daten und Abschnitte in den Prozess injiziert werden.
+
+Auf hoher Ebene kann Process Hollowing in sechs Schritte unterteilt werden:
+
+1. Einen Zielprozess im angehaltenen Zustand erstellen.
+2. Ein bösartiges Image öffnen.
+3. Legitimen Code aus dem Prozessspeicher entmapen.
+4. Speicherbereiche für den bösartigen Code zuweisen und jeden Abschnitt in den Adressraum schreiben.
+5. Einen Einstiegspunkt für den bösartigen Code festlegen.
+6. Den Zielprozess aus dem angehaltenen Zustand herausnehmen.
+
+Die Schritte können auch grafisch dargestellt werden, um zu zeigen, wie Windows API-Aufrufe mit dem Prozessspeicher interagieren.
