@@ -18,7 +18,7 @@ Dieses Zertifikat ist besonders wertvoll für IT-Sicherheitsexperten, Penetratio
 
 ### Complete Beginner Zertifikat
 
-![Complete-Beginner](Complete-Beginner.png)
+<a href="Complete-Beginner.png">Complete Beginner</a>
 Das Complete Beginner Zertifikat wird von TryHackMe verliehen und richtet sich an Einsteiger in die Welt der Cybersecurity und des Ethical Hackings. Inhaber dieses Zertifikats haben grundlegende Kenntnisse und Fähigkeiten erworben, um:
 
 - **Einführung in Cybersecurity**: Grundlegende Konzepte und Prinzipien der Cybersecurity verstehen.
