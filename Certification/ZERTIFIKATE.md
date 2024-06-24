@@ -6,7 +6,7 @@ In diesem Dokument liste ich alle meine Zertifikate auf und erkläre kurz ihre B
 
 ### CompTIA-Pentest+ Zertifikat
 
-![CompTIA-Pentest+](CompTIA-Pentest+.png)
+![ ](CompTIA-Pentest+.png)
 Das CompTIA Pentest+ Zertifikat wurde mir von TryHackMe verliehen und bescheinigt fortgeschrittene Kenntnisse und Fähigkeiten im Bereich der Penetrationstests und Schwachstellenbewertungen. Inhaber dieses Zertifikats haben nachgewiesen, dass sie in der Lage sind:
 
 - **Penetrationstests durchzuführen**: Systeme, Netzwerke und Anwendungen auf Schwachstellen zu prüfen und zu analysieren.
