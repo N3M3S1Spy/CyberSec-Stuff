@@ -633,6 +633,22 @@ Einige der bekannteren Techniken umfassen das Parsen des RVA-Einstiegspunkts, di
 
 Bei allen Injektionstechniken ist die Möglichkeit, gängige Forschungsmethoden zu kombinieren, endlos. Dies bietet Ihnen als Angreifer eine Vielzahl von Optionen, um Ihre bösartigen Daten zu manipulieren und auszuführen.
 
+## Fragen:
+Welches Protokoll wird verwendet, um asynchron im Kontext eines Threads auszuführen?
+```
+Asynchronous Procedure Call
+```
+
+Welcher Windows-API-Aufruf wird verwendet, um eine APC-Funktion in die Warteschlange einzureihen?
+```
+QueueUserAPC
+```
+
+Kann der void-Funktionszeiger in einem Remote-Prozess verwendet werden? (j/n)
+```
+N
+```
+
 # Task 7 - Fallstudie zu Browser-Injection und Hooking
 Um einen praktischen Einblick in die Auswirkungen der Prozessinjektion zu bekommen, können wir die TTPs (Taktiken, Techniken und Verfahren) von TrickBot betrachten.
 
@@ -732,3 +748,28 @@ VirtualProtectEx(		// Return to original protect state
 		&flOldProtect);
 ```
 Das mag immer noch wie eine Menge Code und technisches Wissen erscheinen, und das ist in Ordnung! Die Hauptaussage der Hooking-Funktion von TrickBot ist, dass sie sich mithilfe reflektiver Injektion in Browser-Prozesse einschleusen und API-Aufrufe aus der injizierten Funktion hooken wird.
+
+## Fragen:
+Welcher alternative Windows-API-Aufruf wurde von TrickBot verwendet, um einen neuen Benutzerthread zu erstellen?
+```
+RtlCreateUserThread
+```
+
+Wurden die Injektionstechniken, die von TrickBot verwendet wurden, reflektierend? (j/n)
+```
+j
+```
+
+Welcher Funktionsname wurde verwendet, um Hooks manuell zu schreiben?
+```
+write_hook_iter
+```
+
+# Task 8 - Abschluss
+Die Prozessinjektion ist eine umfassende Technik, die in vielen Varianten angewendet werden kann und einer der häufigsten Fälle des Missbrauchs von Windows-Internas ist.
+
+Es ist wichtig zu beachten, dass sich mit der Weiterentwicklung der Erkennungstechnik und Überwachung auch die Injektionstechniken weiterentwickeln müssen. Die meisten der in diesem Raum gezeigten Techniken werden von gängigen kommerziellen EDRs erkannt, aber Sie können Ihre Injektoren immer noch leicht anpassen, um dem Katz-und-Maus-Spiel zwischen dem roten und blauen Team gerecht zu werden.
+
+Wenn Sie sich darauf vorbereiten, eine Injektionstechnik in Ihre eigenen Arbeiten oder Tools zu integrieren, empfehlen wir, dass Sie diese nur als einen kleinen Teil eines größeren Tools verwenden. Das Mischen und Kombinieren von Komponenten der Injektion kann ebenfalls sehr fruchtbar sein, um Ihre Werkzeuge so nahe wie möglich an eine legitime Anwendung anzupassen.
+
+Fügen Sie diese Techniken Ihrer Ausweich-Werkzeugkiste hinzu und setzen Sie das Experimentieren fort, um herauszufinden, was in der Umgebung, in der Sie sich befinden, am besten funktioniert.
