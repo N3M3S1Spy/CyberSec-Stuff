@@ -583,10 +583,8 @@ Der void-Funktionszeiger ist eine eigenartig neuartige Methode zur Ausführung v
 
 Diese Technik kann nur mit lokal alloziertem Speicher ausgeführt werden, jedoch nicht auf API-Aufrufe oder andere Systemfunktionalitäten angewiesen ist.
 
-Die Einzeiler-Version unten ist die gebräuchlichste Form des void-Funktionszeigers, aber wir können sie weiter aufschlüsseln, um ihre Bestandteile zu erklären.
-```C++
-((void(*)())addressPointer)();
-```
+Die Einzeiler-Version unten ist die gebräuchlichste Form des void-Funktionszeigers, aber wir können sie weiter aufschlüsseln, um ihre Bestandteile zu erklären.  
+![Farbiger Code Screenshot](Bilder/2024-06-25-colored-code-screenshot.png)
 
 Dieser Einzeiler kann schwer zu verstehen oder zu erklären sein, da er so dicht ist. Lassen Sie uns ihn durchgehen, während er den Zeiger verarbeitet.
 
