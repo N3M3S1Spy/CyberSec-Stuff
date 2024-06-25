@@ -3,7 +3,7 @@ Dies ist eine einführung zu dem TryHackMe Raum: [Windows Internals](https://try
 # Task 1 - Introduction
 Betriebssysteme haben viel mehr Technologie und Architektur hinter sich, als wir auf den ersten Blick sehen können. In diesem Raum werden wir die Windows-Betriebssysteme und gängige interne Komponenten beobachten.
 
-## Lernziele
+### Lernziele
 
 - Verständnis und Interaktion mit Windows-Prozessen und ihren zugrunde liegenden Technologien.
 - Lernen Sie die Kern-Dateiformate und ihre Verwendung kennen.
