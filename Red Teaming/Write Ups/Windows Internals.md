@@ -358,3 +358,142 @@ Abschnitte den Inhalt und die Daten der Datei definieren.
 | `.reloc`    | Enthält Informationen zur Relokation       |
 | `.rsrc`     | Enthält Anwendungsressourcen (Bilder usw.) |
 | `.debug`    | Enthält Debug-Informationen                |
+
+## Fragen:
+Lesen Sie den obigen Text und beantworten Sie die folgenden Fragen.
+```
+Keine Antwort nötig
+```
+
+Welche PE-Komponente gibt die Meldung "Dieses Programm kann nicht im DOS-Modus ausgeführt werden" aus?
+```
+DOS Stub
+```
+
+Öffnen Sie "notepad.exe" in Detect It Easy und beantworten Sie die folgenden Fragen.
+```
+Keine Antwort nötig
+```
+
+Was ist der von DiE gemeldete Einstiegspunkt?
+```
+000000014001acd0
+```
+
+Was ist der Wert von "NumberOfSections"?
+```
+0006
+```
+
+Wie lautet die virtuelle Adresse von ".data"?
+```
+00024000
+```
+
+Welche Zeichenfolge befindet sich am Offset "0001f99c"?
+```
+Microsoft.Notepad
+```
+
+# Task 7 - Interaktion mit Windows Internals
+Die Interaktion mit Windows-Internas mag zunächst abschreckend wirken, wurde jedoch deutlich vereinfacht. Die zugänglichste und am besten erforschte Möglichkeit, mit Windows-Internas zu interagieren, ist die Verwendung von Windows-API-Aufrufen. Die Windows-API bietet native Funktionalität zur Interaktion mit dem Windows-Betriebssystem. Die API umfasst die Win32-API und gelegentlich die Win64-API.
+
+In diesem Raum werden wir nur einen kurzen Überblick über die Verwendung einiger spezifischer API-Aufrufe geben, die für Windows-Internas relevant sind. Für weitere Informationen zur Windows-API besuchen Sie den [Windows API Raum](https://tryhackme.com/r/room/windowsapi).
+
+Die meisten Komponenten der Windows-Internas erfordern eine Interaktion mit physischer Hardware und Speicher.
+
+Der Windows-Kernel kontrolliert alle Programme und Prozesse und vermittelt alle Interaktionen zwischen Software und Hardware. Dies ist besonders wichtig, da viele Windows-Internas eine Interaktion mit dem Speicher in irgendeiner Form erfordern.
+
+Eine Anwendung kann standardmäßig normalerweise nicht direkt mit dem Kernel interagieren oder physische Hardware modifizieren und benötigt dafür eine Schnittstelle. Dieses Problem wird durch die Verwendung von Prozessormodi und Zugriffsebenen gelöst.
+
+Ein Windows-Prozessor hat einen Benutzer- und Kernelmodus. Der Prozessor wechselt je nach Zugriff und angeforderter Betriebsart zwischen diesen Modi.
+
+Der Wechsel zwischen Benutzermodus und Kernelmodus wird oft durch System- und API-Aufrufe erleichtert. In der Dokumentation wird dieser Punkt manchmal als "Wechsel-Punkt" bezeichnet.
+| User Mode                                      | Kernel Mode                                                |
+|-----------------------------------------------|-------------------------------------------------------------|
+| Kein direkter Zugriff auf Hardware            | Direkter Zugriff auf Hardware                               |
+| Erstellt einen Prozess in einem privaten virtuellen Adressraum | Wird in einem gemeinsamen virtuellen Adressraum ausgeführt   |
+| Zugriff auf "eigene Speicherorte"             | Zugriff auf den gesamten physischen Speicher                |
+
+Applications, die im Benutzermodus oder "Userland" gestartet werden, verbleiben in diesem Modus, bis ein Systemaufruf erfolgt oder über eine API interfaced wird. Wenn ein Systemaufruf erfolgt, wechselt die Anwendung den Modus. Im Bild rechts ist ein Flussdiagramm dargestellt, das diesen Prozess beschreibt.
+
+Wenn man betrachtet, wie Sprachen mit der Win32-API interagieren, wird dieser Prozess weiter verzerrt; die Anwendung durchläuft zuerst die Laufzeitumgebung der Sprache, bevor sie die API durchläuft. Das häufigste Beispiel ist C#, das über die CLR ausgeführt wird, bevor es mit der Win32-API interagiert und Systemaufrufe tätigt.
+![Visual API Usage](Bilder/2024-06-026-Visual-API-Usage.png)
+
+Wir werden eine MessageBox in unseren lokalen Prozess einfügen, um ein Proof-of-Concept zur Interaktion mit dem Speicher zu demonstrieren.
+
+Die Schritte zum Schreiben einer MessageBox in den Speicher sind nachfolgend aufgeführt:
+
+1. Lokalen Prozessspeicher für die MessageBox allozieren.
+2. Die MessageBox in den alloziierten Speicher schreiben/kopieren.
+3. Die MessageBox aus dem lokalen Prozessspeicher ausführen.
+
+Im ersten Schritt können wir `OpenProcess` verwenden, um den Handle des spezifizierten Prozesses zu erhalten.
+```C++
+HANDLE hProcess = OpenProcess(
+	PROCESS_ALL_ACCESS, // Defines access rights
+	FALSE, // Target handle will not be inhereted
+	DWORD(atoi(argv[1])) // Local process supplied by command-line arguments 
+);
+```
+
+Im zweiten Schritt können wir `VirtualAllocEx` verwenden, um einen Speicherbereich mit dem Payload-Puffer zu allozieren.
+```C++
+remoteBuffer = VirtualAllocEx(
+	hProcess, // Opened target process
+	NULL, 
+	sizeof payload, // Region size of memory allocation
+	(MEM_RESERVE | MEM_COMMIT), // Reserves and commits pages
+	PAGE_EXECUTE_READWRITE // Enables execution and read/write access to the commited pages
+);
+```
+
+Im dritten Schritt können wir `WriteProcessMemory` verwenden, um das Payload in den allozierten Speicherbereich zu schreiben.
+```C++
+WriteProcessMemory(
+	hProcess, // Opened target process
+	remoteBuffer, // Allocated memory region
+	payload, // Data to write
+	sizeof payload, // byte size of data
+	NULL
+);
+```
+
+Im vierten Schritt können wir `CreateRemoteThread` verwenden, um unser Payload aus dem Speicher heraus auszuführen.
+```C++
+remoteThread = CreateRemoteThread(
+	hProcess, // Opened target process
+	NULL, 
+	0, // Default size of the stack
+	(LPTHREAD_START_ROUTINE)remoteBuffer, // Pointer to the starting address of the thread
+	NULL, 
+	0, // Ran immediately after creation
+	NULL
+); 
+```
+
+## Fragen:
+Öffnen Sie eine Eingabeaufforderung und führen Sie die bereitgestellte Datei "inject-poc.exe" aus. Beantworten Sie dann die folgenden Fragen.
+```
+Keine Antwort nötig
+```
+
+Geben Sie die Flagge ein, die aus der ausführbaren Datei erhalten wurde.
+```
+THM{1Nj3c7_4lL_7H3_7h1NG2}
+```
+
+# Task 8 - Abschluss
+Windows Internals sind entscheidend für die Funktionsweise des Windows-Betriebssystems. Diese internen Mechanismen können nicht verändert werden, ohne die grundlegende Betriebsweise des Betriebssystems zu gefährden. Aus diesem Grund sind Windows Internals ein attraktives Ziel für Angreifer.
+
+Wie im gesamten Raum erwähnt wurde, können Angreifer die Funktionalität der Windows-Internals-Komponenten leicht für bösartige Zwecke ausnutzen. Für weitere Informationen hierzu besuchen Sie den Raum "Abusing Windows Internals".
+
+Viele der Konzepte, die in diesem Raum behandelt werden, können sogar auf Unix-Systeme übertragen werden. Während sich die Details der Angriffe und deren Ausführung ändern können, bleiben viele der Kernkonzepte gleich.
+
+Insgesamt sind Windows Internals ein integraler Bestandteil des Betriebssystems; sowohl die roten als auch die blauen Teams müssen sich ihrer Fähigkeiten bewusst sein, einschließlich deren Nutzung und Hintergründe.
+
+## Fragen:
+Lesen Sie das Obige und machen Sie mit dem Lernen weiter!
+```
+Keine Antwort nötig
+```
