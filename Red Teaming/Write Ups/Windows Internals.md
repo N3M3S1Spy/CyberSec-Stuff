@@ -486,7 +486,7 @@ THM{1Nj3c7_4lL_7H3_7h1NG2}
 # Task 8 - Abschluss
 Windows Internals sind entscheidend für die Funktionsweise des Windows-Betriebssystems. Diese internen Mechanismen können nicht verändert werden, ohne die grundlegende Betriebsweise des Betriebssystems zu gefährden. Aus diesem Grund sind Windows Internals ein attraktives Ziel für Angreifer.
 
-Wie im gesamten Raum erwähnt wurde, können Angreifer die Funktionalität der Windows-Internals-Komponenten leicht für bösartige Zwecke ausnutzen. Für weitere Informationen hierzu besuchen Sie den Raum "Abusing Windows Internals".
+Wie im gesamten Raum erwähnt wurde, können Angreifer die Funktionalität der Windows-Internals-Komponenten leicht für bösartige Zwecke ausnutzen. Für weitere Informationen hierzu besuchen Sie den Raum [Abusing Windows Internals](https://tryhackme.com/r/room/abusingwindowsinternals).
 
 Viele der Konzepte, die in diesem Raum behandelt werden, können sogar auf Unix-Systeme übertragen werden. Während sich die Details der Angriffe und deren Ausführung ändern können, bleiben viele der Kernkonzepte gleich.
 
