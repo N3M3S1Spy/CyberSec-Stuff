@@ -272,3 +272,14 @@ Wie viele DLLs wurden von "notepad.exe" geladen?
 ```
 
 # Task 6 - Portable Executable Format
+Ausführbare Dateien und Anwendungen sind ein großer Teil der Funktionsweise von Windows auf höherer Ebene. Das PE-Format (**P**ortable **E**xecutable) definiert die Informationen über die ausführbare Datei und die gespeicherten Daten. Das PE-Format legt auch die Struktur fest, wie Datenkomponenten gespeichert werden.
+
+Das PE-Format (Portable Executable) ist eine übergreifende Struktur für ausführbare und Objektdateien. Die PE- (Portable Executable) und COFF- (Common Object File Format) Dateien bilden zusammen das PE-Format.
+
+PE-Daten werden am häufigsten im Hexdump einer ausführbaren Datei gesehen. Im Folgenden werden wir einen Hexdump von calc.exe in die Abschnitte der PE-Daten aufschlüsseln.
+
+Die Struktur der PE-Daten ist in sieben Komponenten unterteilt:
+
+- Der **DOS-Header** definiert den Dateityp.
+
+Der `MZ` DOS-Header definiert das Dateiformat als `.exe`. Der DOS-Header kann im untenstehenden Abschnitt des Hexdumps gesehen werden.
