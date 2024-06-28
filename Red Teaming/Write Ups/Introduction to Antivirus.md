@@ -455,3 +455,102 @@ Wir haben den SharpEDRChecker bereits aus dem [GitHub Repo](https://github.com/P
 ![Visual Code Screenshot](Bilder/2024-06-28-Visual-Code-Screenshot.png)
 
 Sobald es kompiliert ist, finden wir den Pfad der kompilierten Version im Ausgabeabschnitt, wie in Schritt 3 hervorgehoben. Wir haben auch eine Kopie der kompilierten Version im Verzeichnis `C:\Users\thm\Desktop\Files` hinzugefügt. Nun lassen Sie uns versuchen, es auszuführen und das Ergebnis wie folgt zu sehen:
+```cmd
+C:\> SharpEDRChecker.exe
+[!] Directory Summary:
+   [-] C:\Program Files\Windows Defender : defender
+   [-] C:\Program Files\Windows Defender Advanced Threat Protection : defender, threat
+   [-] C:\Program Files (x86)\Windows Defender : defender
+
+[!] Service Summary:
+   [-] PsShutdownSvc : sysinternal
+   [-] Sense : defender, threat
+   [-] WdNisSvc : defender, nissrv
+   [-] WinDefend : antimalware, defender, malware, msmpeng
+   [-] wscsvc : antivirus
+```
+
+Als Ergebnis wurde Windows Defender basierend auf Ordnern und Diensten gefunden. Beachten Sie, dass dieses Programm von AV-Software als bösartig eingestuft werden kann, da es verschiedene Prüfungen und API-Aufrufe durchführt.
+
+### C# Fingerprint-Checks
+
+Eine andere Möglichkeit, AV-Software zu identifizieren, besteht darin, unser eigenes Programm zu schreiben. Wir haben ein C#-Programm in der bereitgestellten Windows 10 Pro VM vorbereitet, damit wir einige praktische Experimente durchführen können! Sie finden das Projektsymbol auf dem Desktop (AV-Check) und doppelklicken darauf, um es mit Microsoft Visual Studio 2022 zu öffnen.
+
+Der folgende C#-Code ist einfach und hat das primäre Ziel festzustellen, ob AV-Software basierend auf einer vordefinierten Liste bekannter AV-Anwendungen installiert ist.
+```C#
+using System;
+using System.Management;
+
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        var status = false;
+        Console.WriteLine("[+] Antivirus check is running .. ");
+        string[] AV_Check = { 
+            "MsMpEng.exe", "AdAwareService.exe", "afwServ.exe", "avguard.exe", "AVGSvc.exe", 
+            "bdagent.exe", "BullGuardCore.exe", "ekrn.exe", "fshoster32.exe", "GDScan.exe", 
+            "avp.exe", "K7CrvSvc.exe", "McAPExe.exe", "NortonSecurity.exe", "PavFnSvr.exe", 
+            "SavService.exe", "EnterpriseService.exe", "WRSA.exe", "ZAPrivacyService.exe" 
+        };
+        var searcher = new ManagementObjectSearcher("select * from win32_process");
+        var processList = searcher.Get();
+        int i = 0;
+        foreach (var process in processList)
+        {
+            int _index = Array.IndexOf(AV_Check, process["Name"].ToString());
+            if (_index > -1)
+            {
+                Console.WriteLine("--AV Found: {0}", process["Name"].ToString());
+                status = true;
+            }
+            i++;
+        }
+        if (!status) { Console.WriteLine("--AV software is not found!");  }
+    }
+}
+```
+
+Lassen Sie uns den Code etwas genauer erklären. Wir haben eine Liste bekannter AV-Anwendungen im `AV_Check` Array in unserem Code vordefiniert, die aus dem vorherigen Abschnitt stammt, in dem wir das Fingerprinting von AV-Software besprochen haben (siehe Tabelle oben). Dann verwenden wir die Windows Management Instrumentation Command-Line (WMIC)-Abfrage (`select * from win32_process`), um alle derzeit auf der Zielmaschine laufenden Prozesse aufzulisten und speichern sie in der `processList` Variablen. Anschließend gehen wir die derzeit laufenden Prozesse durch und vergleichen, ob sie im vordefinierten Array existieren. Wenn eine Übereinstimmung gefunden wird, ist AV-Software installiert.
+
+Das C#-Programm verwendet ein WMIC-Objekt, um die aktuell laufenden Prozesse aufzulisten, was von der AV-Software überwacht werden kann. Wenn die AV-Software schlecht implementiert ist, um die WMIC-Abfragen oder Windows-APIs zu überwachen, kann dies zu Fehlalarmen beim Scannen unseres C#-Programms führen.
+
+Lassen Sie uns eine x86-Version des C#-Programms kompilieren, sie auf die VirusTotal-Website hochladen und die Ergebnisse überprüfen! Um das C#-Programm in Microsoft Visual Studio 2022 zu kompilieren, wählen Sie Build aus dem Menüleiste und dann die Option Build Solution. Wenn es korrekt kompiliert wurde, finden Sie den Pfad der kompilierten Version im Ausgabeabschnitt, wie im folgenden Screenshot in Schritt 3 hervorgehoben.  
+![Visual Code Example Screenshot](Bilder/2024-06-28-Visual-Code-Example-Screenshot.png)
+
+Wenn wir das AV-Check-Programm auf die [VirusTotal Website](https://www.virustotal.com/gui/home/upload) hochladen und das Ergebnis überprüfen, zeigte VirusTotal überraschenderweise, dass zwei AV-Anbieter (MaxSecure und SecureAge APEX) unser Programm als bösartig eingestuft haben! Dies ist ein falsch positives Ergebnis, bei dem eine Datei fälschlicherweise als bösartig identifiziert wird, obwohl sie es nicht ist. Einer der möglichen Gründe dafür ist, dass die Software dieser AV-Anbieter einen schlecht implementierten maschinellen Lernklassifikator oder eine regelbasierte Erkennungsmethode verwendet. Weitere Details zum tatsächlichen Einreichungsbericht finden Sie [hier](https://www.virustotal.com/gui/file/5f7d3e6cf58596a0186d89c20004c76805769f9ef93dc39e346e7331eee9e7ff?nocache=1). Es gibt vier Hauptabschnitte: Erkennung, Details, Verhalten und Community. Wenn wir den Abschnitt Verhalten überprüfen, können wir alle Aufrufe der Windows-APIs, Registrierungsschlüssel, Module und die WMIC-Abfrage sehen.  
+![Virus Total scan one](Bilder/2024-06-28-Virus-Totals-scan-one.png)
+
+Im Abschnitt Erkennung gibt es Sigma-Regeln, die, wenn ein Systemereignis während der Ausführung übereinstimmt (in der Sandbox-Umgebung), die Datei als bösartig betrachten. Dieses Ergebnis basiert wahrscheinlich auf den Regeln; VirusTotal hat unser Programm aufgrund der [Process Ghosting Technik](https://pentestlaboratories.com/2021/12/08/process-ghosting/) markiert, wie im folgenden Screenshot gezeigt.  
+![VT scan result](Bilder/2024-06-28-VT-rule-result.png)
+
+Lassen Sie uns das C#-Programm jetzt mit einer x64-CPU neu kompilieren und prüfen, ob die Scan-Engines sich anders verhalten. Bei unserem erneuten Einreichungsversuch haben drei AV-Anbieter (einschließlich Cyren AV) die Datei als bösartig markiert. Für weitere Details zum tatsächlichen Einreichungsbericht sehen Sie hier nach.
+
+![VT secound scan result](Bilder/2024-06-28-VT-secound-scan-result.png)
+
+Hinweis: Wenn Sie versuchen, eine Datei auf der VirusTotal-Website einzureichen, könnte das Ergebnis unterschiedlich ausfallen. Beachten Sie, dass VirusTotal Einreichungsberichte mit den Antivirus-Anbietern teilt, um deren Erkennungsmaschinen zu verbessern, einschließlich falsch positiver Ergebnisse.
+
+## Fragen:
+Versuchen Sie für die AV-Fingerprinting in C#, den Code in einer anderen Sprache wie Python neu zu schreiben, und prüfen Sie, ob VirusTotal ihn als bösartig markiert.
+```
+Keine Antwort nötig
+```
+
+Lesen Sie den obigen Text!
+```
+Keine Antwort nötig
+```
+
+# Task 8 - Abschluss
+Zusammenfassung
+
+In diesem Kurs haben wir uns mit Antivirensoftware und ihren Erkennungsansätzen beschäftigt. Als Red Teamer ist es wichtig zu wissen, wie Antivirensoftware funktioniert und bösartige Anwendungen erkennt, um Bypass-Techniken implementieren zu können.
+
+Wir haben auch die statische Erkennungstechnik ausführlich besprochen und gezeigt, wie ClamAV, eine Open-Source-Antivirensoftware, bösartige Dateien mithilfe statischer Analyse erkennt. Darüber hinaus haben wir gezeigt, wie man eine eigene Datenbank erstellt und Yara-Regeln verwendet, um bösartige Dateien zu erkennen, die nicht von der offiziellen Datenbank erfasst werden.
+
+Sobald wir Zugang zu einem Ziel erhalten haben, ist es entscheidend, die Zielsysteme zu enumerieren, bevor weitere Aktionen wie Privilege Escalation oder laterale Bewegungen durchgeführt werden. Der Grund dafür ist, keine Alarme für verdächtige Aktivitäten auszulösen, die den Zugang zu den Zielsystemen gefährden könnten. Deshalb haben wir zwei Methoden vorgestellt, um AV-Fingerprinting mithilfe öffentlicher und privater Tools zu üben.
+
+## Fragen:
+```
+Keine Antwort nötig
+```
