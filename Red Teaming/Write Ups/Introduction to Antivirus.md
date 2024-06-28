@@ -351,12 +351,107 @@ Der Nachteil der signaturbasierten Erkennung besteht darin, dass Dateien einen a
 ## Fragen:
 Wie lautet die Ausgabe des `sigtool` tool zur Generierung eines MD5-Hashs der `AV-Check.exe` Binärdatei?
 ```
-
+f4a974b0cf25dca7fbce8701b7ab3a88:6144:AV-Check.exe
 ```
 
 Verwenden Sie das strings-Werkzeug, um alle menschenlesbaren Zeichenfolgen der AV-Check-Binärdatei aufzulisten. Was ist die Kennzeichnung (Flagge)?
 ```
-
+THM{Y0uC4nC-5tr16s}
 ```
 
 # Task 6 - Andere Erkennungstechniken
+Das Konzept der statischen Erkennung ist relativ einfach. In diesem Abschnitt werden wir die verschiedenen Arten von Erkennungstechniken besprechen.
+
+### Dynamische Erkennung
+
+Der dynamische Erkennungsansatz ist fortschrittlicher und komplizierter als die statische Erkennung. Die dynamische Erkennung konzentriert sich stärker darauf, Dateien zur Laufzeit mit verschiedenen Methoden zu überprüfen. Das folgende Diagramm zeigt den Ablauf der dynamischen Erkennungsscans:
+![Dynamische Erkennungsmethoden in der Cybersicherheit](Bilder/2024-06-28-Dynamische-Erkennungsmethoden-in-der-Cybersicherheit.png
+)
+
+Die erste Methode besteht darin, die Windows-APIs zu überwachen. Die Erkennungs-Engine überprüft Windows-Anwendungsaufrufe und überwacht Windows-API-Aufrufe mithilfe von Windows [Hooks](https://learn.microsoft.com/en-us/windows/win32/winmsg/about-hooks).
+
+Eine weitere Methode für die dynamische Erkennung ist das Sandboxing. Eine Sandbox ist eine virtualisierte Umgebung, die verwendet wird, um bösartige Dateien vom Host-Computer getrennt auszuführen. Dies geschieht normalerweise in einer isolierten Umgebung, und das Hauptziel besteht darin, zu analysieren, wie sich die bösartige Software im System verhält. Sobald die bösartige Software bestätigt ist, wird eine eindeutige Signatur und Regel basierend auf den Eigenschaften der Binärdatei erstellt. Schließlich wird ein neues Update für die zukünftige Nutzung in die Cloud-Datenbank übertragen.
+
+Diese Art der Erkennung hat auch Nachteile, da sie erfordert, dass die bösartige Software für eine begrenzte Zeit in der virtuellen Umgebung ausgeführt wird, um die Systemressourcen zu schützen. Wie bei anderen Erkennungstechniken kann die dynamische Erkennung umgangen werden. Malware-Entwickler implementieren ihre Software so, dass sie nicht innerhalb der virtuellen oder simulierten Umgebung funktioniert, um eine dynamische Analyse zu vermeiden. Beispielsweise überprüfen sie, ob das System einen echten Prozess der Softwareausführung startet, bevor bösartige Aktivitäten ausgeführt werden, oder lassen die Software vor der Ausführung eine Weile warten.
+
+Für weitere Informationen zur Umgehung von Sandboxen empfehlen wir den THM-Raum: [Sandbox Evasion](https://tryhackme.com/r/room/sandboxevasion)!
+
+### Heuristische und Verhaltensbasierte Erkennung
+
+Die heuristische und verhaltensbasierte Erkennung ist in modernen AV-Produkten heute unverzichtbar geworden. Moderne AV-Software verlässt sich auf diese Art der Erkennung, um bösartige Software zu erkennen. Die heuristische Analyse verwendet verschiedene Techniken, einschließlich statischer und dynamischer heuristischer Methoden:
+
+1. Statische heuristische Analyse ist ein Prozess des Dekomplilierens (wenn möglich) und Extrahierens des Quellcodes der bösartigen Software. Anschließend wird der extrahierte Quellcode mit anderen bekannten Virus-Quellcodes verglichen. Diese Quellcodes sind vorher bekannt und in einer heuristischen Datenbank vordefiniert. Wenn eine Übereinstimmung den Schwellenwertprozentsatz erreicht oder überschreitet, wird der Code als bösartig markiert.
+
+2. Dynamische heuristische Analyse basiert auf vordefinierten Verhaltensregeln. Sicherheitsexperten analysierten verdächtige Software in isolierten und gesicherten Umgebungen. Basierend auf ihren Erkenntnissen wurde die Software als bösartig markiert. Anschließend wurden Verhaltensregeln erstellt, um die bösartigen Aktivitäten der Software innerhalb eines Zielcomputers zu erkennen.
+
+Folgende Beispiele für Verhaltensregeln:
+
+- Wenn ein Prozess versucht, mit dem Prozess LSASS.exe zu interagieren, der die NTLM-Hashes, Kerberos-Tickets und mehr der Benutzer enthält.
+- Wenn ein Prozess einen Listening-Port öffnet und auf Befehle von einem Command-and-Control (C2)-Server wartet.
+
+Das folgende Diagramm zeigt den Ablauf der heuristischen und verhaltensbasierten Erkennungsscans:
+![Heuristische und verhaltensbasierte Erkennung](Bilder/2024-06-28-Heuristische-und-verhaltensbasierte-Erkennung.png)
+
+Zusammenfassung der Erkennungsmethoden
+
+Lassen Sie uns zusammenfassen, wie moderne AV-Software als eine Einheit funktioniert, alle Komponenten umfasst und verschiedene Funktionen und Erkennungstechniken kombiniert, um ihre AV-Engine zu implementieren. Das Folgende ist ein Beispiel für die Komponenten einer Antivirus-Engine:  
+![Prozessflussdiagramm für den Antivirus-Erkennungsmotor](Bilder/2024-06-28-Prozessflussdiagramm-für-den-Antivirus-Erkennungsmotor.png)
+
+Im Diagramm sehen Sie, dass eine verdächtige Datei `Foobar.zip` zur Überprüfung an die AV-Software übergeben wird. Die AV-Software erkennt, dass es sich um eine komprimierte Datei (.zip) handelt. Da die Software .zip-Dateien unterstützt, wendet sie eine Entpacker-Funktion an, um die Dateien (`Foobar.exe`) zu extrahieren. Anschließend identifiziert sie den Dateityp, um zu wissen, mit welchem Modul gearbeitet werden soll, und führt dann eine PE-Parsing-Operation durch, um die Informationen und andere charakteristische Merkmale des Binaries zu extrahieren. Als nächstes wird überprüft, ob die Datei gepackt ist; falls ja, wird der Code entpackt. Schließlich werden die gesammelten Informationen und das Binary an die AV-Engine übergeben, wo versucht wird festzustellen, ob es sich um Malware handelt, und uns das Ergebnis mitgeteilt wird.
+
+## Fragen:
+Welche Erkennungsmethode wird verwendet, um bösartige Software in virtuellen Umgebungen zu analysieren?
+```
+Dynamic Detection
+```
+
+# Task 7 - AV Test und Fingerabdruckerkennung
+AV-Anbieter
+
+Viele AV-Anbieter auf dem Markt konzentrieren sich hauptsächlich darauf, ein Sicherheitsprodukt für Privat- oder Unternehmenskunden bereitzustellen. Moderne AV-Software hat sich weiterentwickelt und kombiniert nun Antivirus-Funktionen mit anderen Sicherheitsmerkmalen wie Firewall, Verschlüsselung, Anti-Spam, EDR, Schwachstellenscans, VPN usw.
+
+Es ist wichtig zu beachten, dass es schwierig ist, zu empfehlen, welche AV-Software die beste ist. Letztlich hängt es von den Vorlieben und Erfahrungen der Benutzer ab. Heutzutage konzentrieren sich AV-Anbieter sowohl auf die Sicherheit von Unternehmen als auch auf die Sicherheit der Endbenutzer. Wir empfehlen, die Website von [AV Comparatives](https://www.av-comparatives.org/list-of-enterprise-av-vendors-pc/) für weitere Details zu Unternehmens AV Anbietern zu besuchen.
+
+AV-Testumgebung
+
+AV-Testumgebungen sind großartige Orte, um verdächtige oder bösartige Dateien zu überprüfen. Sie können Dateien hochladen, um sie von verschiedenen AV-Softwareanbietern scannen zu lassen. Plattformen wie VirusTotal verwenden verschiedene Techniken und liefern Ergebnisse innerhalb von Sekunden. Als Red-Teamer oder Pentester müssen wir eine Payload gegen die bekanntesten AV-Anwendungen testen, um die Effektivität der Umgehungstechnik zu überprüfen.
+
+VirusTotal ![Virus Total Logo](Bilder/2024-06-28-VirusTotal-Logo.png)
+
+VirusTotal ist eine bekannte webbasierte Scan-Plattform zum Überprüfen verdächtiger Dateien. Sie ermöglicht es Benutzern, Dateien hochzuladen, die von über 70 Antivirus-Engines gescannt werden. VirusTotal übergibt die hochgeladenen Dateien an die Antivirus-Engines, die diese überprüfen, das Ergebnis zurückgeben und melden, ob die Datei bösartig ist oder nicht. Es werden viele Kontrollpunkte angewendet, darunter das Überprüfen auf schwarze Listen von URLs oder Diensten, Signaturen, Binäranalysen, Verhaltensanalysen sowie das Überprüfen von API-Aufrufen. Zusätzlich wird die Binärdatei in einer simulierten und isolierten Umgebung ausgeführt und überprüft, um bessere Ergebnisse zu erzielen. Für weitere Informationen und um andere Funktionen zu überprüfen, können Sie die [VirusTotal Website](https://www.virustotal.com/gui/home/upload) besuchen.
+
+Alternativen zu VirusTotal
+
+Wichtiger Hinweis: VirusTotal ist eine praktische Scan-Plattform mit großartigen Funktionen, hat jedoch eine Freigaberichtlinie. Alle gescannten Ergebnisse werden an die Antivirus-Anbieter weitergeleitet und mit ihnen geteilt, um deren Produkte zu verbessern und ihre Datenbanken für bekannte Malware zu aktualisieren. Als Red-Teamer wird dadurch ein Dropper oder eine Payload, die Sie in Einsätzen verwenden, enttarnt. Daher gibt es alternative Lösungen, um gegen verschiedene Sicherheitsprodukte zu testen, wobei der wichtigste Vorteil darin besteht, dass sie keine Freigaberichtlinie haben. Es gibt jedoch andere Einschränkungen. Sie können eine begrenzte Anzahl von Dateien pro Tag scannen lassen; andernfalls ist ein Abonnement erforderlich, um unbegrenzte Tests durchzuführen. Aus diesen Gründen empfehlen wir, Ihre Malware nur auf Websites zu testen, die keine Informationen teilen, wie zum Beispiel:
+
+- [AntiscanMe](https://antiscan.me/) (6 kostenlose Scans pro Tag)
+- [Virus Scan Jotti's Malware Scan](https://virusscan.jotti.org/)
+
+Fingerabdruckerkennung von AV-Software
+
+Als Red-Teamer wissen wir nicht, welche AV-Software vorhanden ist, sobald wir erstmaligen Zugriff auf einen Zielrechner erlangt haben. Daher ist es wichtig, herauszufinden und zu identifizieren, welche hostbasierten Sicherheitsprodukte installiert sind, einschließlich AV-Software. Die Fingerabdruckerkennung von AV-Software ist ein wesentlicher Prozess, um festzustellen, welcher AV-Anbieter vorhanden ist. Zu wissen, welche AV-Software installiert ist, ist auch sehr hilfreich, um die gleiche Umgebung zu erstellen und Umgehungstechniken zu testen.
+
+In diesem Abschnitt werden verschiedene Möglichkeiten vorgestellt, um Antivirus-Software basierend auf statischen Artefakten zu identifizieren, einschließlich Dienstnamen, Prozessnamen, Domänennamen, Registrierungsschlüsseln und Dateisystemen.
+
+Die folgende Tabelle enthält bekannte und häufig verwendete AV-Software.
+| Antivirus Name      | Service Name                        | Process Name                       |
+|---------------------|-------------------------------------|------------------------------------|
+| Microsoft Defender  | WinDefend                           | MSMpEng.exe                        |
+| Trend Micro         | TMBMSRV                             | TMBMSRV.exe                        |
+| Avira               | AntivirService, Avira.ServiceHost   | avguard.exe, Avira.ServiceHost.exe |
+| Bitdefender         | VSSERV                              | bdagent.exe, vsserv.exe            |
+| Kaspersky           | AVP<Version #>                      | avp.exe, ksde.exe                  |
+| AVG                 | AVG Antivirus                       | AVGSvc.exe                         |
+| Norton              | Norton Security                     | NortonSecurity.exe                 |
+| McAfee              | McAPExe, Mfemms                     | MCAPExe.exe, mfemms.exe            |
+| Panda               | PavPrSvr                            | PavPrSvr.exe                       |
+| Avast               | Avast Antivirus                     | afwServ.exe, AvastSvc.exe          |
+
+SharpEDRChecker
+
+Eine Möglichkeit, Antivirus-Software zu identifizieren, ist die Verwendung öffentlicher Tools wie [SharpEDRChecker](https://github.com/PwnDexter/SharpEDRChecker). Es ist in C# geschrieben und führt verschiedene Überprüfungen auf einem Zielrechner durch, einschließlich Überprüfungen auf AV-Software, wie laufende Prozesse, Metadaten von Dateien, geladene DLL-Dateien, Registrierungsschlüssel, Dienste, Verzeichnisse und Dateien.
+
+Wir haben den SharpEDRChecker bereits aus dem [GitHub Repo](https://github.com/PwnDexter/SharpEDRChecker) heruntergeladen, damit wir ihn in der bereitgestellten VM verwenden können. Nun müssen wir das Projekt kompilieren, und wir haben bereits eine Verknüpfung zum Projekt auf dem Desktop erstellt (SharpEDRChecker). Um dies zu tun, doppelklicken Sie darauf, um es in Microsoft Visual Studio 2022 zu öffnen. Jetzt, da unser Projekt bereit ist, müssen wir es kompilieren, wie im folgenden Screenshot gezeigt:
+![Visual Code Screenshot](Bilder/2024-06-28-Visual-Code-Screenshot.png)
+
+Sobald es kompiliert ist, finden wir den Pfad der kompilierten Version im Ausgabeabschnitt, wie in Schritt 3 hervorgehoben. Wir haben auch eine Kopie der kompilierten Version im Verzeichnis `C:\Users\thm\Desktop\Files` hinzugefügt. Nun lassen Sie uns versuchen, es auszuführen und das Ergebnis wie folgt zu sehen:
