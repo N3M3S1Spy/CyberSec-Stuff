@@ -185,7 +185,7 @@ Anschließend führt sie eine Reihe von Vergleichen zwischen vorhandenen Dateien
 
 In dieser Aufgabe werden wir eine signaturbasierte Erkennungsmethode verwenden, um zu sehen, wie Antivirenprodukte bösartige Dateien erkennen. Es ist wichtig zu beachten, dass diese Technik nur gegen bekannte bösartige Dateien mit vorab generierten Signaturen in einer Datenbank funktioniert. Daher muss die Datenbank von Zeit zu Zeit aktualisiert werden.
 
-Wir werden die ClamAV-Antivirensoftware verwenden, um zu demonstrieren, wie die signaturbasierte Erkennung bösartige Dateien identifiziert. Die ClamAV-Software ist auf der bereitgestellten VM vorinstalliert, und wir können darauf unter folgendem Pfad zugreifen: c:\Program Files\ClamAV\clamscan.exe. Wir werden auch einige Malware-Beispiele scannen, die auf dem Desktop zu finden sind. Der Ordner "Malware samples" enthält die folgenden Dateien:
+Wir werden die `ClamAV` Antivirensoftware verwenden, um zu demonstrieren, wie die signaturbasierte Erkennung bösartige Dateien identifiziert. Die ClamAV-Software ist auf der bereitgestellten VM vorinstalliert, und wir können darauf unter folgendem Pfad zugreifen: `c:\Program Files\ClamAV\clamscan.exe`. Wir werden auch einige Malware-Beispiele scannen, die auf dem Desktop zu finden sind. Der Ordner "Malware samples" enthält die folgenden Dateien:
 
 - **EICAR** ist eine Testdatei, die ASCII-Zeichenfolgen enthält und verwendet wird, um die Effektivität von Antivirensoftware zu testen, anstatt echter Malware, die Ihren Rechner beschädigen könnte. Für weitere Informationen können Sie die offizielle EICAR-Website besuchen, [hier](https://www.eicar.org/?page_id=3950).
 - **Backdoor 1** ist ein C#-Programm, das eine bekannte Technik verwendet, um eine Rückverbindung herzustellen, einschließlich der Erstellung eines Prozesses und der Ausführung eines Metasploit Framework-Shellcodes.
@@ -193,7 +193,7 @@ Wir werden die ClamAV-Antivirensoftware verwenden, um zu demonstrieren, wie die 
 - **AV-Check** ist ein C#-Programm, das Antivirensoftware auf einem Zielrechner auflistet. Beachten Sie, dass diese Datei nicht bösartig ist. Wir werden dieses Tool in Aufgabe 6 genauer besprechen.
 - **notes.txt** ist eine Textdatei, die eine Befehlszeile enthält. Beachten Sie, dass diese Datei nicht bösartig ist.
 
-ClamAV wird mit einer eigenen Datenbank geliefert, und während der Installation müssen wir die kürzlich aktualisierte Version herunterladen. Lassen Sie uns versuchen, den Ordner "Malware samples" mit der clamscan.exe-Binärdatei zu scannen und überprüfen, wie ClamAV gegen diese Beispiele abschneidet.
+ClamAV wird mit einer eigenen Datenbank geliefert, und während der Installation müssen wir die kürzlich aktualisierte Version herunterladen. Lassen Sie uns versuchen, den Ordner "Malware samples" mit der `clamscan.exe` Binärdatei zu scannen und überprüfen, wie ClamAV gegen diese Beispiele abschneidet.
 ```cmd
 c:\>"c:\Program Files\ClamAV\clamscan.exe" c:\Users\thm\Desktop\Samples
 Loading:    22s, ETA:   0s [========================>]    8.61M/8.61M sigs
