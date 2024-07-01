@@ -48,7 +48,7 @@ Erstelle eine funktionierende Shell auf der Opfermaschine und lies die Datei auf
 Task 3 - PE Struktur
 Diese Aufgabe hebt einige der wichtigen Elemente der PE-Datenstruktur für Windows-Binärdateien hervor.
 
-Was ist PE?
+### Was ist PE?
 
 Das Portable Executable (PE) ist das Dateiformat für ausführbare Dateien unter Windows, das eine Datenstruktur darstellt, welche die für Dateien notwendigen Informationen enthält. Es dient dazu, den ausführbaren Dateicode auf einer Festplatte zu organisieren. Betriebssystemkomponenten wie Windows- und DOS-Lader können diese Dateien in den Speicher laden und auf Basis der analysierten Dateiinformationen aus dem PE ausführen.
 
@@ -93,7 +93,7 @@ Wenn wir uns den Inhalt der PE ansehen, sehen wir, dass er eine Reihe von Bytes 
 
 5. **Die Einstiegspunkt-Adresse wird lokalisiert und die Hauptausführungsfunktion wird ausgeführt.**
 
-**Warum müssen wir über PE Bescheid wissen?**
+### Warum müssen wir über PE Bescheid wissen?
 
 Es gibt ein paar Gründe, warum wir es lernen müssen. Erstens erfordert die Technik des Packens und Entpackens detaillierte Kenntnisse über die PE-Struktur.
 
@@ -106,7 +106,7 @@ Wir können kontrollieren, in welchem Datenabschnitt wir unseren Shellcode speic
 - Eine weitere Technik besteht darin, den Shellcode als Rohbinärdatei in einem Iconbild zu speichern und es im Code zu verlinken, sodass er im `.rsrc`-Datenabschnitt angezeigt wird.
 - Wir können einen benutzerdefinierten Datenabschnitt hinzufügen, um den Shellcode zu speichern.
 
-**PE-Bear**
+### PE-Bear
 
 Die angehängte VM ist eine Windows-Entwicklungsmaschine, die die Tools zum Analysieren von EXE-Dateien enthält und die besprochenen Details lesen kann. Zur einfachen Nutzung haben wir eine Kopie der PE-Bear-Software auf dem Desktop bereitgestellt, die die PE-Struktur überprüft: Header, Abschnitte usw. PE-Bear bietet eine grafische Benutzeroberfläche, um alle relevanten EXE-Details anzuzeigen. Um eine EXE-Datei zur Analyse zu laden, wähle `Datei -> PE laden (Strg + O)`.
 ![PE Bear new file load](Bilder/2024-07-01-PE-Bear-new-file-load.png)
