@@ -356,13 +356,13 @@ unsigned char buf[] =
 ```
 Als Ergebnis generiert das Metasploit-Framework einen Shellcode, der den Windows-Rechner (calc.exe) ausführt. Der Windows-Rechner wird häufig als Beispiel im Malware-Entwicklungsprozess verwendet, um einen Proof of Concept zu zeigen. Wenn die Technik funktioniert, öffnet sich eine neue Instanz des Windows-Rechners. Dies bestätigt, dass jeder ausführbare Shellcode mit der verwendeten Methode funktioniert.
 
-Shellcode-Injektion
+### Shellcode-Injektion
 
 Hacker injizieren Shellcode in einen laufenden oder neuen Thread und Prozess mithilfe verschiedener Techniken. Shellcode-Injektionstechniken ändern den Ausführungsfluss des Programms, um Register und Funktionen des Programms zu aktualisieren und den eigenen Code des Angreifers auszuführen.
 
 Lassen Sie uns nun den generierten Shellcode weiterverwenden und ihn im Betriebssystem ausführen. Hier ist ein C-Code mit unserem generierten Shellcode, der in den Speicher injiziert und “calc.exe” ausgeführt wird.
 
-Auf der AttackBox speichern wir das Folgende in einer Datei namens “calc.c”:
+Auf der AttackBox speichern wir das Folgende in einer Datei namens `calc.c`:
 ```C
 #include <windows.h>
 char stager[] = {
@@ -408,11 +408,11 @@ Das Metasploit-Framework bietet viele andere Shellcode-Formate und -Typen für I
 
 Das vorherige Beispiel zeigt, wie Sie Shellcode generieren und auf einer Zielmaschine ausführen können. Natürlich können Sie dieselben Schritte wiederholen, um verschiedene Arten von Shellcode zu erstellen, z. B. den Meterpreter-Shellcode.
 
-Generieren von Shellcode aus EXE-Dateien
+### Generieren von Shellcode aus EXE-Dateien
 
-Shellcode kann auch in .bin-Dateien gespeichert werden, einem Rohdatenformat. In diesem Fall können wir den Shellcode mit dem Befehl “xxd -i” extrahieren.
+Shellcode kann auch in `.bin` Dateien gespeichert werden, einem Rohdatenformat. In diesem Fall können wir den Shellcode mit dem Befehl `xxd -i` extrahieren.
 
-C2-Frameworks stellen Shellcode als rohe Binärdatei .bin bereit. Wenn dies der Fall ist, können wir den Linux-Systembefehl “xxd” verwenden, um die hexadezimale Darstellung der Binärdatei zu erhalten. Dazu führen wir den folgenden Befehl aus: xxd -i.
+C2-Frameworks stellen Shellcode als rohe Binärdatei `.bin` bereit. Wenn dies der Fall ist, können wir den Linux-Systembefehl `xxd` verwenden, um die hexadezimale Darstellung der Binärdatei zu erhalten. Dazu führen wir den folgenden Befehl aus: `xxd -i`.
 
 Lassen Sie uns eine rohe Binärdatei mit msfvenom erstellen, um den Shellcode zu erhalten:
 ```shell
@@ -424,7 +424,7 @@ user@AttackBox$ file /tmp/example.bin
 /tmp/example.bin: data
 ```
 
-Führe dann den Befehl xxd für die erstellte Datei aus:
+Führe dann den Befehl `xxd` für die erstellte Datei aus:
 ```shell
 user@AttackBox$ xxd -i /tmp/example.bin
 unsigned char _tmp_example_bin[] = {
