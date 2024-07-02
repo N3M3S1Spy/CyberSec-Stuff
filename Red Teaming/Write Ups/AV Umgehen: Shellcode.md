@@ -46,7 +46,7 @@ Erstelle eine funktionierende Shell auf der Opfermaschine und lies die Datei auf
 ```
 ```
 
-Task 3 - PE Struktur
+# Task 3 - PE Struktur
 Diese Aufgabe hebt einige der wichtigen Elemente der PE-Datenstruktur für Windows-Binärdateien hervor.
 
 ### Was ist PE?
