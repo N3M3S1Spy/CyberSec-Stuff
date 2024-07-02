@@ -22,6 +22,7 @@ Wichtige Punkte:
 - Versuchen Sie, die diskutierten Techniken zu kombinieren.
 - Die Website unterstützt nur EXE-Dateien.
 - Sobald die Antivirensoftware die hochgeladene Datei gescannt und keine schädlichen Codes gefunden hat, wird die Datei ausgeführt. Wenn also alles richtig zusammengefügt ist, sollten Sie eine umgekehrte Shell erhalten.
+
 ![Antivirus GUI Showcase](Bilder/2024-07-01-AV-GUI-Showcase.png)
 
 Sie können die Fragen für diese Aufgabe vorerst ignorieren, aber stellen Sie sicher, dass Sie auf sie zurückkommen, sobald Sie die Antivirensoftware erfolgreich umgangen und eine Shell erhalten haben.
