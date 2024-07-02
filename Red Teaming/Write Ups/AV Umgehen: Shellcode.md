@@ -120,26 +120,32 @@ Jetzt ist es an der Zeit, es auszuprobieren! Lade die Datei **thm-intro2PE.exe**
 ## Fragen:
 Was sind die letzten 6 Stellen des MD5-Hashwerts der Datei **thm-intro2PE.exe**?
 ```
+530949
 ```
 
 Was ist der Wert der Magic Number der Datei **thm-intro2PE.exe** (in Hexadezimal)?
 ```
+5A4D
 ```
 
 Was ist der Einstiegspunkt-Wert der Datei **thm-intro2PE.exe**?
 ```
+12E4
 ```
 
 Wie viele Abschnitte hat die Datei **thm-intro2PE.exe**?
 ```
+7
 ```
 
 Eine benutzerdefinierte Sektion könnte verwendet werden, um zusätzliche Daten zu speichern. Malware-Entwickler nutzen diese Technik, um einen neuen Abschnitt zu erstellen, der ihren bösartigen Code enthält und den Programmfluss umleitet, um den Inhalt des neuen Abschnitts auszuführen. Wie lautet der Name dieser zusätzlichen Sektion?
 ```
+.flag
 ```
 
 Überprüfe den Inhalt der zusätzlichen Sektion. Was ist die Flagge?
 ```
+THM{PE-N3w-s3ction!}
 ```
 
 # Task 4 - Einführung in Shellcode
