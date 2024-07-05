@@ -1015,16 +1015,16 @@ Sobald Sie eine funktionierende ausführbare Datei haben, können Sie versuchen,
 
 Für diese Aufgabe werden wir den [ConfuserEx](https://github.com/mkaring/ConfuserEx/releases/tag/v1.6.0) Packer verwenden, da unsere Payloads auf `.NET` programmiert sind. Für Ihre Bequemlichkeit finden Sie eine Verknüpfung dazu auf Ihrem Desktop.
 
-ConfuserEx wird Sie auffordern, die Ordner anzugeben, in denen es arbeiten soll. Stellen Sie sicher, dass Sie Ihren Desktop als Basisverzeichnis auswählen, wie im Bild unten gezeigt. Sobald das Basisverzeichnis eingerichtet ist, ziehen Sie die ausführbare Datei, die Sie packen möchten, auf die Oberfläche, und Sie sollten folgendes Ergebnis erhalten:
+ConfuserEx wird Sie auffordern, die Ordner anzugeben, in denen es arbeiten soll. Stellen Sie sicher, dass Sie Ihren Desktop als Basisverzeichnis auswählen, wie im Bild unten gezeigt. Sobald das Basisverzeichnis eingerichtet ist, ziehen Sie die ausführbare Datei, die Sie packen möchten, auf die Oberfläche, und Sie sollten folgendes Ergebnis erhalten:  
 ![Confuser.Core Software-Benutzeroberfläche](Bilder/2024-07-05-Confuser.Core-Software-Benutzeroberfläche.png)
 
-Lassen Sie uns zum Einstellungs-Tab gehen und unseren Payload auswählen. Sobald ausgewählt, klicken Sie auf die Schaltfläche "+" , um Einstellungen zu Ihrem Payload hinzuzufügen. Dadurch sollte eine Regel namens "true" erstellt werden. Stellen Sie sicher, dass Sie auch die Komprimierung aktivieren:
+Lassen Sie uns zum Einstellungs-Tab gehen und unseren Payload auswählen. Sobald ausgewählt, klicken Sie auf die Schaltfläche "+" , um Einstellungen zu Ihrem Payload hinzuzufügen. Dadurch sollte eine Regel namens "true" erstellt werden. Stellen Sie sicher, dass Sie auch die Komprimierung aktivieren:  
 ![Erklärung für Confuser.Core Software-Benutzeroberfläche](Bilder/2024-07-05-Erklärung-für-Confuser.Core-Software-Benutzeroberfläche.png)
 
-Jetzt werden wir die Regel "true" bearbeiten und sie auf das Maximum-Voreinstellung setzen:
+Jetzt werden wir die Regel "true" bearbeiten und sie auf das Maximum-Voreinstellung setzen:  
 ![Edit rule Bild](Bilder/2024-07-05-Edit-rule-Bild.png)
 
-Abschließend gehen wir zum Tab "Schützen!" und klicken auf "Schützen":
+Abschließend gehen wir zum Tab "Schützen!" und klicken auf "Schützen":  
 ![debug log](Bilder/2024-07-05-debug-log.png)
 
 Der neue Payload sollte nun bereit sein und hoffentlich keine Alarme auslösen, wenn er auf den THM Antivirus Checker (Verknüpfung auf Ihrem Desktop verfügbar) hochgeladen wird. Tatsächlich sollten Sie, wenn Sie Ihren Payload ausführen und einen `nc` Listener einrichten, eine Shell zurückbekommen:
