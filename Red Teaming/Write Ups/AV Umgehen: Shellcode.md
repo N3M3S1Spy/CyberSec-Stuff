@@ -465,11 +465,11 @@ Keine Antwort nötig
 ```
 
 # Task 6 - Staged Payloads
-In unserem Ziel, die AV zu umgehen, werden wir zwei Hauptansätze finden, um den finalen Shellcode einem Opfer zuzustellen. Abhängig von der Methode werden die Nutzlasten üblicherweise als **staged** oder **stageless** Payloads kategorisiert. In dieser Aufgabe werden wir die Unterschiede beider Ansätze und die Vorteile jeder Methode betrachten.
+In unserem Ziel, die AV zu umgehen, werden wir zwei Hauptansätze finden, um den finalen Shellcode einem Opfer zuzustellen. Abhängig von der Methode werden die Payloads üblicherweise als **staged** oder **stageless** Payloads kategorisiert. In dieser Aufgabe werden wir die Unterschiede beider Ansätze und die Vorteile jeder Methode betrachten.
 
 ### Stageless Payloads
 
-Eine nicht gestufte Nutzlast bettet den finalen Shellcode direkt in sich selbst ein. Man kann sie sich wie eine verpackte App vorstellen, die den Shellcode in einem einstufigen Prozess ausführt. In früheren Aufgaben haben wir eine ausführbare Datei eingebettet, die einen einfachen `Calc` Shellcode eingebettet hat, wodurch eine nicht gestufte Nutzlast erstellt wurde.
+Eine nicht staged Payload bettet den finalen Shellcode direkt in sich selbst ein. Man kann sie sich wie eine verpackte App vorstellen, die den Shellcode in einem einstufigen Prozess ausführt. In früheren Aufgaben haben wir eine ausführbare Datei eingebettet, die einen einfachen `Calc` Shellcode eingebettet hat, wodurch eine stageless Payload erstellt wurde.
 ![Ablauf eines nicht gestuften Payloads](Bilder/2024-07-05-Ablauf-einer-nicht-gestuften-Payload.png)
 
 Im obigen Beispiel, wenn der Benutzer die bösartige Payload ausführt, wird der eingebettete Shellcode ausgeführt und dem Angreifer eine Reverse-Shell bereitstellen.
