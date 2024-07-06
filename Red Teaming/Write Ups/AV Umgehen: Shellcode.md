@@ -708,17 +708,17 @@ Encoding und Verschlüsselung können in AV-Umgehungstechniken verwendet werden,
 ## Fragen:
 Reicht es aus, Shellcode nur zu encodieren, um Antivirus-Software zu umgehen? (ja/nein)
 ```
-
+nein
 ```
 
 Verwenden Encoding-Techniken einen Schlüssel, um Strings oder Dateien zu encodieren? (ja/nein)
 ```
-
+nein
 ```
 
 Verwenden Verschlüsselungsalgorithmen einen Schlüssel, um Strings oder Dateien zu verschlüsseln? (ja/nein)
 ```
-
+ja
 ```
 
 # Task 8 - Shellcode Ver- und Entschlüsselung
