@@ -1049,17 +1049,17 @@ Jedes AV-Programm verhält sich unterschiedlich, aber meistens gibt es einen äh
 ## Fragen:
 Helfen Packer Ihnen, Ihren bösartigen Code zu verschleiern, um AV-Lösungen zu umgehen? (ja/nein)
 ```
-
+ja
 ```
 
 Entpacken Packer oft den ursprünglichen Code im Speicher, bevor sie ihn ausführen? (ja/nein)
 ```
-
+ja
 ```
 
 Werden einige Packer von einigen AV-Lösungen als bösartig erkannt? (ja/nein)
 ```
-
+ja
 ```
 
 Folgen Sie den Anweisungen, um einen gepackten Payload zu erstellen und ihn auf dem THM Antivirus Check unter http://MACHINE_IP/ hochzuladen.
