@@ -149,7 +149,7 @@ THM{PE-N3w-s3ction!}
 ```
 
 # Task 4 - Einführung in Shellcode
-Shellcode ist eine Reihe von präzise erstellten Maschinencode-Anweisungen, die dem verwundbaren Programm sagen, zusätzliche Funktionen auszuführen und in den meisten Fällen Zugang zu einer Systemshell zu ermöglichen oder eine umgekehrte Befehlsshell zu erstellen.
+Shellcode ist eine Reihe von präzise erstellten Maschinencode-Anweisungen, die dem verwundbaren Programm sagen, zusätzliche Funktionen auszuführen und in den meisten Fällen Zugang zu einer Systemshell zu ermöglichen oder eine reverse Befehlsshell zu erstellen.
 
 Sobald das Shellcode in einen Prozess injiziert und von der verwundbaren Software oder dem Programm ausgeführt wird, ändert es den Ablauf des Programms, um Register und Funktionen zu aktualisieren und den Code des Angreifers auszuführen.
 
@@ -507,7 +507,7 @@ Staged-Payloads hingegen sind großartig, wenn Sie möchten, dass Ihr Fußabdruc
 
 Stagers in Metasploit
 
-Bei der Erstellung von Payloads mit msfvenom oder der Verwendung in Metasploit können Sie wählen, ob Sie staged oder stageless Payloads verwenden möchten. Als Beispiel, wenn Sie eine umgekehrte TCP-Shell generieren möchten, finden Sie zwei Payloads für diesen Zweck mit leicht unterschiedlichen Namen (beachten Sie das _ versus / nach shell).
+Bei der Erstellung von Payloads mit msfvenom oder der Verwendung in Metasploit können Sie wählen, ob Sie staged oder stageless Payloads verwenden möchten. Als Beispiel, wenn Sie eine reverse TCP-Shell generieren möchten, finden Sie zwei Payloads für diesen Zweck mit leicht unterschiedlichen Namen (beachten Sie das _ versus / nach shell).
 | Payload | Type |
 | ------- | ---- |
 | windows/x64/shell_reverse_tcp | Stageless payload |
@@ -648,7 +648,7 @@ Sie werden nach einigen Informationen gefragt, aber Sie können gerne die Eingab
 user@AttackBox$ python3 -c "import http.server, ssl;server_address=('0.0.0.0',443);httpd=http.server.HTTPServer(server_address,http.server.SimpleHTTPRequestHandler);httpd.socket=ssl.wrap_socket(httpd.socket,server_side=True,certfile='localhost.pem',ssl_version=ssl.PROTOCOL_TLSv1_2);httpd.serve_forever()"
 ```
 
-Mit allem bereit können wir jetzt unseren Stager-Payload ausführen. Der Stager sollte sich mit dem HTTPS-Server verbinden und die Datei shellcode.bin abrufen, um sie in den Speicher zu laden und auf der Zielmaschine auszuführen. Denken Sie daran, einen nc-Listener einzurichten, um die umgekehrte Shell auf dem gleichen Port zu empfangen, der beim Ausführen von msfvenom angegeben wurde:
+Mit allem bereit können wir jetzt unseren Stager-Payload ausführen. Der Stager sollte sich mit dem HTTPS-Server verbinden und die Datei shellcode.bin abrufen, um sie in den Speicher zu laden und auf der Zielmaschine auszuführen. Denken Sie daran, einen nc-Listener einzurichten, um die reverse Shell auf dem gleichen Port zu empfangen, der beim Ausführen von msfvenom angegeben wurde:
 ```shell
 user@AttackBox$ nc -lvp 7474
 ```
@@ -842,7 +842,7 @@ qKDPSzN5UbvWEJQsxhsD8mM+uHNAwz9jPM57FAL....pEvWzJg3oE=
 
 Selbst-dekodierender Payload
 
-Da wir einen verschlüsselten Payload haben, müssen wir unseren Code anpassen, damit er den Shellcode entschlüsselt, bevor er ihn ausführt. Um den Encoder zu entsprechen, werden wir alles in umgekehrter Reihenfolge entschlüsseln, wie wir es verschlüsselt haben. Wir beginnen also damit, den Base64-Inhalt zu entschlüsseln, und setzen dann fort, indem wir das Ergebnis mit demselben Schlüssel XORieren, den wir im Encoder verwendet haben. Hier ist der vollständige Payload-Code (Sie können ihn auch auf Ihrem Windows-Rechner unter `C:\Tools\CS Files\EncStageless.cs` erhalten):
+Da wir einen verschlüsselten Payload haben, müssen wir unseren Code anpassen, damit er den Shellcode entschlüsselt, bevor er ihn ausführt. Um den Encoder zu entsprechen, werden wir alles in reverser Reihenfolge entschlüsseln, wie wir es verschlüsselt haben. Wir beginnen also damit, den Base64-Inhalt zu entschlüsseln, und setzen dann fort, indem wir das Ergebnis mit demselben Schlüssel XORieren, den wir im Encoder verwendet haben. Hier ist der vollständige Payload-Code (Sie können ihn auch auf Ihrem Windows-Rechner unter `C:\Tools\CS Files\EncStageless.cs` erhalten):
 
 ```cs
 using System;
