@@ -656,17 +656,17 @@ user@AttackBox$ nc -lvp 7474
 ## Fragen:
 Liefern gestagte Payloads den gesamten Inhalt unseres Payloads in einem einzelnen Paket? (ja/nein)
 ```
-
+nein
 ```
 
 Ist der Metasploit-Payload windows/x64/meterpreter_reverse_https ein gestagter Payload? (ja/nein)
 ```
-
+nein
 ```
 
 Ist Stage0 eines gestagten Payloads dafür zuständig, den finalen Payload herunterzuladen, der ausgeführt werden soll? (ja/nein)
 ```
-
+ja
 ```
 
 Folgen Sie den Anweisungen, um eine gestagte Payload zu erstellen und sie in der THM Antivirus-Überprüfung unter http://MACHINE_IP/ hochzuladen.
