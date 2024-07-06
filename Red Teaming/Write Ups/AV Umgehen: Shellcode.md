@@ -687,7 +687,7 @@ Encoding ist ein wichtiges Konzept, das häufig für verschiedene Zwecke verwend
 
 Ebenso wird Encoding bei AV-Umgehungstechniken verwendet, um Shellcode-Strings innerhalb einer Binärdatei zu verstecken. Allerdings ist Encoding allein nicht ausreichend für Umgehungszwecke. Heutzutage ist AV-Software intelligenter und kann eine Binärdatei analysieren. Wenn ein codierter String gefunden wird, wird er dekodiert, um die ursprüngliche Form des Textes zu überprüfen.
 
-Sie können auch zwei oder mehr Encoding-Algorithmen gleichzeitig verwenden, um es der AV schwerer zu machen, den versteckten Inhalt zu entschlüsseln. Die folgende Abbildung zeigt, dass wir den "THM"-String in eine hexadezimale Darstellung umgewandelt und dann mit Base64 codiert haben. In diesem Fall müssen Sie sicherstellen, dass Ihr Dropper solches Encoding verarbeitet, um den String in seinen ursprünglichen Zustand zurückzuführen.
+Sie können auch zwei oder mehr Encoding-Algorithmen gleichzeitig verwenden, um es der AV schwerer zu machen, den versteckten Inhalt zu entschlüsseln. Die folgende Abbildung zeigt, dass wir den "THM"-String in eine hexadezimale Darstellung umgewandelt und dann mit Base64 codiert haben. In diesem Fall müssen Sie sicherstellen, dass Ihr Dropper solches Encoding verarbeitet, um den String in seinen ursprünglichen Zustand zurückzuführen.  
 ![Mathematisches Zerlegungsdiagramm](Bilder/2024-07-05-Mathematisches-Zerlegungsdiagramm.png)
 
 ### Was ist Verschlüsselung?
