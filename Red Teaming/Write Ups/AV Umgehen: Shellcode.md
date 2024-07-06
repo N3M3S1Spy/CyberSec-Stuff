@@ -133,7 +133,7 @@ Was ist der Einstiegspunkt-Wert der Datei **thm-intro2PE.exe**?
 12E4
 ```
 
-Wie viele Abschnitte hat die Datei **thm-intro2PE.exe**?
+Wie viele Sectionen hat die Datei **thm-intro2PE.exe**?
 ```
 7
 ```
