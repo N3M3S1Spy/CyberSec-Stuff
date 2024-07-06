@@ -1047,17 +1047,17 @@ Wenn die Erkennung kein Problem darstellt, können Sie sogar einen einfachen Tri
 Jedes AV-Programm verhält sich unterschiedlich, aber meistens gibt es einen ähnlichen Weg um sie herum, daher lohnt es sich, jedes seltsame Verhalten zu erkunden, das Sie beim Testen bemerken
 
 ## Fragen:
-Helfen Packer Ihnen, Ihren bösartigen Code zu verschleiern, um AV-Lösungen zu umgehen? (yea/nay)
+Helfen Packer Ihnen, Ihren bösartigen Code zu verschleiern, um AV-Lösungen zu umgehen? (ja/nein)
 ```
 
 ```
 
-Entpacken Packer oft den ursprünglichen Code im Speicher, bevor sie ihn ausführen? (yea/nay)
+Entpacken Packer oft den ursprünglichen Code im Speicher, bevor sie ihn ausführen? (ja/nein)
 ```
 
 ```
 
-Werden einige Packer von einigen AV-Lösungen als bösartig erkannt? (yea/nay)
+Werden einige Packer von einigen AV-Lösungen als bösartig erkannt? (ja/nein)
 ```
 
 ```
@@ -1102,12 +1102,12 @@ Bei der Erstellung eines echten Payloads möchten Sie möglicherweise Encoder, C
 Versuchen Sie gerne, Ihre gebundene ausführbare Datei auf der THM Antivirus Check-Website (Link auf Ihrem Desktop verfügbar) ohne Verpackung hochzuladen. Sie sollten eine Erkennung vom Server zurückbekommen. Diese Methode wird also nicht besonders hilfreich sein, wenn Sie versuchen, die Flagge vom Server selbst zu erhalten.
 
 ## Fragen:
-Wird ein Binder helfen, AV-Lösungen zu umgehen? (nay)
+Wird ein Binder helfen, AV-Lösungen zu umgehen? (ja/nein)
 ```
 
 ```
 
-Kann ein Binder verwendet werden, um einen Payload als legitime ausführbare Datei erscheinen zu lassen? (yea)
+Kann ein Binder verwendet werden, um einen Payload als legitime ausführbare Datei erscheinen zu lassen? (ja/nein)
 ```
 
 ```
