@@ -19,10 +19,10 @@ Obwohl dies auf den ersten Blick kontraproduktiv erscheinen mag, stellen Sie sic
 
 ### UAC Elevation
 
-Wenn ein Administrator für eine privilegierte Aufgabe erforderlich ist, bietet UAC eine Möglichkeit zur Erhöhung der Rechte. Die **Erhöhung** funktioniert, indem dem Benutzer ein einfaches Dialogfeld angezeigt wird, um zu bestätigen, dass er ausdrücklich zustimmt, die Anwendung im administrativen Sicherheitskontext auszuführen:
+Wenn ein Administrator für eine privilegierte Aufgabe erforderlich ist, bietet UAC eine Möglichkeit zur Erhöhung der Rechte. Die **Erhöhung** funktioniert, indem dem Benutzer ein einfaches Dialogfeld angezeigt wird, um zu bestätigen, dass er ausdrücklich zustimmt, die Anwendung im administrativen Sicherheitskontext auszuführen:  
 ![2024-07-08-8088062c5a8e61407d343186bba02596.png](Bilder/2024-07-08-8088062c5a8e61407d343186bba02596.png)
 
-Integritätsstufen
+### Integritätsstufen
 
 UAC ist eine **Mandatory Integrity Control** (**MIC**), ein Mechanismus, der es ermöglicht, Benutzer, Prozesse und Ressourcen durch Zuweisung einer **Integritätsstufe** (**IL**) voneinander zu unterscheiden. Im Allgemeinen können Benutzer oder Prozesse mit einem höheren IL-Zugriffstoken auf Ressourcen mit niedrigeren oder gleichen ILs zugreifen. MIC hat Vorrang vor den regulären Windows-DACLs (Discretionary Access Control Lists), daher kann es sein, dass Sie gemäß der DACL auf eine Ressource zugreifen dürfen, aber es spielt keine Rolle, wenn Ihre IL nicht hoch genug ist.
 
@@ -49,7 +49,7 @@ Auf diese Weise verwenden Administratoren ihr gefiltertes Token, es sei denn, si
 
 ### Öffnen einer Anwendung auf übliche Weise
 
-Wenn wir versuchen, eine normale Konsole zu öffnen, können wir sie entweder als nicht privilegierter Benutzer oder als Administrator öffnen. Abhängig von unserer Wahl wird dem gestarteten Prozess entweder ein Token mit mittlerer oder hoher Integritätsstufe zugewiesen:  
+Wenn wir versuchen, eine normale Konsole zu öffnen, können wir sie entweder als nicht privilegierter Benutzer oder als Administrator öffnen. Abhängig von unserer Wahl wird dem gestarteten Prozess entweder ein Token mit mittlerer oder hoher Integritätsstufe zugewiesen:    
 ![2024-07-08-85532945ffd962373592d21f1720ee39.png](Bilder/2024-07-08-85532945ffd962373592d21f1720ee39.png)
 
 Wenn wir beide Prozesse mit dem Process Hacker analysieren, können wir die zugehörigen Tokens und ihre Unterschiede sehen:  
@@ -66,7 +66,7 @@ Je nach unseren Sicherheitsanforderungen kann UAC auf vier verschiedene Benachri
 - **Benachrichtigen, wenn Programme versuchen, Änderungen am Computer vorzunehmen (Desktop nicht abdunkeln)**: Wie oben, aber der UAC-Prompt wird nicht auf einem sicheren Desktop ausgeführt.
 -** Nie benachrichtigen**: UAC-Prompt deaktivieren. Administratoren führen alles mit einem Token hoher Privilegien aus.
 
-Standardmäßig ist UAC auf die **Benachrichtigen, wenn Programme versuchen, Änderungen am Computer vorzunehmen-Ebene** eingestellt.
+Standardmäßig ist UAC auf die **Benachrichtigen, wenn Programme versuchen, Änderungen am Computer vorzunehmen-Ebene** eingestellt.  
 ![2024-07-08-143a6c0fd6725edaee0f3d5c707e97f0.png](Bilder/2024-07-08-143a6c0fd6725edaee0f3d5c707e97f0.png)
 
 Vom Standpunkt eines Angreifers aus betrachtet sind die drei niedrigeren Sicherheitsstufen äquivalent, und nur die Einstellung "Immer benachrichtigen" stellt einen Unterschied dar.
@@ -242,7 +242,7 @@ Fodhelper.exe ist eine der standardmäßigen ausführbaren Dateien von Windows, 
 
 Von der Perspektive eines Angreifers aus betrachtet bedeutet dies, dass es über eine Remote-Shell mit mittlerer Integrität verwendet werden kann und in einen voll funktionsfähigen Prozess mit hoher Integrität umgewandelt werden kann. Diese spezielle Technik wurde von [@winscripting](https://winscripting.blog/2017/05/12/first-entry-welcome-and-uac-bypass/) entdeckt und wurde bereits von der [Glupteba-Malware](https://www.cybereason.com/blog/research/glupteba-expands-operation-and-toolkit-with-lolbins-cryptominer-and-router-exploit) in freier Wildbahn eingesetzt.
 
-Was an fodhelper bemerkt wurde, ist, dass es die Registry nach einem spezifischen interessanten Schlüssel durchsucht:
+Was an fodhelper bemerkt wurde, ist, dass es die Registry nach einem spezifischen interessanten Schlüssel durchsucht:  
 ![2024-07-08-eb7ac876cd05f51495f9882fa00ef832.png](Bilder/2024-07-08-eb7ac876cd05f51495f9882fa00ef832.png)
 
 Wenn Windows eine Datei öffnet, überprüft es die Registrierung, um zu erfahren, welche Anwendung verwendet werden soll. Die Registrierung enthält einen Schlüssel namens Programmatic ID (**ProgID**) für jeden Dateityp, wo die entsprechende Anwendung zugeordnet ist. Angenommen, Sie versuchen, eine HTML-Datei zu öffnen. Ein Teil der Registrierung, bekannt als **HKEY_CLASSES_ROOT**, wird überprüft, damit das System weiß, dass es Ihren bevorzugten Webclient verwenden muss, um sie zu öffnen. Der Befehl zur Verwendung wird unter dem Unterschlüssel `shell/open/command` für jedes ProgID der Datei angegeben. Nehmen wir den ProgID "htmlfile" als Beispiel:  
@@ -300,7 +300,7 @@ Wir richten einen Listener auf unserem Rechner mit netcat ein:
 
 `nc -lvp 4444`
 
-Anschließend führen wir **fodhelper.exe** aus, was wiederum die Ausführung unserer Reverse Shell auslöst:
+Anschließend führen wir **fodhelper.exe** aus, was wiederum die Ausführung unserer Reverse Shell auslöst:  
 ![2024-07-08-2f1aef0aa39ffcf9056999c999e43b8d.png](Bilder/2024-07-08-2f1aef0aa39ffcf9056999c999e43b8d.png)
 
 Die empfangene Shell läuft mit hoher Integrität, was anzeigt, dass wir die Benutzerkontensteuerung (UAC) erfolgreich umgangen haben.
@@ -333,13 +333,13 @@ Welche Flagge wird durch die Ausführung des "fodhelper"-Exploits zurückgegeben
 
 Zur Vereinfachung ist auf dem Zielrechner Windows Defender deaktiviert. Was würde jedoch passieren, wenn er aktiviert wäre?
 
-Gehen Sie zunächst über Ihre GUI-Verbindung zu Ihrem Desktop und doppelklicken Sie auf das folgende Symbol, um Windows Defender zu aktivieren:
+Gehen Sie zunächst über Ihre GUI-Verbindung zu Ihrem Desktop und doppelklicken Sie auf das folgende Symbol, um Windows Defender zu aktivieren:  
 ![2024-07-08-a138ccd399c27bb922efcc266053c3a3.png](Bilder/2024-07-08-a138ccd399c27bb922efcc266053c3a3.png)
 
-Versuchen Sie nun erneut, "fodhelper" über die Backdoor-Verbindung auszunutzen, und beobachten Sie, was auf der GUI des Servers passiert. Sobald Sie den `(Default)` Wert in `HKCU\Software\Classes\ms-settings\Shell\Open\command` ändern, um Ihren Reverse-Shell-Befehl einzufügen, erscheint eine Windows Defender-Benachrichtigung:
+Versuchen Sie nun erneut, "fodhelper" über die Backdoor-Verbindung auszunutzen, und beobachten Sie, was auf der GUI des Servers passiert. Sobald Sie den `(Default)` Wert in `HKCU\Software\Classes\ms-settings\Shell\Open\command` ändern, um Ihren Reverse-Shell-Befehl einzufügen, erscheint eine Windows Defender-Benachrichtigung:  
 ![2024-07-08-9ebebccbac675f6b66f98a16446d1859.png](Bilder/2024-07-08-9ebebccbac675f6b66f98a16446d1859.png)
 
-Wenn Sie die Benachrichtigung anklicken, können Sie die Details des Alarms einsehen, die einen UAC-Umgehungsversuch durch Ändern eines Registrierungswertes erwähnen:
+Wenn Sie die Benachrichtigung anklicken, können Sie die Details des Alarms einsehen, die einen UAC-Umgehungsversuch durch Ändern eines Registrierungswertes erwähnen:  
 ![2024-07-08-8faadca4b214e13d32a6e7979554dcdc.png](Bilder/2024-07-08-8faadca4b214e13d32a6e7979554dcdc.png)
 
 Wenn Sie den entsprechenden Wert in der Registrierung abfragen, werden Sie feststellen, dass er gelöscht wurde:
