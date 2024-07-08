@@ -418,7 +418,7 @@ Dieser Exploit erstellt eine neue progID mit dem Namen **.pwn** und verknüpft u
 Diese Technik ist wahrscheinlicher, Windows Defender zu umgehen, da wir mehr Freiheit haben, wo wir unser Payload platzieren, da der Name der "progID", die unser Payload enthält, völlig willkürlich ist. Starten wir eine neue Reverse-Shell auf dem Angreifer-Rechner:
 `nc -lvp 4445`
 
-Und führen den Exploit von unserer Backdoor-Verbindung aus. Als Ergebnis wird Windows Defender einen weiteren Alarm auslösen, der auf unsere Aktionen verweist:
+Und führen den Exploit von unserer Backdoor-Verbindung aus. Als Ergebnis wird Windows Defender einen weiteren Alarm auslösen, der auf unsere Aktionen verweist:  
 ![2024-07-08-36a12bfed5c44fedf170f934bd4bc9ca.png](Bilder/2024-07-08-36a12bfed5c44fedf170f934bd4bc9ca.png)
 
 Obwohl wir weiterhin erkannt werden, ist es wichtig zu beachten, dass die Erkennungsmethoden von Antivirensoftware manchmal streng gegen den veröffentlichten Exploit implementiert werden, ohne mögliche Variationen zu berücksichtigen. Wenn wir unseren Exploit von PowerShell auf cmd.exe übersetzen, wird der Virenschutz keine Alarme auslösen (stellen Sie sicher, dass Sie Ihre IP-Adresse entsprechend ersetzen):
