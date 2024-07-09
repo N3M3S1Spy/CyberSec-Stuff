@@ -528,7 +528,7 @@ int main(int argc, char* argv[])
 ## Fragen:
 Welche Flagge wird nach dem Hochladen eines ordnungsgemäß obfuskierten Ausschnitts gefunden?
 ```
-
+THM{Y0Ur_1NF0_15_M1N3}
 ```
 
 # Task 9 - Abschluss
