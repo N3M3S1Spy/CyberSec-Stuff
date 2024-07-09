@@ -1,3 +1,4 @@
+# Task 1 - Einführung
 Ein Gegner kann Schwierigkeiten haben, spezifische Erkennungsmethoden zu überwinden, wenn er es mit einer fortschrittlichen Antiviren-Engine oder einer **EDR** (**E**ndpoint **D**etection & **R**esponse) Lösung zu tun hat. Selbst nach der Anwendung einiger der häufigsten in den [Prinzipien der Verschleierung](https://tryhackme.com/r/room/obfuscationprinciples) diskutierten Verschleierungstechniken können Signaturen in einer schädlichen Datei weiterhin vorhanden sein.
 
 Um persistente Signaturen zu bekämpfen, können Gegner jede einzelne beobachten und nach Bedarf angehen.
