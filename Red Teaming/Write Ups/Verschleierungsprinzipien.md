@@ -13,7 +13,7 @@ Bevor Sie mit diesem Raum beginnen, machen Sie sich mit grundlegender Programmie
 
 Wir haben mehrere Maschinen mit den benötigten Dateien und Webservern bereitgestellt, um diesen Raum abzuschließen. Mit den unten stehenden Zugangsdaten können Sie auf die Maschinen und Webserver im Browser oder über RDP zugreifen.
 
-Maschinen-IP: MACHINE_IP             Benutzername: Student             Passwort: TryHackMe!
+Maschinen-IP: `MACHINE_IP`             Benutzername: `Student`             Passwort: `TryHackMe!`
 
 # Task 2 - Ursprünge der Verschleierung
 Obfuscation wird in vielen softwarebezogenen Bereichen weit verbreitet eingesetzt, um geistiges Eigentum (Intellectual Property, IP) und andere proprietäre Informationen zu schützen, die eine Anwendung enthalten kann.
