@@ -154,7 +154,7 @@ Angreifer können fortschrittliche Logik und mathematische Methoden nutzen, um k
 Für weitere Informationen zum Thema Reverse Engineering werfen Sie einen Blick auf das [Modul zur Malware-Analyse](https://tryhackme.com/module/malware-analysis).
 
 Das bereits erwähnte Whitepaper [Layered Obfuscation Taxonomy](https://cybersecurity.springeropen.com/articles/10.1186/s42400-020-00049-3) fasst diese Praktiken gut unter anderen Subschichten der Code-Element-Schicht zusammen. Im Folgenden finden Sie eine Tabelle der von der Taxonomie abgedeckten Methoden in den Subschichten für die Layout- und Steuerungsobfuskation.
-| Zweck |
+| Zweck | Beschreibung |
 |--------------------------|--------------------------------------------------------|
 | Junk Code                | Fügt nicht-funktionale Anweisungen hinzu, auch bekannt als Code-Stubs |
 | Trennung verwandter Codes | Trennt verwandte Codes oder Anweisungen, um die Lesbarkeit des Programms zu erschweren |
