@@ -172,12 +172,12 @@ Weitere Informationen zu Anti-Analyse- und Anti-Reversing-Techniken finden Sie i
 ## Fragen:
 Wie werden nutzlose Anweisungen im Junk-Code genannt?
 ```
-
+Code Stubs
 ```
 
 Welche Verschleierungsschicht zielt darauf ab, Analysten durch Manipulation des Codeflusses und der abstrakten Syntaxbäume zu verwirren?
 ```
-
+Obfuscating Controls
 ```
 
 # Task 6 - Codefluss und Logik
