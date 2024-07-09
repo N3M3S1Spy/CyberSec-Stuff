@@ -52,7 +52,7 @@ Um Signaturen zu umgehen, können Angreifer eine Vielzahl von Logik- und Syntaxr
 
 Das zuvor erwähnte Whitepaper „Layered Obfuscation Taxonomy“ fasst diese Praktiken gut unter der Code-Element-Schicht zusammen. Unten ist eine Tabelle der Methoden aufgeführt, die von der Taxonomie in der Unterschicht „Data Obfuscation“ behandelt werden.
 
-Diagramm, das die Ziele der Unterschicht „Data Obfuscation“ zeigt: Array-Transformation, Datenkodierung, Datenprozeduralisierung und Datenaufteilung/-zusammenführung.
+Diagramm, das die Ziele der Unterschicht „Data Obfuscation“ zeigt: Array-Transformation, Datenkodierung, Datenprozeduralisierung und Datenaufteilung/-zusammenführung.  
 ![Ziele der Data-Obfuscation-Schicht](Bilder/2024-07-08-Ziele-der-Data-Obfuscation-Schicht.png)
 
 | Obfuscation Method       | Zweck                                                      |
