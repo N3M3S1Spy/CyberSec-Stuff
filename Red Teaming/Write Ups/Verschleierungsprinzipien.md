@@ -167,7 +167,7 @@ Das bereits erwähnte Whitepaper [Layered Obfuscation Taxonomy](https://cybersec
 
 In den kommenden Aufgaben werden wir mehrere der oben genannten Methoden in einem neutralen Format demonstrieren.
 
-Weitere Informationen zu Anti-Analyse- und Anti-Reversing-Techniken finden Sie im Raum "Sandbox-Evasion".
+Weitere Informationen zu Anti-Analyse- und Anti-Reversing-Techniken finden Sie im Raum "[Sandbox-Evasion](https://tryhackme.com/room/sandboxevasion)".
 
 ## Fragen:
 Wie werden nutzlose Anweisungen im Junk-Code genannt?
