@@ -37,12 +37,12 @@ Aber wie könnte dies böswillig genutzt werden? Gegner und Malware-Entwickler k
 ## Fragen:
 Aus wie vielen Kernebenen besteht die "Layered Obfuscation Taxonomy"?
 ```
-
+4
 ```
 
 Welche Unterschicht der Layered Obfuscation Taxonomy umfasst bedeutungslose Identifikatoren?
 ```
-
+Obfuscating Layout
 ```
 
 # Task 3 - Verschleierungsfunktion für statische Umgehung
