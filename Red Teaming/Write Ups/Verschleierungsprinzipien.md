@@ -299,7 +299,7 @@ while (x > 1):
 ## Fragen:
 Welche Flagge wird gefunden, nachdem der bereitgestellte Ausschnitt ordnungsgemäß rückwärts entschlüsselt wurde?
 ```
-
+THM{D3cod3d!!!}
 ```
 
 # Task 8 - Identifizierbare Informationen schützen und entfernen
