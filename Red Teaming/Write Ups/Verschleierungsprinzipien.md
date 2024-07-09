@@ -64,17 +64,17 @@ Diagramm, das die Ziele der Unterschicht „Data Obfuscation“ zeigt: Array-Tra
 
 In den kommenden Aufgaben werden wir uns hauptsächlich auf die Datenverteilung/-zusammenführung konzentrieren; da statische Signaturen schwächer sind, müssen wir in der Anfangsphase der Verschleierung nur diesen Aspekt beachten.
 
-Schauen Sie sich den Raum für Encoding/Packing/Binder/Crypters für weitere Informationen zur Datenkodierung an, und den Raum für Signaturenvermeidung für weitere Informationen zur Datenprozedurisierung und -transformation.
+Schauen Sie sich den Raum für Encoding/Packing/Binder/Crypters für weitere Informationen zur Datenkodierung an, und den Raum für [Signaturenvermeidung](https://tryhackme.com/room/signatureevasion) für weitere Informationen zur Datenprozedurisierung und -transformation.
 
 ## Fragen:
 Welche Verschleierungsmethode wird ein Objekt zerbrechen oder aufteilen?
 ```
-
+Data Splitting
 ```
 
 Mit welcher Verschleierungsmethode wird statische Daten durch einen Aufruf einer Prozedur umgeschrieben?
 ```
-
+Data Procedurization
 ```
 
 # Task 4 - Objektverkettung
