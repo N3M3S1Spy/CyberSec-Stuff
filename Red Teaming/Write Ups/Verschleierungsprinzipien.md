@@ -200,8 +200,8 @@ if(x > 7):
 else:
 	print("This is ignored")
 ```
-
 ![2024-07-08-cfc2504b9a4a76682d724413080e3729.png](Bilder/2024-07-08-cfc2504b9a4a76682d724413080e3729.png)
+
 Was bedeutet das für Angreifer? Ein Analyst kann versuchen, die Funktion eines Programms durch seinen Kontrollfluss zu verstehen; obwohl dies problematisch ist, ist es fast mühelos, Logik und Kontrollfluss willkürlich zu manipulieren und beliebig verwirrend zu gestalten. Wenn es um den Kontrollfluss geht, zielt ein Angreifer darauf ab, genug obskure und willkürliche Logik einzuführen, um einen Analysten zu verwirren, aber nicht so viel, dass weitere Verdachtsmomente entstehen oder die Möglichkeit besteht, von einer Plattform als bösartig erkannt zu werden.
 
 In der kommenden Aufgabe werden wir verschiedene Kontrollflussmuster diskutieren, die ein Angreifer nutzen kann, um einen Analysten zu verwirren.
