@@ -127,7 +127,7 @@ Wenn der zweite Codeblock mit der Yara-Regel gescannt würde, gäbe es keine Ala
 | Breaks     | Einzelnen String in mehrere Teil-Strings aufteilen und kombinieren | `('co'+'ffe'+'e')`           |
 | Reorders   | Komponenten eines Strings neu anordnen                         | `('{1}{0}'-f'ffee','co')`    |
 | Whitespace | Nicht interpretierbare Leerzeichen einfügen                    | `.( 'Ne' +'w-Ob' + 'ject')`  |
-| Ticks      | Nicht interpretierbare Ticks einfügen                         | `d`own`LoAd`Stri`ng`         |
+| Ticks      | Nicht interpretierbare Ticks einfügen                         | `d'own'LoAd'Stri'ng`         |
 | Random Case| Tokens sind generell nicht case-sensitive und können beliebige Groß- und Kleinschreibung haben | `dOwnLoAdsTRing`             |
 
 Verwenden Sie das Wissen, das Sie während dieser Aufgabe erworben haben, um den folgenden PowerShell-Schnipsel zu verschleiern, bis er den Erkennungen von Defender ausweicht.
