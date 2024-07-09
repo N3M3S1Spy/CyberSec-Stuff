@@ -207,9 +207,9 @@ Was bedeutet das für Angreifer? Ein Analyst kann versuchen, die Funktion eines 
 In der kommenden Aufgabe werden wir verschiedene Kontrollflussmuster diskutieren, die ein Angreifer nutzen kann, um einen Analysten zu verwirren.
 
 ## Fragen:
-Kann Logik die Kontrollfluss eines Programms verändern und beeinflussen? (R/F)
+Kann Logik die Kontrollfluss eines Programms verändern und beeinflussen? (T/F)
 ```
-
+T
 ```
 
 # Task 7 - Beliebige Kontrollflussmuster
