@@ -127,17 +127,17 @@ In allen Szenarien, die in diesem Kontext behandelt werden, gehen wir davon aus,
 ## Fragen:
 Was ist das höchste Integritätslevel (IL), das auf Windows verfügbar ist?
 ```
-
+System
 ```
 
 Welches IL ist mit einem erhöhten Token eines Administrators verbunden?
 ```
-
+high
 ```
 
 Wie lautet der vollständige Name des Dienstes, der für die Verarbeitung von UAC-Erhebungsanfragen zuständig ist?
 ```
-
+Application Information Service
 ```
 
 # Task 3 - UAC: GUI-basierte Umgehungen
