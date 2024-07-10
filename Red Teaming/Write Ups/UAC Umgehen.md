@@ -81,7 +81,7 @@ Im Kern von UAC haben wir den Anwendungsinformationsdienst oder Appinfo. Wenn ei
 4. Es wird überprüft, ob im Anwendungsmanifest die AutoElevation erlaubt ist (mehr dazu später).
 5. Appinfo führt consent.exe aus, die den UAC-Prompt auf einem sicheren Desktop anzeigt. Ein sicherer Desktop ist einfach ein separater Desktop, der Prozesse von dem isoliert, was auf dem tatsächlichen Desktop des Benutzers läuft, um zu verhindern, dass andere Prozesse den UAC-Prompt auf irgendeine Weise manipulieren.
 6. Wenn der Benutzer zustimmt, die Anwendung als Administrator auszuführen, wird der Appinfo-Dienst die Anfrage mit einem erhöhten Token des Benutzers ausführen. Anschließend setzt Appinfo die Elternprozess-ID des neuen Prozesses so, dass sie auf die Shell zeigt, von der aus die Erhöhung angefordert wurde.  
-![2024-07-08-fce906f0e438efa938753430e5d25afe.png](2024-07-08-fce906f0e438efa938753430e5d25afe.png)
+![2024-07-010-fce906f0e438efa938753430e5d25afe.png](2024-07-010-fce906f0e438efa938753430e5d25afe.png)
 
 ### Umgehung der Benutzerkontensteuerung (UAC)
 
