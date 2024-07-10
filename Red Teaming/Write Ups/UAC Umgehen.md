@@ -161,7 +161,7 @@ Wenn wir den msconfig-Prozess mit dem Process Hacker analysieren (verfügbar auf
 Das ist dank einer Funktion namens automatische Erhebung möglich, die bestimmten Binärdateien ermöglicht, sich ohne Interaktion des Benutzers zu erhöhen. Weitere Details dazu folgen später.
 
 Wenn es uns gelingen würde, msconfig dazu zu bringen, eine Shell für uns zu starten, würde die Shell dasselbe Zugriffstoken erben, das von msconfig verwendet wird, und daher als Prozess mit hohem Integritätslevel ausgeführt werden. Indem wir zum Register "Tools" navigieren, finden wir eine Option, genau das zu tun:  
-![204-07-08-efbc49a8c7acfe3f296d0cb46cd2f75a.png](Bilder/204-07-08-efbc49a8c7acfe3f296d0cb46cd2f75a.png)
+![2024-07-08-efbc49a8c7acfe3f296d0cb46cd2f75a.png](Bilder/2024-07-08-efbc49a8c7acfe3f296d0cb46cd2f75a.png)
 
 Wenn wir auf "Launch" klicken, erhalten wir eine Eingabeaufforderung mit hohem Integritätslevel, ohne dabei mit der UAC in irgendeiner Weise interagieren zu müssen.
 ```powershell
