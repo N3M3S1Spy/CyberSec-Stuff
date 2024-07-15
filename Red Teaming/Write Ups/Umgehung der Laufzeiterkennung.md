@@ -193,12 +193,12 @@ Sobald das Feld `amsiInitFailed` auf `$true` gesetzt ist, wird AMSI mit dem Antw
 Lesen Sie den obigen Text und üben Sie die Nutzung des Einzeilers auf der bereitgestellten Maschine.
 Um den Einzeiler zu verwenden, können Sie ihn in derselben Sitzung wie den gewünschten bösartigen Code ausführen oder ihn dem bösartigen Code voranstellen.
 ```
-
+Keine Antwort nötig
 ```
 
 Geben Sie die Flagge ein, die Sie vom Desktop erhalten, nachdem Sie den Befehl ausgeführt haben.
 ```
-
+THM{r3fl3c7_4ll_7h3_7h1n65}
 ```
 
 # Task 7 - AMSI-Patching
