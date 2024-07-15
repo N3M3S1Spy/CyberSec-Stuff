@@ -76,12 +76,12 @@ In der nächsten Aufgabe werden wir die technischen Details erläutern, wie AMSI
 ## Fragen:
 Lesen Sie den obigen Text und beantworten Sie die folgende Frage.
 ```
-
+Kein Antwort nötig
 ```
 
 Welcher Antwortwert ist `32768` zugewiesen?
 ```
-
+AMSI_RESULT_DETECTED
 ```
 
 # Task 4 - AMSI Instrumentierung
