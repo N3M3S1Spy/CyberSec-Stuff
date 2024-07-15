@@ -292,7 +292,7 @@ Keine Antwort nötig
 
 Geben Sie die Flagge ein, die auf dem Desktop nach Ausführung des Befehls erhalten wurde.
 ```
-
+THM{p47ch1n6_15n7_ju57_f0r_7h3_600d_6uy5}
 ```
 
 # Task 8 - Automatisieren für Spaß und Profit
