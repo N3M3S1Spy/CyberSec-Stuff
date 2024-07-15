@@ -34,7 +34,7 @@ Keine Antwort nötig
 
 Welche Laufzeiterkennungsmaßnahme ist im Lieferumfang von Windows enthalten?
 ```
-
+AMSI
 ```
 
 # Task 3 - AMSI Überblick
