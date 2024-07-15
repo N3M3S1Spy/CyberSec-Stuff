@@ -125,7 +125,7 @@ Keine Antwort nötig
 
 Wird AMSI instrumentiert, wenn sich die Datei nur auf der Festplatte befindet? (Y/N)
 ```
-
+N
 ```
 
 # Task 5 - Powershell Downgrade
