@@ -343,7 +343,7 @@ Signaturen sind rot markiert; Sie können diese Signaturen durch Codierung, Obfu
 ## Fragen:
 Beantworten Sie die folgenden Fragen nach dem Lesen und fahren Sie mit der nächsten Aufgabe fort.
 ```
-
+Keine Antwort nötig
 ```
 
 # Task 9 - Abschluss
