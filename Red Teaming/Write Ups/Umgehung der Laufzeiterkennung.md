@@ -150,12 +150,12 @@ Die beiden einfachsten Maßnahmen zur Abwehr sind das Entfernen der PowerShell 2
 ## Fragen:
 Lesen Sie den obigen Text und üben Sie das Herabstufen von PowerShell auf der bereitgestellten Maschine.
 ```
-
+Keine Antwort nötig
 ```
 
 Geben Sie die Flagge ein, die Sie vom Desktop erhalten, nachdem Sie den Befehl in cmd.exe ausgeführt haben.
 ```
-
+THM{p0w3r5h3ll_d0wn6r4d3!}
 ```
 
 # Task 6 - Powershell Reflektion
