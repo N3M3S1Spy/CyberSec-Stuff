@@ -14,7 +14,7 @@ Dieser Raum wird sich mit der Ereignisverfolgung und ihren Schwachstellen befass
 - Verstehen, wie Techniken zur Umgehung von ETW erstellt werden.
 - Erlernen, wie theoretische Umgehungskonzepte auf Code angewendet werden.
 
-Bevor Sie mit diesem Raum beginnen, machen Sie sich mit der grundlegenden Windows-Nutzung und -Funktionalität vertraut; wir empfehlen, den Windows Internals Raum abzuschließen. Grundlegende Programmierkenntnisse in C und PowerShell sind ebenfalls empfehlenswert, aber nicht erforderlich.
+Bevor Sie mit diesem Raum beginnen, machen Sie sich mit der grundlegenden Windows-Nutzung und -Funktionalität vertraut; wir empfehlen, den [Windows Internals](https://tryhackme.com/room/windowsinternals) Raum abzuschließen. Grundlegende Programmierkenntnisse in C und PowerShell sind ebenfalls empfehlenswert, aber nicht erforderlich.
 
 Wir haben eine grundlegende Windows-Maschine mit den benötigten Dateien bereitgestellt, um diesen Raum abzuschließen. Sie können auf die Maschine im Browser oder über RDP mit den unten stehenden Anmeldedaten zugreifen.
 
