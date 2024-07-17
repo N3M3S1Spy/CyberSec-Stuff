@@ -8,7 +8,7 @@ Ein Angreifer hat möglicherweise wenig Kontrolle, sobald Protokolle von einem G
 
 Dieser Raum wird sich mit der Ereignisverfolgung und ihren Schwachstellen befassen, um einem Angreifer zu ermöglichen, ETW-basierte Lösungen zu umgehen oder zu deaktivieren.
 
-Lernziele:
+### Lernziele:
 
 - Verstehen der Technologie und Implementierung der Ereignisverfolgung.
 - Verstehen, wie Techniken zur Umgehung von ETW erstellt werden.
