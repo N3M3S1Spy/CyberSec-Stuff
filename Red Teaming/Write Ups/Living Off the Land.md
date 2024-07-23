@@ -141,17 +141,17 @@ Das LOLBAS-Projekt akzeptiert Werkzeugeinreichungen, die eine der folgenden Funk
 ## Fragen:
 Besuchen Sie die Website des [LOLBAS-Projekts](https://lolbas-project.github.io/) und überprüfen Sie seine Funktionalitäten. Verwenden Sie dann die Suchleiste, um die ATT&CK-ID T1040 zu finden. Wie lautet der Name der Binärdatei?
 ```
-
+Pktmon.exe
 ```
 
 Verwenden Sie die Suchleiste, um weitere Informationen über MSbuild.exe zu finden. Welche ATT&CK-ID hat sie?
 ```
-
+T1127.001
 ```
 
 Verwenden Sie die Suchleiste, um mehr Informationen über Scriptrunner.exe zu finden. Welche Funktion hat die Binärdatei?
 ```
-
+Execute
 ```
 
 In der nächsten Aufgabe werden einige Werkzeuge basierend auf den Funktionalitäten vorgestellt! Los geht's!
