@@ -1,11 +1,12 @@
 # Task 1 - Einführung
-**Living Off the Land** ist ein Trendbegriff in der Red-Team-Community. Der Name stammt aus dem realen Leben, wo man von dem lebt, was das Land bietet. Ebenso nutzen Angreifer und Malware-Ersteller die eingebauten Tools und Dienstprogramme eines Zielcomputers aus. Der Begriff **Living Off the Land** wurde erstmals auf der [DerbyCon3](https://www.youtube.com/watch?v=j-r6UonEkUw) im Jahr 2013 eingeführt und hat seitdem in der Red-Team-Community an Bedeutung gewonnen, indem er zu einer häufig verwendeten und beliebten Technik wurde.
 
-Diese eingebauten Tools führen verschiedene regelmäßige Aktivitäten innerhalb des Zielsystems oder der Netzwerkkapazitäten aus; sie werden jedoch zunehmend missbraucht, beispielsweise durch die Verwendung des Tools [CertUtil](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil) zum Herunterladen bösartiger Dateien auf den Zielrechner.
+**Living Off the Land** ist ein Begriff aus der Red-Team-Community. Der Name stammt aus dem realen Leben, wo man von dem lebt, was das Land bietet. Ebenso nutzen Angreifer und Malware-Ersteller die eingebauten Tools und Dienstprogramme eines Zielcomputers. Der Begriff **Living Off the Land** wurde erstmals auf der [DerbyCon 3](https://www.youtube.com/watch?v=j-r6UonEkUw) im Jahr 2013 eingeführt und hat seitdem in der Red-Team-Community an Bedeutung gewonnen und ist zu einer häufig verwendeten und beliebten Technik geworden.
 
-Die Hauptidee besteht darin, Microsoft-signierte Programme, Skripte und Bibliotheken zu verwenden, um sich in die Umgebung einzufügen und Abwehrkontrollen zu umgehen. Red Teamers möchten nicht erkannt werden, wenn sie ihre Aktivitäten auf dem Ziel ausführen, daher ist die Nutzung dieser Tools sicherer, um ihre Tarnung aufrechtzuerhalten.
+Diese eingebauten Tools führen verschiedene regelmäßige Aktivitäten innerhalb des Zielsystems oder der Netzwerkkapazitäten aus. Sie werden jedoch zunehmend missbraucht, beispielsweise durch die Verwendung des Tools [CertUtil](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil) zum Herunterladen bösartiger Dateien auf den Zielrechner.
 
-### Folgende sind einige Kategorien, die "Living Off the Land" umfasst:
+Die Hauptidee besteht darin, Microsoft-signierte Programme, Skripte und Bibliotheken zu verwenden, um sich in die Umgebung einzufügen und Abwehrkontrollen zu umgehen. Red Teamer möchten nicht erkannt werden, wenn sie ihre Aktivitäten auf dem Zielsystem ausführen. Daher ist die Nutzung dieser Tools sicherer, um ihre Tarnung aufrechtzuerhalten.
+
+### Folgende Kategorien umfasst "Living Off the Land":
 
 - Aufklärung
 - Dateioperationen
@@ -17,23 +18,26 @@ Die Hauptidee besteht darin, Microsoft-signierte Programme, Skripte und Biblioth
 
 - Erfahren Sie mehr über den Begriff "Living Off the Land" in Red-Team-Engagements.
 - Lernen Sie das LOLBAS-Projekt kennen und wie Sie es verwenden.
-- Verstehen und anwenden der Techniken, die in Red-Teaming-Engagements verwendet werden.
+- Verstehen und Anwenden der Techniken, die in Red-Teaming-Engagements verwendet werden.
 
 ### Raumvoraussetzungen
 
 - Grundkenntnisse in allgemeinen Hacking-Techniken.
 - Abschluss des Lernpfads für [Junior Penetration Tester](https://tryhackme.com/path-action/jrpenetrationtester/join).
-- TryHackMe Modul für den [Red-Team-Initialzugriff](https://tryhackme.com/module/red-team-initial-access).
+- TryHackMe-Modul für den [Red-Team-Initialzugriff](https://tryhackme.com/module/red-team-initial-access).
 
 Wir haben eine Windows 10 Pro-Maschine bereitgestellt, um diesen Raum abzuschließen. Sie können die In-Browser-Funktion verwenden oder, wenn Sie möchten, über RDP eine Verbindung herstellen. Stellen Sie sicher, dass Sie dabei die AttackBox bereitstellen oder sich über das VPN verbinden.
 
 Verwenden Sie die folgenden Anmeldedaten:
 
-Maschinen-IP: `MACHINE_IP`  Benutzername: `thm`  Passwort: `TryHackM3`
+- Maschinen-IP: MACHINE_IP
+- Benutzername: thm
+- Passwort: TryHackM3
 
 ---
 
 # Task 2 - Windows Sysinternals
+
 ### Was ist Windows Sysinternals?
 
 Windows Sysinternals ist eine Sammlung von Tools und erweiterten Systemdienstprogrammen, die entwickelt wurden, um IT-Profis bei der Verwaltung, Fehlerbehebung und Diagnose des Windows-Betriebssystems in verschiedenen fortgeschrittenen Themen zu unterstützen.
@@ -49,32 +53,35 @@ Die Sysinternals Suite ist in verschiedene Kategorien unterteilt, darunter:
 Um die Windows Sysinternals-Tools zu verwenden, müssen wir die Microsoft-Lizenzvereinbarung dieser Tools akzeptieren. Dies können wir tun, indem wir das Argument `-accepteula` an der Befehlszeile übergeben oder es während der Ausführung der Tools über die GUI tun.
 
 Einige beliebte Windows Sysinternals-Tools sind:
+
 | Tool        | Beschreibung                                                                                             |
 |-------------|----------------------------------------------------------------------------------------------------------|
-| AccessChk   | Hilft Systemadministratoren, spezifische Zugriffe für Dateien, Verzeichnisse, Registry-Schlüssel, globale Objekte und Windows-Dienste zu überprüfen.                     |
-| PsExec      | Ein Tool, das Programme auf einem Remote-System ausführt.                                                  |
-| ADExplorer | Ein fortschrittliches Active Directory-Tool, das hilft, die AD-Datenbank einfach anzuzeigen und zu verwalten. |
-| ProcDump    | Überwacht laufende Prozesse auf CPU-Spitzen und die Möglichkeit, Speicherdumps für weitere Analysen zu erstellen.  |
-| ProcMon     | Ein wesentliches Werkzeug zur Prozessüberwachung.                                                          |
-| TCPView     | Ein Tool, das alle TCP- und UDP-Verbindungen auflistet.                                                    |
+| AccessChk   | Hilft Systemadministratoren, spezifische Zugriffe für Dateien, Verzeichnisse, Registry-Schlüssel, globale Objekte und Windows-Dienste zu überprüfen. |
+| PsExec      | Ein Tool, das Programme auf einem Remote-System ausführt.                                                 |
+| ADExplorer  | Ein fortschrittliches Active Directory-Tool, das hilft, die AD-Datenbank einfach anzuzeigen und zu verwalten. |
+| ProcDump    | Überwacht laufende Prozesse auf CPU-Spitzen und erstellt Speicherdumps für weitere Analysen.              |
+| ProcMon     | Ein wesentliches Werkzeug zur Prozessüberwachung.                                                        |
+| TCPView     | Ein Tool, das alle TCP- und UDP-Verbindungen auflistet.                                                  |
 | PsTools     | Das erste Werkzeug, das in der Sysinternals-Suite entwickelt wurde, um detaillierte Informationen anzuzeigen. |
-| Portmon     | Überwacht und zeigt alle Aktivitäten an seriellen und parallelen Anschlüssen auf einem System an.           |
-| Whois       | Bietet Informationen zu einem bestimmten Domainnamen oder einer IP-Adresse.                                |
+| Portmon     | Überwacht und zeigt alle Aktivitäten an seriellen und parallelen Anschlüssen auf einem System an.         |
+| Whois       | Bietet Informationen zu einem bestimmten Domainnamen oder einer IP-Adresse.                              |
 
 Weitere Informationen zur Sysinternals Suite finden Sie auf der Webseite der Tools auf Microsoft Docs [hier](https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite).
 
-Sysinternals Live
+### Sysinternals Live
 
-Eine großartige Funktion von Windows Sysinternals ist, dass keine Installation erforderlich ist. Microsoft bietet einen Windows Sysinternals-Dienst namens Sysinternals Live an, mit verschiedenen Möglichkeiten zur Verwendung und Ausführung der Tools. Wir können darauf über Folgendes zugreifen:
+Eine großartige Funktion von Windows Sysinternals ist, dass keine Installation erforderlich ist. Microsoft bietet einen Windows Sysinternals-Dienst namens Sysinternals Live an, mit verschiedenen Möglichkeiten zur Verwendung und Ausführung der Tools. Wir können darauf zugreifen über:
 
 - Webbrowser ([Link](https://live.sysinternals.com/))
 - Windows-Freigabe
 - Befehlszeile
 
-Um diese Tools zu verwenden, laden Sie sie herunter oder geben Sie den Pfad `\\live.sysinternals.com\tools` in den Windows Explorer ein.  
+Um diese Tools zu verwenden, laden Sie sie herunter oder geben Sie den Pfad `\\live.sysinternals.com\tools` in den Windows Explorer ein.
+
 ![2024-07-09-75af3683c5d9263c66c2ca4a9cb23a6f.png](Bilder/2024-07-09-75af3683c5d9263c66c2ca4a9cb23a6f.png)
 
 **Beachten** Sie, dass da die angehängte VM keinen Internetzugang hat, wir die Sysinternals-Tools im Verzeichnis `C:\Tools\` vorab heruntergeladen haben.
+
 ```cmd
 C:\Users\thm> C:\Tools\SysinternalsSuite\PsExec64.exe
 ```
@@ -86,7 +93,7 @@ Wenn Sie mehr über Windows Sysinternals erfahren möchten, empfehlen wir Ihnen,
 
 ### Nutzung und Vorteile für das Red Team
 
-Obwohl eingebaute und Sysinternals-Tools nützlich für Systemadministratoren sind, werden diese auch von Hackern, Malware und Penetrationstestern aufgrund des innewohnenden Vertrauens, das sie innerhalb des Betriebssystems genießen, verwendet. Dieses Vertrauen ist für Red Teamers vorteilhaft, die nicht von Sicherheitskontrollen auf dem Zielsystem erkannt oder erwischt werden möchten. Daher wurden diese Tools genutzt, um Erkennung und andere Blau-Team-Kontrollen zu umgehen.
+Obwohl eingebaute und Sysinternals-Tools nützlich für Systemadministratoren sind, werden diese auch von Hackern, Malware und Penetrationstestern aufgrund des innewohnenden Vertrauens, das sie innerhalb des Betriebssystems genießen, verwendet. Dieses Vertrauen ist für Red Teamer vorteilhaft, die nicht von Sicherheitskontrollen auf dem Zielsystem erkannt oder erwischt werden möchten. Daher wurden diese Tools genutzt, um Erkennung und andere Blau-Team-Kontrollen zu umgehen.
 
 Denken Sie daran, dass aufgrund der zunehmenden Nutzung durch Angreifer und Malware-Ersteller diese Tools heute bekannt sind und defensive Maßnahmen gegen die meisten von ihnen implementiert wurden.
 
