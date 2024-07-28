@@ -296,7 +296,7 @@ Evasion durch Payload-Manipulation umfasst:
 
 - **Obfuskation und Kodierung der Payload** (Obfuscating and encoding the payload)
 - **Verschlüsselung des Kommunikationskanals** (Encrypting the communication channel)
-- **Ändern des Shellcodes** (Modifying the shellcode)
+- **Ändern des Shellcodes** (Modifying the shellcode)  
 ![2024-07-28-285004e9e2336cc06906009b969d330b.png](Bilder/2024-07-28-285004e9e2336cc06906009b969d330b.png)
 
 ### Obfuskation und Kodierung der Payload
