@@ -201,11 +201,10 @@ Verwenden Sie eine spezifische Quellportnummer. Das Scannen von einer bestimmten
 Der folgende Wireshark-Screenshot zeigt einen Nmap-Scan mit der festen Quell-TCP-Portnummer 8080. Wir haben den folgenden Nmap-Befehl verwendet: `nmap -sS -Pn -g 8080 -F MACHINE_IP`. Sie können im Screenshot sehen, dass alle TCP-Verbindungen von derselben TCP-Portnummer gesendet werden.  
 ![2024-07-29-a0307f9e74e7f110b546dc7b423a288e.png](Bilder/2024-07-29-a0307f9e74e7f110b546dc7b423a288e.png)
 
-Natürlich, hier ist die Übersetzung:
-
----
-
 Du entscheidest dich, Nmap zu verwenden, um nach offenen UDP-Ports zu scannen. Du bemerkst, dass die Verwendung von `nmap -sU -F MACHINE_IP`, um die offenen häufigen UDP-Ports zu entdecken, keine bedeutungsvollen Ergebnisse liefert. Was musst du zu deinem Nmap-Befehl hinzufügen, um die Quellportnummer auf 53 zu setzen?
+```
+
+```
 
 Dies ist eine kurze Zusammenfassung der in dieser Aufgabe besprochenen Nmap-Optionen:
 
@@ -219,3 +218,9 @@ Spoofing der Quell-IP-Adresse  |  `-S IP_ADDRESS`
 Verwende eine spezifische Quellportnummer  |  `-g PORT_NUM` oder `--source-port PORT_NUM`  
 
 ---
+
+```
+Keine Antwort nötig
+```
+
+# Task 4 - Evasion via Forcing Fragmentation, MTU, and Data Length
