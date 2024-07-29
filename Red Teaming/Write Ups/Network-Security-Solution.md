@@ -482,3 +482,89 @@ Auf der angehängten Maschine aus der vorherigen Aufgabe, gehen Sie zu http://MA
 ```
 
 # Task 6 - Evasion via Route Manipulation
+Evasion durch Routenmanipulation umfasst:
+
+- Verlassen auf Quellrouting
+- Verwendung von Proxy-Servern  
+![2024-07-29-d0e4bdf9c029c7efa74b9962b3a42010.png](Bilder/2024-07-29-d0e4bdf9c029c7efa74b9962b3a42010.png)
+
+Verlassen auf Quellrouting
+
+In vielen Fällen kannst du Quellrouting verwenden, um die Pakete zu zwingen, eine bestimmte Route zu ihrem Ziel zu nehmen. Nmap bietet diese Funktion mit der Option `--ip-options` an. Nmap bietet lose und strenge Routings:
+
+- Loses Routing kann mit `L` angegeben werden. Zum Beispiel fordert `--ip-options "L 10.10.10.50 10.10.50.250"` an, dass deine Scanpakete über die beiden angegebenen IP-Adressen geleitet werden.
+- Strenges Routing kann mit `S` angegeben werden. Strenges Routing erfordert, dass du jeden Hop zwischen deinem System und dem Zielhost angibst. Zum Beispiel gibt `--ip-options "S 10.10.10.1 10.10.20.2 10.10.30.3"` an, dass die Pakete über diese drei Hops geleitet werden, bevor sie den Zielhost erreichen.
+
+Verwendung von Proxy-Servern
+
+Die Verwendung von Proxy-Servern kann helfen, deine Quelle zu verbergen. Nmap bietet die Option `--proxies`, die eine durch Kommas getrennte Liste von Proxy-URLs akzeptiert. Jede URL sollte im Format `proto://host:port` ausgedrückt werden. Gültige Protokolle sind HTTP und SOCKS4; zudem wird derzeit keine Authentifizierung unterstützt.
+
+Betrachte folgendes Beispiel. Anstatt `nmap -sS MACHINE_IP` auszuführen, würdest du deinen Nmap-Befehl zu etwas wie `nmap -sS HTTP://PROXY_HOST1:8080,SOCKS4://PROXY_HOST2:4153 MACHINE_IP` ändern. Auf diese Weise würdest du deinen Scan über den HTTP-Proxy-Host1 und dann über den SOCKS4-Proxy-Host2 laufen lassen, bevor er dein Ziel erreicht. Es ist wichtig zu beachten, dass es einige Versuche und Fehler erfordert, einen zuverlässigen Proxy zu finden, bevor du dich darauf verlassen kannst, deine Nmap-Scanquelle zu verbergen.
+
+Wenn du deinen Webbrowser verwendest, um eine Verbindung zum Ziel herzustellen, wäre es eine einfache Aufgabe, deinen Datenverkehr über einen Proxy-Server zu leiten. Andere Netzwerktools bieten normalerweise ihre eigenen Proxy-Einstellungen, die du verwenden kannst, um deine Datenverkehrsquelle zu verbergen.
+
+## Fragen:
+Protokolle, die in Proxy-Servern verwendet werden können, sind HTTP, HTTPS, SOCKS4 und SOCKS5. Welche Protokolle werden derzeit von Nmap unterstützt?
+```
+
+```
+
+# Task 7 - Evasion via Tactical DoS
+Umgehung durch taktischen DoS umfasst:
+
+- Starten eines Denial-of-Service-Angriffs gegen das IDS/IPS
+- Starten eines Denial-of-Service-Angriffs gegen den Protokollierungsserver  
+![2024-07-29-53b31ed73b300020fbf7b2b699769b95.png](Bilder/2024-07-29-53b31ed73b300020fbf7b2b699769b95.png)
+
+Ein IDS/IPS erfordert hohe Rechenleistung, wenn die Anzahl der Regeln zunimmt und das Netzwerkverkehrsvolumen steigt. Insbesondere im Fall eines IDS besteht die Hauptreaktion darin, Verkehrsinformationen zu protokollieren, die der Signatur entsprechen. Folglich könnte es vorteilhaft sein, wenn Sie:
+
+- Eine große Menge an gutartigem Verkehr erzeugen, der einfach die Verarbeitungskapazität des IDS/IPS überlastet.
+- Eine massive Menge an nicht-bösartigem Verkehr erzeugen, der dennoch in die Protokolle aufgenommen wird. Diese Aktion würde den Kommunikationskanal mit dem Protokollierungsserver überlasten oder dessen Schreibkapazität auf der Festplatte überschreiten.
+
+Es ist auch zu beachten, dass das Ziel Ihres Angriffs der IDS-Betreiber sein kann. Durch das Verursachen einer großen Anzahl von Fehlalarmen können Sie Ermüdung beim Betreiber hervorrufen, was Ihrem "Gegner" schaden könnte.
+
+## Fragen:
+Stellen Sie sicher, dass Sie die drei Punkte dieser Aufgabe gelesen und verstanden haben.
+```
+Keine Antwort nötig
+```
+
+# Task 8 - C2 and IDS/IPS Evasion
+Penetrationstesting-Frameworks, wie Cobalt Strike und Empire, bieten veränderbare Command and Control (C2)-Profile. Diese Profile ermöglichen eine Vielzahl von Feinabstimmungen, um IDS/IPS-Systeme zu umgehen. Wenn Sie ein solches Framework verwenden, ist es ratsam, ein benutzerdefiniertes Profil zu erstellen, anstatt sich auf ein Standardprofil zu verlassen. Beispiele für Variablen, die Sie steuern können, sind:
+
+- **User-Agent**: Das verwendete Werkzeug oder Framework kann Sie durch seinen standardmäßig gesetzten User-Agent enttarnen. Daher ist es immer wichtig, den User-Agent auf etwas Unauffälliges zu setzen und zu testen, um die Einstellungen zu bestätigen.
+- **Sleep Time**: Die Sleep Time ermöglicht es Ihnen, das Rückrufintervall zwischen den Beacon-Check-Ins zu steuern. Mit anderen Worten, Sie können steuern, wie oft das infizierte System versucht, eine Verbindung zum Kontrollsystem herzustellen.
+- **Jitter**: Diese Variable ermöglicht es Ihnen, der Sleep Time etwas Zufälligkeit hinzuzufügen, die durch den Jitter-Prozentsatz angegeben wird. Ein Jitter von 30% führt zu einer Sleep Time von ±30%, um die Erkennung weiter zu umgehen.
+- **SSL-Zertifikat**: Die Verwendung eines authentisch aussehenden SSL-Zertifikats wird Ihre Chancen, der Erkennung zu entgehen, erheblich verbessern. Es ist eine sehr lohnenswerte Investition von Zeit.
+- **DNS Beacon**: Betrachten Sie den Fall, dass Sie das DNS-Protokoll zur Datenexfiltration verwenden. Sie können DNS-Beacons feinabstimmen, indem Sie die DNS-Server und den Hostnamen in der DNS-Anfrage festlegen. Der Hostname wird die exfiltrierten Daten enthalten.
+
+Dieses [CobaltStrike-Richtlinienprofil](https://github.com/bigb0sss/RedTeam-OffensiveSecurity/blob/master/01-CobaltStrike/malleable_C2_profile/CS4.0_guideline.profile) zeigt, wie ein Profil zusammengestellt wird. 
+
+## Fragen:
+
+Welche Variable würden Sie ändern, um eine zufällige Sleep Time zwischen den Beacon-Check-Ins hinzuzufügen?
+```
+
+```
+
+# Task 9 - Next-Gen Security
+Nächste Generation Netzwerk-IPS (NGNIPS) hat laut Gartner die folgenden fünf [Merkmale](https://www.gartner.com/en/documents/2390317-next-generation-ips-technology-disrupts-the-ips-market):
+
+1. **Standard-Funktionen der ersten Generation von IPS:** Ein Next-Generation Network IPS sollte die Funktionen eines traditionellen Netzwerk-IPS erreichen.
+2. **Anwendungsbewusstsein und vollständige Sichtbarkeit des Stacks:** Identifikation des Traffics von verschiedenen Anwendungen und Durchsetzung der Netzwerksicherheitsrichtlinie. Ein NGNIPS muss bis zur Anwendungsschicht verstehen können.
+3. **Kontextbewusstsein:** Nutzung von Informationen aus Quellen außerhalb des IPS zur Unterstützung der Blockierungsentscheidungen.
+4. **Inhaltsbewusstsein:** Fähigkeit zur Inspektion und Klassifizierung von Dateien, wie z.B. ausführbare Programme und Dokumente, im eingehenden und ausgehenden Traffic.
+5. **Agiler Motor:** Unterstützung von Upgrade-Pfaden, um von neuen Informationsquellen zu profitieren.
+
+Da eine Next-Generation Firewall (NGFW) die gleiche Funktionalität wie ein IPS bietet, scheint der Begriff NGNIPS zugunsten von NGFW an Beliebtheit zu verlieren. Weitere Informationen über NGFW finden Sie im Bereich [Red Team Firewalls](https://tryhackme.com/room/redteamfirewalls).
+
+## Fragen:
+Lese mehr über NGFW im Raum Red Team Firewalls.
+```
+
+```
+
+# Task 10 - Summary
+In diesem Raum haben wir die IDS- und IPS-Typen basierend auf Installationsort und Erkennungsengine behandelt. Wir haben auch Snort 2-Regeln als Beispiel dafür betrachtet, wie IDS-Regeln ausgelöst werden. Um eine Erkennung zu umgehen, ist es notwendig, so viele Informationen wie möglich über die eingesetzten Geräte zu sammeln und verschiedene Techniken auszuprobieren. Mit anderen Worten, Versuch und Irrtum könnten unvermeidlich sein, es sei denn, man hat vollständiges Wissen über die Sicherheitsgeräte und deren Konfiguration.
+
+Die Verwendung von Command and Control (C2) Frameworks trägt zur Umgehung von IPS bei, indem sie die Form des Traffics kontrollieren, um ihn so harmlos wie möglich erscheinen zu lassen. C2-Profile sind eine wichtige Funktion, die man meistern sollte, wenn man ein C2-Framework verwendet, das anpassbare Profile unterstützt.
