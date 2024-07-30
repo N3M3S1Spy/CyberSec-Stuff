@@ -74,6 +74,9 @@ Learn about and experiment with various IDS/IPS evasion techniques, such as prot
 - ![Firewalls](Firewalls.md)
 Lerne verschiedene Techniken zur Umgehung von Firewalls kennen und experimentiere mit Methoden wie Port-Hopping und Port-Tunneling.
 
+- ![Sanbox Evasion](Sanbox_Evasion.md)
+Lerne über aktive Verteidigungsmechanismen, die Blue Teamers einsetzen können, um Angreifer in ihrer Umgebung zu identifizieren.
+
 ## Lizenz
 
 Da dieser Ordner nur für meine private Nutzung gedacht ist, gibt es keine speziellen Lizenzanforderungen.
