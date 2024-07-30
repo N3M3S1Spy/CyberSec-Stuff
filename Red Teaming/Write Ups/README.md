@@ -26,10 +26,10 @@ Falls notwendig, werde ich Unterordner für verschiedene Projekte oder Kategorie
 
 ## Write-ups
 
-### [AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)
+### ![AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)
 Lernen Sie Shellcode-Kodierung, Verpackung, Binder und Crypter kennen.
 
-### [Abusing Windows Internals](Abusing_Windows_Internals.md)
+### ![Abusing Windows Internals](Abusing_Windows_Internals.md)
 Nutze Windows-Interna, um gängige Erkennungslösungen zu umgehen, indem du moderne, werkzeugunabhängige Ansätze verwendest.
 
 ### []()
