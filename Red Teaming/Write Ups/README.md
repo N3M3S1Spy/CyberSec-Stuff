@@ -24,24 +24,47 @@ Falls notwendig, werde ich Unterordner für verschiedene Projekte oder Kategorie
 - `Notizen`
 - `Artikel`
 
-## Write-ups
+# Read Teaming
+Das Ziel dieses Pfades ist es, dir zu zeigen, wie du einen möglichen Angreiferangriff in komplexen Umgebungen nachahmen kannst. Über das Penetration Testing hinaus wirst du lernen, erfolgreiche Red Team-Einsätze durchzuführen und die Verteidigungsfähigkeit deiner Kunden herauszufordern.
 
-### ![Windows Internals](Windows_Internals.md)
+Nach Abschluss dieses Pfades wirst du über die fortgeschrittenen Fähigkeiten verfügen, die erforderlich sind, um neue Karrierechancen im Bereich der offensiven Sicherheit zu verfolgen.
+
+## Host Evasion
+Verstehe die Techniken hinter hostbasierter Sicherheit und umgehe die häufigsten Sicherheitsprodukte in Windows-Betriebssystemen.
+
+- ![Windows Internals](Windows_Internals.md)  
 Lerne und verstehe die Grundlagen, wie Windows auf seiner Kernebene funktioniert.
 
-### ![Introduction to Windows API](Introduction_to_Windows_API.md)
+- ![Introduction to Windows API](Introduction_to_Windows_API.md)  
 Lerne, wie man mit der Win32-API interagiert, und verstehe ihre vielfältigen Anwendungsfälle.
 
-### ![Abusing Windows Internals](Abusing_Windows_Internals.md)
+- ![Abusing Windows Internals](Abusing_Windows_Internals.md)  
 Nutze Windows-Interna, um gängige Erkennungslösungen zu umgehen, indem du moderne, werkzeugunabhängige Ansätze verwendest.
 
-### ![Introduction to Antivirus](Introduction_to_Antivirus.md)
+- ![Introduction to Antivirus](Introduction_to_Antivirus.md)  
 Verstehe, wie Antivirensoftware funktioniert und welche Erkennungstechniken verwendet werden, um bösartige Dateiüberprüfungen zu umgehen.
 
-### ![AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)
+- ![AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)  
 Lernen Sie Shellcode-Kodierung, Verpackung, Binder und Crypter kennen.
 
-### ![]
+- ![Obfuscation Principles](Obfuscation_Principles.md)  
+Nutze werkzeugunabhängige Software-Obfuskationstechniken, um bösartige Funktionen zu verbergen und einzigartigen Code zu erstellen.
+
+- ![Signature Evasion](Signature_Evasion.md)  
+Lerne, wie man Signaturen bricht und gängige Antivirenprogramme umgeht, indem man moderne werkzeugunabhängige Ansätze verwendet.
+
+- ![Bypassing UAC](Bypassing_UAC.md)  
+Lerne gängige Methoden kennen, um die Benutzerkontensteuerung (UAC) auf Windows-Hosts zu umgehen.
+
+- ![Runtime Detection Evasion](Runtime_Detection_Evasion.md)  
+Lerne, wie man gängige Laufzeiterkennungsmaßnahmen wie AMSI mit modernen, tool-agnostischen Ansätzen umgehen kann.
+
+- ![Evading Logging and Monitoring](Evading_Logging_and_Monitoring)  
+Lerne, wie man gängige Protokollierungs- und Systemüberwachungsmechanismen wie ETW mit modernen, tool-agnostischen Ansätzen umgehen kann.
+
+- ![Living Off the Land](Living_Off_the_Land.md)  
+Lerne das wesentliche Konzept von "Living Off the Land" in Red Team-Einsätzen kennen.
+
 
 ## Lizenz
 
