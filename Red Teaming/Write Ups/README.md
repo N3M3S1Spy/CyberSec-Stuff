@@ -26,13 +26,22 @@ Falls notwendig, werde ich Unterordner für verschiedene Projekte oder Kategorie
 
 ## Write-ups
 
-### ![AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)
-Lernen Sie Shellcode-Kodierung, Verpackung, Binder und Crypter kennen.
+### ![Windows Internals](Windows_Internals.md)
+Lerne und verstehe die Grundlagen, wie Windows auf seiner Kernebene funktioniert.
+
+### ![Introduction to Windows API](Introduction_to_Windows_API.md)
+Lerne, wie man mit der Win32-API interagiert, und verstehe ihre vielfältigen Anwendungsfälle.
 
 ### ![Abusing Windows Internals](Abusing_Windows_Internals.md)
 Nutze Windows-Interna, um gängige Erkennungslösungen zu umgehen, indem du moderne, werkzeugunabhängige Ansätze verwendest.
 
-### []()
+### ![Introduction to Antivirus](Introduction_to_Antivirus.md)
+Verstehe, wie Antivirensoftware funktioniert und welche Erkennungstechniken verwendet werden, um bösartige Dateiüberprüfungen zu umgehen.
+
+### ![AV Umgehen: Shellcode](AV_Umgehen:_Shellcode.md)
+Lernen Sie Shellcode-Kodierung, Verpackung, Binder und Crypter kennen.
+
+### ![]
 
 ## Lizenz
 
