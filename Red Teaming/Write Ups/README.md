@@ -65,6 +65,14 @@ Lerne, wie man gängige Protokollierungs- und Systemüberwachungsmechanismen wie
 - ![Living Off the Land](Living_Off_the_Land.md)  
 Lerne das wesentliche Konzept von "Living Off the Land" in Red Team-Einsätzen kennen.
 
+## Network Security Evasion
+Lerne, wie man verschiedene Sicherheitslösungen in der Industrie, wie Firewalls und IDS/IPS, umgehen und vermeiden kann.
+
+- ![Network Security Solution](Network_Security_Solution.md)
+Learn about and experiment with various IDS/IPS evasion techniques, such as protocol and payload manipulation.
+
+- ![Firewalls](Firewalls.md)
+Lerne verschiedene Techniken zur Umgehung von Firewalls kennen und experimentiere mit Methoden wie Port-Hopping und Port-Tunneling.
 
 ## Lizenz
 
