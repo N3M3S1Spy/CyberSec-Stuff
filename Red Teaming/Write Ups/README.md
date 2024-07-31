@@ -29,6 +29,13 @@ Das Ziel dieses Pfades ist es, dir zu zeigen, wie du einen möglichen Angreifera
 
 Nach Abschluss dieses Pfades wirst du über die fortgeschrittenen Fähigkeiten verfügen, die erforderlich sind, um neue Karrierechancen im Bereich der offensiven Sicherheit zu verfolgen.
 
+## Red Team Fundamentals
+Lerne die Kernkomponenten eines Red-Team-Einsatzes kennen, von Bedrohungsaufklärung bis OPSEC und C2s.
+
+## Initial Access
+Erkunden Sie die verschiedenen Techniken, um aus der Perspektive eines Red Teamers anfänglichen Zugang zu einem Zielsystem und Netzwerk zu erlangen.
+
+
 ## Post Compromise
 Erfahren Sie mehr über die Schritte, die ein Angreifer unternimmt, nachdem er einen ersten Zugang zu einem Netzwerk erlangt hat.
 
