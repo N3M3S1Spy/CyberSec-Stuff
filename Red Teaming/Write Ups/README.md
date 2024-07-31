@@ -32,7 +32,7 @@ Nach Abschluss dieses Pfades wirst du über die fortgeschrittenen Fähigkeiten v
 ## Post Compromise
 Erfahren Sie mehr über die Schritte, die ein Angreifer unternimmt, nachdem er einen ersten Zugang zu einem Netzwerk erlangt hat.
 
-- ![The Lay of the Land](The_Lay_of_the_Land.md)
+- ![The Lay of the Land](The_Lay_of_the_Land.md)  
 Erfahren Sie mehr über und machen Sie praktische Erfahrungen mit gängigen Technologien und Sicherheitsprodukten, die in Unternehmensumgebungen verwendet werden; sowohl host- als auch netzwerkbasierte Sicherheitslösungen werden abgedeckt.
 
 
