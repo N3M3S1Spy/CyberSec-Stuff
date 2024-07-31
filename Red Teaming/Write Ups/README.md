@@ -32,6 +32,9 @@ Nach Abschluss dieses Pfades wirst du über die fortgeschrittenen Fähigkeiten v
 ## Red Team Fundamentals
 Lerne die Kernkomponenten eines Red-Team-Einsatzes kennen, von Bedrohungsaufklärung bis OPSEC und C2s.
 
+- ![Red Team Fundamentals](Red_Team_Fundamentals.md)  
+Lerne die Grundlagen eines Red-Team-Einsatzes kennen, die Hauptkomponenten und beteiligten Akteure sowie die Unterschiede zwischen Red-Teaming und anderen Cybersecurity-Einsätzen.
+
 ## Initial Access
 Erkunden Sie die verschiedenen Techniken, um aus der Perspektive eines Red Teamers anfänglichen Zugang zu einem Zielsystem und Netzwerk zu erlangen.
 
