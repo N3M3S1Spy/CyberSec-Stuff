@@ -199,12 +199,12 @@ C:\> C:\flags\GetFlag-azman.exe
 ## Fragen:
 Welche Flagge wird durch Ausführen des msconfig-Exploits zurückgegeben?
 ```
-
+THM{UAC_HELLO_WORLD}
 ```
 
 Welche Flagge wird durch Ausführen des azman.msc-Exploits zurückgegeben?
 ```
-
+THM{GUI_UAC_BYPASSED_AGAIN}
 ```
 
 # Task 4 - UAC: Prozesse automatisch erhöhen
@@ -325,7 +325,7 @@ reg delete HKCU\Software\Classes\ms-settings\ /f
 ## Fragen:
 Welche Flagge wird durch die Ausführung des "fodhelper"-Exploits zurückgegeben?
 ```
-
+THM{AUTOELEVATE4THEWIN}
 ```
 
 # Task 5 - UAC: Verbesserung des Fodhelper-Exploits zur Umgehung von Windows Defender
@@ -466,7 +466,7 @@ reg delete "HKCU\Software\Classes\ms-settings\" /f
 ## Fragen:
 Welche Flagge wird durch die Ausführung des "fodhelper-curver"-Exploits zurückgegeben?
 ```
-
+THM{AV_UAC_BYPASS_4_ALL}
 ```
 
 # Task 6 - UAC: Erweiterung der Umgebungsvariablen
@@ -550,7 +550,7 @@ reg delete "HKCU\Environment" /v "windir" /f
 ## Fragen:
 Welche Flagge wird durch die Ausführung des "DiskCleanup"-Exploits zurückgegeben?
 ```
-
+THM{SCHEDULED_TASKS_AND_ENVIRONMENT_VARS}
 ```
 
 # Task 7 - Automatisierter Exploit
