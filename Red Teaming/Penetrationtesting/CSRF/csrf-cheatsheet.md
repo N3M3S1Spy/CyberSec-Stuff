@@ -93,3 +93,53 @@ Hier ist ein Beispiel, wie ein Angriff strukturiert sein könnte:
 </html>
 ```
 > **Info:** Wenn der CSRF-Token mit dem Sitzungscookie verbunden ist, funktioniert dieser Angriff nicht. In diesem Fall müssten Sie die Sitzung des Opfers setzen, was bedeutet, dass Sie sich selbst angreifen würden.
+
+
+> **Info:** Beachten Sie, dass das Vermeiden des `Referer`-Headers durch den HTML-Meta-Tag möglicherweise nicht in allen Browsern oder Konfigurationen wirksam ist. Die Verlässlichkeit dieser Methode kann variieren.
+
+# Content-Type-Änderung
+
+Laut dieser Quelle, um Preflight-Anfragen mit der POST-Methode zu vermeiden, sind die folgenden Content-Type-Werte erlaubt:
+
+- `application/x-www-form-urlencoded`
+- `multipart/form-data`
+- `text/plain`
+
+Beachten Sie jedoch, dass die Logik der Server variieren kann, abhängig vom verwendeten Content-Type. Daher sollten Sie die genannten Werte und andere wie `application/json`, `text/xml`, `application/xml` testen.
+
+## Beispiel für das Senden von JSON-Daten als `text/plain`
+
+```html
+<html>
+<body>
+<form id="form" method="post" action="https://phpme.be.ax/" enctype="text/plain">
+<input name='{"garbageeeee":"' value='", "yep": "yep yep yep", "url": "https://webhook/"}'>
+</form>
+<script>
+form.submit();
+</script>
+</body>
+</html>
+```
+
+## Umgehung von Preflight-Anfragen für JSON-Daten
+
+Beim Versuch, JSON-Daten über eine POST-Anfrage zu senden, ist es nicht direkt möglich, `Content-Type: application/json` in einem HTML-Formular zu verwenden. Ebenso initiiert die Nutzung von XMLHttpRequest, um diesen Inhaltstyp zu senden, eine Preflight-Anfrage. Dennoch gibt es Strategien, um diese Einschränkung möglicherweise zu umgehen und zu überprüfen, ob der Server die JSON-Daten unabhängig vom Content-Type verarbeitet:
+
+- **Verwendung alternativer Inhaltstypen**: Verwenden Sie `Content-Type: text/plain` oder `Content-Type: application/x-www-form-urlencoded`, indem Sie `enctype="text/plain"` im Formular festlegen. Dieser Ansatz testet, ob das Backend die Daten unabhängig vom Content-Type nutzt.
+
+- **Inhaltstyp ändern**: Um eine Preflight-Anfrage zu vermeiden und sicherzustellen, dass der Server den Inhalt als JSON erkennt, können Sie die Daten mit `Content-Type: text/plain; application/json` senden. Dies löst keine Preflight-Anfrage aus, könnte jedoch vom Server korrekt verarbeitet werden, wenn er so konfiguriert ist, `application/json` zu akzeptieren.
+
+- **Nutzung von SWF Flash-Dateien**: Eine weniger gängige, aber machbare Methode besteht darin, eine SWF-Flash-Datei zu verwenden, um solche Einschränkungen zu umgehen. Für ein tieferes Verständnis dieser Technik siehe [diesen Beitrag](#).
+
+## Umgehung der Überprüfungen von Referrer / Origin
+
+### Vermeiden Sie den Referrer-Header
+
+Anwendungen können den `Referer`-Header nur validieren, wenn er vorhanden ist. Um zu verhindern, dass ein Browser diesen Header sendet, kann der folgende HTML-Meta-Tag verwendet werden:
+
+```html
+<meta name="referrer" content="never">
+```
+Dies stellt sicher, dass der `Referer`-Header weggelassen wird, wodurch möglicherweise Validierungsprüfungen in einigen Anwendungen umgangen werden.
+
