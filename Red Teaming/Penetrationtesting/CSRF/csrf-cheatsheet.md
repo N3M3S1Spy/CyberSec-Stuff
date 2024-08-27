@@ -107,7 +107,7 @@ Laut dieser Quelle, um Preflight-Anfragen mit der POST-Methode zu vermeiden, sin
 
 Beachten Sie jedoch, dass die Logik der Server variieren kann, abhängig vom verwendeten Content-Type. Daher sollten Sie die genannten Werte und andere wie `application/json`, `text/xml`, `application/xml` testen.
 
-## Beispiel für das Senden von JSON-Daten als `text/plain`
+## Beispiel (von [hier](https://brycec.me/posts/corctf_2021_challenges)) für das Senden von JSON-Daten als `text/plain`
 
 ```html
 <html>
@@ -130,7 +130,7 @@ Beim Versuch, JSON-Daten über eine POST-Anfrage zu senden, ist es nicht direkt 
 
 - **Inhaltstyp ändern**: Um eine Preflight-Anfrage zu vermeiden und sicherzustellen, dass der Server den Inhalt als JSON erkennt, können Sie die Daten mit `Content-Type: text/plain; application/json` senden. Dies löst keine Preflight-Anfrage aus, könnte jedoch vom Server korrekt verarbeitet werden, wenn er so konfiguriert ist, `application/json` zu akzeptieren.
 
-- **Nutzung von SWF Flash-Dateien**: Eine weniger gängige, aber machbare Methode besteht darin, eine SWF-Flash-Datei zu verwenden, um solche Einschränkungen zu umgehen. Für ein tieferes Verständnis dieser Technik siehe [diesen Beitrag](#).
+- **Nutzung von SWF Flash-Dateien**: Eine weniger gängige, aber machbare Methode besteht darin, eine SWF-Flash-Datei zu verwenden, um solche Einschränkungen zu umgehen. Für ein tieferes Verständnis dieser Technik siehe [diesen Beitrag](https://anonymousyogi.medium.com/json-csrf-csrf-that-none-talks-about-c2bf9a480937).
 
 ## Umgehung der Überprüfungen von Referrer / Origin
 
@@ -168,7 +168,7 @@ document.forms[0].submit();
 
 # HEAD-Methode umgehen
 
-Im ersten Teil von diesem CTF-Bericht wird erklärt, dass Oaks Quellcode, ein Router, HEAD-Anfragen als GET-Anfragen ohne Antwortkörper behandelt – ein gängiger Workaround, der nicht einzigartig für Oak ist. Anstelle eines spezifischen Handlers, der sich mit HEAD-Anfragen befasst, werden sie einfach dem GET-Handler übergeben, aber die App entfernt einfach den Antwortkörper.
+Im ersten Teil von diesem [CTF-Bericht](https://github.com/google/google-ctf/tree/master/2023/web-vegsoda/solution) wird erklärt, dass [Oaks Quellcode](https://github.com/oakserver/oak/blob/main/router.ts#L281), ein Router, HEAD-Anfragen als GET-Anfragen ohne Antwortkörper behandelt – ein gängiger Workaround, der nicht einzigartig für Oak ist. Anstelle eines spezifischen Handlers, der sich mit HEAD-Anfragen befasst, werden sie einfach dem GET-Handler übergeben, aber die App entfernt einfach den Antwortkörper.
 
 Daher, wenn eine GET-Anfrage eingeschränkt wird, könnten Sie einfach eine HEAD-Anfrage senden, die als GET-Anfrage verarbeitet wird.
 
@@ -176,7 +176,7 @@ Daher, wenn eine GET-Anfrage eingeschränkt wird, könnten Sie einfach eine HEAD
 
 ### Exfiltrieren des CSRF-Tokens
 
-Wenn ein CSRF-Token als Schutz verwendet wird, könnten Sie versuchen, es zu exfiltrieren, indem Sie eine XSS-Schwachstelle oder eine Dangling Markup-Schwachstelle ausnutzen.
+Wenn ein CSRF-Token als Schutz verwendet wird, könnten Sie versuchen, es zu exfiltrieren, indem Sie eine [XSS](https://book.hacktricks.xyz/v/de/pentesting-web/xss-cross-site-scripting#xss-stealing-csrf-tokens)-Schwachstelle oder eine [Dangling Markup](https://book.hacktricks.xyz/v/de/pentesting-web/dangling-markup-html-scriptless-injection)-Schwachstelle ausnutzen.
 
 ### GET mit HTML-Tags
 
