@@ -97,6 +97,28 @@ Hier ist ein Beispiel, wie ein Angriff strukturiert sein könnte:
 
 > **Info:** Beachten Sie, dass das Vermeiden des `Referer`-Headers durch den HTML-Meta-Tag möglicherweise nicht in allen Browsern oder Konfigurationen wirksam ist. Die Verlässlichkeit dieser Methode kann variieren.
 
+## Bypassing SameSite Lax restrictions using GET requests
+
+In der Praxis sind Server nicht immer wählerisch, ob sie eine GET- oder POST-Anfrage an einen bestimmten Endpunkt erhalten, selbst wenn diese eine Formularübermittlung erwarten. Wenn sie auch Lax-Einschränkungen für ihre Sitzungscookies verwenden, entweder explizit oder aufgrund der Browsereinstellungen, können Sie möglicherweise immer noch einen CSRF-Angriff ausführen, indem Sie eine GET-Anfrage aus dem Browser des Opfers anfordern.
+
+Solange die Anfrage eine Top-Level-Navigation beinhaltet, wird der Browser weiterhin das Sitzungscookie des Opfers senden. Eine der einfachsten Methoden, einen solchen Angriff zu starten, ist:
+```html
+<script>
+    document.location = 'https://vulnerable-website.com/account/transfer-payment?recipient=hacker&amount=1000000';
+</script>
+```
+
+Selbst wenn eine gewöhnliche GET-Anfrage nicht erlaubt ist, bieten einige Frameworks Möglichkeiten, die Methode in der Anforderungszeile zu überschreiben. Beispielsweise unterstützt Symfony das `_method`-Parameter in Formularen, das für Routing-Zwecke Vorrang vor der normalen Methode hat:
+```html
+<form action="https://vulnerable-website.com/account/transfer-payment" method="POST">
+    <input type="hidden" name="_method" value="GET">
+    <input type="hidden" name="recipient" value="hacker">
+    <input type="hidden" name="amount" value="1000000">
+</form>
+```
+
+Andere Frameworks unterstützen eine Vielzahl ähnlicher Parameter.
+
 # Content-Type-Änderung
 
 Laut dieser Quelle, um Preflight-Anfragen mit der POST-Methode zu vermeiden, sind die folgenden Content-Type-Werte erlaubt:
