@@ -129,3 +129,38 @@ Beispiel (von hier) zum Senden von JSON-Daten als `text/plain`:
 ### Vorab-Anfragen für JSON-Daten umgehen
 
 Beim Versuch, JSON-Daten über eine POST-Anfrage zu senden, ist die Verwendung von `Content-Type: application/json` in einem HTML-Formular nicht direkt möglich. Ebenso löst die Nutzung von `XMLHttpRequest` zur Übermittlung dieses Content-Types eine Vorab-Anfrage aus. Es gibt jedoch Strategien, um diese
+
+### Umgehen von Preflight-Anfragen für JSON-Daten
+
+Beim Versuch, JSON-Daten über eine POST-Anfrage zu senden, ist die Verwendung von `Content-Type: application/json` in einem HTML-Formular direkt nicht möglich. Ebenso führt die Nutzung von `XMLHttpRequest` mit diesem Content-Type zu einer Preflight-Anfrage. Es gibt jedoch Strategien, um diese Einschränkung möglicherweise zu umgehen und zu überprüfen, ob der Server die JSON-Daten unabhängig vom Content-Type verarbeitet:
+
+- **Verwendung alternativer Content-Types**: Verwenden Sie `Content-Type: text/plain` oder `Content-Type: application/x-www-form-urlencoded`, indem Sie `enctype="text/plain"` im Formular setzen. Dieser Ansatz testet, ob das Backend die Daten unabhängig vom Content-Type verarbeitet.
+
+- **Änderung des Content-Types**: Um eine Preflight-Anfrage zu vermeiden und sicherzustellen, dass der Server die Daten als JSON erkennt, können Sie die Daten mit `Content-Type: text/plain; application/json` senden. Dies löst keine Preflight-Anfrage aus, könnte aber vom Server korrekt verarbeitet werden, wenn dieser für `application/json` konfiguriert ist.
+
+- **Verwendung einer SWF-Flash-Datei**: Eine weniger gebräuchliche, aber mögliche Methode besteht darin, eine SWF-Flash-Datei zu verwenden, um solche Einschränkungen zu umgehen. Für ein tieferes Verständnis dieser Technik verweisen Sie bitte auf diesen Beitrag.
+
+### Umgehung der Referrer-/Origin-Prüfung
+
+#### Vermeidung des Referrer-Headers
+
+Anwendungen können den 'Referer'-Header nur validieren, wenn er vorhanden ist. Um zu verhindern, dass ein Browser diesen Header sendet, kann das folgende HTML-Meta-Tag verwendet werden:
+
+```html
+<meta name="referrer" content="never">
+```
+
+Dies stellt sicher, dass der 'Referer'-Header weggelassen wird, was möglicherweise Validierungsprüfungen in einigen Anwendungen umgeht.
+
+### Regexp-Umgehungen
+
+- **Null-Byte-Injektion**:  
+  Die Null-Byte-Injektion nutzt schlecht konfigurierte reguläre Ausdrücke oder String-Verarbeitung aus, indem ein Null-Byte (`%00` oder `\0`) eingefügt wird. Wenn die Anwendung C-basierte String-Verarbeitungsfunktionen verwendet oder Null-Bytes nicht ordnungsgemäß verarbeitet, kann dies den String vorzeitig beenden und die Regex-Prüfung umgehen.
+
+- **Unicode-Zeichen**:  
+  Unicode-Zeichen können manchmal verwendet werden, um Regex-Prüfungen zu umgehen, insbesondere wenn die Anwendung sie nicht ordnungsgemäß normalisiert oder dekodiert, bevor die Validierung erfolgt.
+
+- **Überlange Codierung**:  
+  Die überlange Codierung kann ebenfalls eingesetzt werden, um Regex-Validierungen zu umgehen, indem Daten in einer Form gesendet werden, die nicht den erwarteten Mustern entspricht.
+```
+
