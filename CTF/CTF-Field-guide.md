@@ -1,213 +1,218 @@
-Verstanden! Hier ist eine vollständige **README**-Datei, die alle Aspekte eines typischen CTFs abdeckt, einschließlich Web, Forensik, Kryptografie und mehr:
+# **CTF Guide - Ein umfassender Leitfaden für alle Kategorien**
+
+## **Inhaltsverzeichnis**
+1. [Einführung](#einführung)
+2. [Installation der wichtigsten Tools](#installation-der-wichtigsten-tools)
+3. [CTF-Kategorien und Lösungen](#ctf-kategorien-und-lösungen)
+   - 3.1 [Reconnaissance (Recon)](#reconnaissance-recon)
+   - 3.2 [Web-Exploitation](#web-exploitation)
+   - 3.3 [Forensik](#forensik)
+   - 3.4 [Kryptografie](#kryptografie)
+   - 3.5 [Reverse Engineering](#reverse-engineering)
+   - 3.6 [Pwn (Binary Exploitation)](#pwn-binary-exploitation)
+   - 3.7 [Steganographie](#steganographie)
+   - 3.8 [Miscellaneous (Sonstiges)](#miscellaneous-sonstiges)
+4. [Typische Vorgehensweise für CTFs](#typische-vorgehensweise-für-ctfs)
+5. [CTF-Plattformen und Ressourcen](#ctf-plattformen-und-ressourcen)
+6. [Zusätzliche Tipps und Tricks](#zusätzliche-tipps-und-tricks)
 
 ---
 
-# CTF Cheat Sheet - Web, Forensik, Kryptografie und mehr
+## **Einführung**
 
-## Inhaltsverzeichnis
-1. [Einführung](#einführung)
-2. [Installation von Tools](#installation-von-tools)
-3. [Kategorien von CTFs](#kategorien-von-ctfs)
-   - 3.1 [Web-Exploitation](#web-exploitation)
-   - 3.2 [Forensik](#forensik)
-   - 3.3 [Kryptografie](#kryptografie)
-   - 3.4 [Reverse Engineering](#reverse-engineering)
-   - 3.5 [Pwn](#pwn)
-   - 3.6 [Miscellaneous (Sonstiges)](#miscellaneous)
-4. [Typisches Vorgehen](#typisches-vorgehen)
-5. [Zusätzliche Ressourcen](#zusätzliche-ressourcen)
+Capture-The-Flag (CTF) Wettbewerbe sind ein beliebtes Mittel, um technische Fähigkeiten im Bereich Cybersicherheit zu testen und zu verbessern. CTFs decken eine Vielzahl von Bereichen ab, darunter Web-Exploitation, Forensik, Kryptografie, Reverse Engineering und mehr. Dieser Leitfaden bietet eine umfassende Anleitung zur Vorbereitung und Lösung von CTF-Aufgaben, gibt dir spezifische Tools an die Hand und erklärt detailliert das typische Vorgehen.
 
-## Einführung
+---
 
-In Capture The Flag (CTF)-Wettbewerben wird von den Teilnehmern erwartet, dass sie verschiedene Herausforderungen meistern, die unterschiedliche Cybersecurity-Konzepte testen, darunter Web-Exploitation, Forensik, Kryptografie und mehr. Dieser Leitfaden dient als Einstieg in die wichtigsten Kategorien von CTFs, die gebräuchlichsten Tools und Techniken sowie als Hilfe zur schnellen Problemlösung.
+## **Installation der wichtigsten Tools**
 
-## Installation von Tools
-
-Um die gängigsten Tools für CTFs auf Kali Linux zu installieren, kannst du diesen One-Liner verwenden:
+Um sicherzustellen, dass du gut für die meisten CTF-Aufgaben ausgestattet bist, installiere die wichtigsten Tools mit folgendem One-Liner:
 
 ```bash
-sudo apt update && sudo apt install -y steghide zsteg exiftool binwalk foremost gimp tesseract-ocr imagemagick openjdk-17-jre nmap gobuster sqlmap john hashcat radare2 gdb pwntools python3-pip && pip3 install pwntools
+sudo apt update && sudo apt install -y steghide zsteg exiftool binwalk foremost gimp tesseract-ocr imagemagick openjdk-17-jre nmap gobuster sqlmap nikto whatweb john hashcat radare2 gdb pwntools python3-pip && pip3 install pwntools && wget https://github.com/eugenekolo/sec-tools/raw/master/stego/stegsolve/stegsolve.jar -O stegsolve.jar
 ```
 
-Dieser Befehl installiert Tools für Steganographie, Forensik, Web-Exploitation, Kryptografie, Reverse Engineering und mehr.
+Dies installiert Tools für:
 
-## Kategorien von CTFs
+- **Reconnaissance (Recon)**
+- **Web-Exploitation**
+- **Forensik**
+- **Kryptografie**
+- **Reverse Engineering**
+- **Pwn (Binary Exploitation)**
+- **Steganographie**
 
-### 3.1 Web-Exploitation
+---
 
-Web-Exploitation-Challenges verlangen, dass du Schwachstellen in Webanwendungen findest und ausnutzt. Häufige Schwachstellen sind **SQL-Injection**, **Cross-Site Scripting (XSS)**, **Remote File Inclusion (RFI)**, und **Command Injection**.
+## **CTF-Kategorien und Lösungen**
 
-#### Tools:
-- **Burp Suite**: Ein Web-Proxysystem zur Analyse und Manipulation von HTTP-Requests.
-- **SQLMap**: Ein Tool zur automatischen Erkennung und Ausnutzung von SQL-Injection-Schwachstellen.
-- **Gobuster**: Ein Verzeichnis- und Datei-Bruteforce-Tool, um versteckte URLs zu finden.
-- **WhatWeb**: Zum Identifizieren von Technologien, die eine Webseite verwendet.
+### 3.1 **Reconnaissance (Recon)**
 
-#### Vorgehen:
-1. **Recon**: 
-   - Führe `whatweb` aus, um Technologien auf der Seite zu erkennen:
-     ```bash
-     whatweb http://example.com
-     ```
-   - Verwende `nmap`, um offene Ports zu scannen:
-     ```bash
-     nmap -sV http://example.com
-     ```
+Recon ist oft der erste Schritt in einer CTF-Challenge. Hier sammelst du Informationen über Ziele, Server, Domains oder Netzwerke, um Schwachstellen zu finden.
 
-2. **Directory Bruteforce**: 
-   - Verwende `gobuster`, um versteckte Pfade zu finden:
-     ```bash
-     gobuster dir -u http://example.com -w /usr/share/wordlists/dirb/common.txt
-     ```
+#### **Tools**:
+- **Nmap**: Port-Scanner und Service-Detektor
+  ```bash
+  nmap -sV -p- target.com
+  ```
 
-3. **SQL-Injection Test**:
-   - Verwende SQLMap, um SQLi-Schwachstellen zu testen:
-     ```bash
-     sqlmap -u "http://example.com/page?id=1" --dbs
-     ```
+- **WhatWeb**: Analyse des Webserver-Stack (Technologien)
+  ```bash
+  whatweb target.com
+  ```
 
-4. **Manuelle Analyse**:
-   - Verwende Burp Suite, um HTTP-Requests zu manipulieren und Schwachstellen zu finden.
+- **Gobuster**: Verzeichnis-Bruteforcing
+  ```bash
+  gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt
+  ```
 
-### 3.2 Forensik
+#### **Vorgehen**:
+1. **Port-Scan**: Mit `nmap` alle offenen Ports und Dienste des Ziels identifizieren.
+2. **Technologie-Erkennung**: Mit `whatweb` oder ähnlichen Tools die genutzten Technologien der Webseite herausfinden.
+3. **Verzeichnisse aufspüren**: Verwende `gobuster` oder `dirb`, um versteckte Verzeichnisse oder Dateien zu finden.
 
-Forensik-Challenges beinhalten die Analyse von Dateien, um versteckte Informationen oder Metadaten zu finden. Das können Bilder, Audiodateien, Netzwerk-Dumps und mehr sein.
+### 3.2 **Web-Exploitation**
 
-#### Tools:
-- **Steghide**: Zum Extrahieren von versteckten Daten in Bilddateien.
-- **Binwalk**: Zum Analysieren und Extrahieren von Dateien aus Binärdaten.
-- **Exiftool**: Zum Anzeigen von Metadaten (EXIF) in Bildern und Videos.
-- **Wireshark**: Ein Netzwerkprotokoll-Analysetool, das oft zur Analyse von Netzwerkdumps verwendet wird.
+Web-Exploitation-Challenges erfordern, dass du Schwachstellen in Webanwendungen findest, die sich oft in der unsachgemäßen Handhabung von Benutzereingaben oder in Fehlkonfigurationen verstecken.
 
-#### Vorgehen:
-1. **Dateityp prüfen**:
-   - Verwende `file`, um den Dateityp zu bestimmen:
-     ```bash
-     file suspect_file
-     ```
+#### **Tools**:
+- **Burp Suite**: Web-Proxy-Tool zum Abfangen und Modifizieren von HTTP-Requests.
+- **SQLMap**: Automatisiertes SQL-Injection-Tool.
+- **Nikto**: Webserver-Schwachstellen-Scanner.
+- **XSS-Injector**: Zum Testen von Cross-Site Scripting (XSS).
 
-2. **Metadaten prüfen**:
-   - Verwende `exiftool` zur Analyse der Metadaten:
-     ```bash
-     exiftool image.jpg
-     ```
+#### **Häufige Schwachstellen**:
+- **SQL-Injection**: Wenn Benutzereingaben direkt in SQL-Abfragen verwendet werden.
+  ```bash
+  sqlmap -u "http://target.com/page?id=1" --dbs
+  ```
 
-3. **Steganographie überprüfen**:
-   - Verwende `steghide`, um versteckte Nachrichten in Bildern zu finden:
-     ```bash
-     steghide extract -sf image.jpg
-     ```
+- **Cross-Site Scripting (XSS)**: Wenn Benutzer Daten ohne Filterung auf der Seite zurückgegeben werden.
+  Beispiel:
+  ```javascript
+  <script>alert('XSS')</script>
+  ```
 
-4. **Versteckte Dateien extrahieren**:
-   - Verwende `binwalk`, um versteckte Daten aus Bildern oder anderen Dateien zu extrahieren:
-     ```bash
-     binwalk -e suspect_file
-     ```
+- **File Inclusion (LFI/RFI)**: Ermöglicht das Einfügen von Dateien in Webanwendungen.
+  Beispiel:
+  ```bash
+  http://target.com/page.php?file=../../../../etc/passwd
+  ```
 
-5. **Netzwerk-Traffic analysieren**:
-   - Öffne Netzwerk-Dumps in `Wireshark` und suche nach auffälligem Traffic oder Kennwörtern.
+#### **Vorgehen**:
+1. **SQL-Injection testen**: Mit `sqlmap` Schwachstellen erkennen und ausnutzen.
+2. **XSS-Filter überprüfen**: Teste mit einfachen Payloads wie `"><script>alert(1)</script>`.
+3. **Datei-Inklusion prüfen**: Teste `LFI` oder `RFI`, indem du versuchst, Server-Dateien aufzurufen.
 
-### 3.3 Kryptografie
+### 3.3 **Forensik**
 
-Kryptografie-Challenges erfordern, dass du verschlüsselte Nachrichten oder Hashes knackst. Oft kommen bekannte Verschlüsselungen wie **Caesar Cipher**, **RSA**, **AES** oder **hash-basierte Angriffe** zum Einsatz.
+Forensik-Challenges erfordern die Untersuchung und Analyse von Dateien (z. B. Bilder, Netzwerkschnitte, Binärdateien), um versteckte Daten oder Spuren zu finden.
 
-#### Tools:
-- **John the Ripper**: Ein Passwort-Cracking-Tool, das verschiedene Hash-Typen unterstützt.
-- **Hashcat**: Ein leistungsfähiges Tool für das Cracking von Passwörtern mit GPUs.
-- **CyberChef**: Ein web-basiertes Tool für die Bearbeitung von Kryptografie-Aufgaben (Ciphers, Encodings, Hashes).
+#### **Tools**:
+- **Exiftool**: Zum Auslesen von Metadaten.
+  ```bash
+  exiftool image.jpg
+  ```
 
-#### Vorgehen:
-1. **Hash identifizieren**:
-   - Verwende `hashid`, um den Typ des Hashes zu bestimmen:
-     ```bash
-     hashid -m hashvalue
-     ```
+- **Binwalk**: Sucht nach eingebetteten Dateien in Binärdateien.
+  ```bash
+  binwalk -e suspect_file
+  ```
 
-2. **Passwörter knacken**:
-   - Verwende `john` oder `hashcat`, um Hashes zu knacken:
-     ```bash
-     john --wordlist=/usr/share/wordlists/rockyou.txt hashfile
-     ```
+- **Wireshark**: Analyse von Netzwerkprotokollen.
+  ```bash
+  wireshark capture.pcap
+  ```
 
-3. **Manuelle Ciphers knacken**:
-   - Nutze `CyberChef`, um gängige Verschlüsselungen wie Base64, ROT13 oder Hex zu entschlüsseln:
-     https://gchq.github.io/CyberChef/
+- **Steghide**: Zum Verstecken und Extrahieren von Daten in Bilddateien.
+  ```bash
+  steghide extract -sf image.jpg
+  ```
 
-### 3.4 Reverse Engineering
+#### **Vorgehen**:
+1. **Metadaten analysieren**: Verwende `exiftool`, um interessante Informationen in Bildern oder anderen Dateien zu finden.
+2. **Binärdateien untersuchen**: Nutze `binwalk`, um versteckte Dateien zu extrahieren.
+3. **Netzwerkverkehr analysieren**: Öffne `PCAP`-Dateien in `Wireshark` und analysiere den Datenverkehr.
 
-Reverse Engineering bezieht sich auf die Analyse von Binärdateien (oft Programme), um deren Funktionsweise zu verstehen und Schwachstellen zu finden.
+### 3.4 **Kryptografie**
 
-#### Tools:
+Kryptografie-Challenges beinhalten das Knacken von Verschlüsselungen oder das Entschlüsseln von Nachrichten. Häufige Aufgaben umfassen einfache Cäsar-Verschiebungen, RSA oder Hash-Berechnungen.
+
+#### **Tools**:
+- **John the Ripper**: Zum Cracken von Passwörtern und Hashes.
+  ```bash
+  john --wordlist=/usr/share/wordlists/rockyou.txt hashfile
+  ```
+
+- **Hashcat**: Ein leistungsstarkes Tool zum Cracken von Hashes mit GPU-Unterstützung.
+  ```bash
+  hashcat -m 0 hash.txt /usr/share/wordlists/rockyou.txt
+  ```
+
+- **CyberChef**: Ein web-basiertes Tool zum Bearbeiten von Verschlüsselungen, Hashes und Encodings (Base64, ROT13, Hex usw.).
+  ```bash
+  https://gchq.github.io/CyberChef/
+  ```
+
+#### **Häufige Verschlüsselungen**:
+- **Caesar Cipher**: Einfache Buchstabenverschiebung.
+- **RSA**: Eine kryptografische Methode, die öffentliche und private Schlüssel verwendet.
+- **Base64**: Ein weit verbreitetes Text-Encoding.
+
+#### **Vorgehen**:
+1. **Hash knacken**: Nutze `john` oder `hashcat`, um Passwörter oder Hashes zu knacken.
+2. **Manuelle Ciphers**: Nutze Tools wie `CyberChef`, um gängige Verschlüsselungen zu dekodieren.
+3. **RSA analysieren**: Prüfe die Public Keys und die Faktoren der Modulus.
+
+### 3.5 **Reverse Engineering**
+
+Reverse Engineering erfordert das Analysieren und Verstehen von Binärdateien, oft um Schwachstellen zu identifizieren oder um ein tieferes Verständnis des Programms zu erlangen.
+
+#### **Tools**:
 - **Ghidra**: Ein Open-Source-Reverse-Engineering-Tool von der NSA.
-- **Radare2**: Ein komplexes Reverse-Engineering-Tool, das viele Funktionen bietet.
-- **GDB**: Der GNU-Debugger, oft für das Debugging von Binärdateien verwendet.
+- **Radare2**: Ein leistungsstarkes Framework für Reverse Engineering.
+- **GDB**: Ein Debugger, um Programme im Detail zu analysieren.
 
-#### Vorgehen:
-1. **Binärdatei analysieren**:
-   - Öffne die Datei in `Ghidra` oder `Radare2`:
-     ```bash
-     r2 -A binaryfile
-     ```
+#### **V
 
-2. **Strings extrahieren**:
-   - Verwende `strings`, um lesbare Zeichenfolgen aus Binärdateien zu extrahieren:
-     ```bash
-     strings binaryfile
-     ```
+orgehen**:
+1. **Dekompilierung**: Nutze `Ghidra`, um Binärdateien zu dekompilieren und ihren Code zu untersuchen.
+2. **Debugging**: Verwende `GDB`, um Programme im laufenden Betrieb zu untersuchen und Fehler oder Exploits zu finden.
+3. **Analyse der Logik**: Versuche, die Logik des Programms nachzuvollziehen und Eingaben zu manipulieren.
 
-3. **Debuggen**:
-   - Verwende `gdb`, um eine Binärdatei zu debuggen:
-     ```bash
-     gdb binaryfile
-     ```
+### 3.6 **Pwn (Binary Exploitation)**
 
-4. **Funktionalität verstehen**:
-   - Nutze Disassembler, um den Code der Binärdatei zu verstehen.
+Pwn-Aufgaben erfordern oft das Ausnutzen von Speicherfehlern, wie Buffer Overflows, um Kontrolle über ein Programm zu erlangen.
 
-### 3.5 Pwn
+#### **Tools**:
+- **Pwntools**: Ein Python-Framework zur Exploit-Entwicklung.
+- **GDB**: Zum Debugging von Binärdateien.
 
-In **Pwn**-Challenges geht es um das Ausnutzen von Schwachstellen in Binärdateien, oft Buffer Overflows oder Format-String-Vulnerabilities.
+#### **Vorgehen**:
+1. **Overflow prüfen**: Teste Eingaben auf Buffer Overflow-Schwachstellen.
+2. **Exploit schreiben**: Verwende `pwntools`, um einen Exploit zu schreiben, der eine Shell öffnet oder Code ausführt.
 
-#### Tools:
-- **Pwntools**: Ein Python-Framework für die Entwicklung von Exploits.
-- **GDB**: Debugging-Tool zur Analyse von Binärdateien.
-- **ROPgadget**: Ein Tool zur Erstellung von Return-Oriented Programming-Exploits.
+---
 
-#### Vorgehen:
-1. **Exploit schreiben**:
-   - Verwende `Pwntools`, um Exploits zu entwickeln:
-     ```python
-     from pwn import *
-     p = process('./vulnerable_binary')
-     payload = b'A' * offset + p64(return_address)
-     p.sendline(payload)
-     p.interactive()
-     ```
+## **Typische Vorgehensweise für CTFs**
 
-2. **Overflow testen**:
-   - Verwende `gdb`, um die genaue Länge des Buffers zu finden:
-     ```bash
-     gdb binaryfile
-     ```
+1. **Reconnaissance**: Führe gründliche Recon-Techniken durch, um Informationen über das Ziel zu sammeln.
+2. **Schwachstellen identifizieren**: Nutze Web-Exploitation-Techniken und analysiere Dateien.
+3. **Exploits entwickeln**: Wende Binäre Exploits oder Web-Exploitation-Techniken an, um die Aufgabe zu lösen.
+4. **Dokumentation**: Halte deine Schritte fest und dokumentiere deinen Ansatz.
 
-### 3.6 Miscellaneous
+---
 
-In dieser Kategorie können sehr unterschiedliche Aufgaben auftauchen, die spezielle Fähigkeiten erfordern, z. B. Datenextraktion, Protokollanalyse, Automatisierung und mehr.
+## **CTF-Plattformen und Ressourcen**
 
-## Typisches Vorgehen
+- [OverTheWire](https://overthewire.org): Wargames für verschiedene Level.
+- [Hack The Box](https://hackthebox.eu): Eine Plattform für virtuelle Maschinen und Exploitation.
+- [PicoCTF](https://picoctf.org): Einfache bis mittelgroße CTFs, besonders gut für Anfänger.
 
-1. **Reconnaissance**: Führe bei Web- und Netzwerksicherheitsaufgaben immer eine umfassende Aufklärung durch, z. B
+---
 
-. durch Portscanning (`nmap`) und Verzeichnis-Bruteforcing (`gobuster`).
+## **Zusätzliche Tipps und Tricks**
 
-2. **Analyse**: Untersuche alle Dateitypen gründlich, indem du Tools wie `file`, `exiftool`, `binwalk` und `strings` verwendest.
-
-3. **Cracking**: Wenn du mit Hashes oder Passwörtern konfrontiert wirst, nutze `john` oder `hashcat` in Verbindung mit einer geeigneten Wortliste, z. B. `rockyou.txt`.
-
-4. **Exploitentwicklung**: Verwende Tools wie `Pwntools` oder `GDB`, um Exploits zu entwickeln und Schwachstellen in Binärdateien auszunutzen.
-
-## Zusätzliche Ressourcen
-
-- [OverTheWire: Wargames](https://overthewire.org/wargames/)
-- [CTF Field Guide](https://trailofbits.github.io/ctf/)
-- [GDB Tutorial](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf)
+- **Teamwork**: In vielen CTFs ist es sinnvoll, im Team zu arbeiten und verschiedene Aufgaben zu verteilen.
+- **Time Management**: Setze Prioritäten und arbeite Aufgaben der Reihe nach ab.
+- **Learning by Doing**: Nutze CTFs, um kontinuierlich deine Fähigkeiten zu verbessern. Erwarte nicht, immer sofort die Lösung zu finden.
