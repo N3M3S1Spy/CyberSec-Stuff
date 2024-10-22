@@ -173,9 +173,7 @@ Reverse Engineering erfordert das Analysieren und Verstehen von Binärdateien, o
 - **Radare2**: Ein leistungsstarkes Framework für Reverse Engineering.
 - **GDB**: Ein Debugger, um Programme im Detail zu analysieren.
 
-#### **V
-
-orgehen**:
+#### **Vorgehen**:
 1. **Dekompilierung**: Nutze `Ghidra`, um Binärdateien zu dekompilieren und ihren Code zu untersuchen.
 2. **Debugging**: Verwende `GDB`, um Programme im laufenden Betrieb zu untersuchen und Fehler oder Exploits zu finden.
 3. **Analyse der Logik**: Versuche, die Logik des Programms nachzuvollziehen und Eingaben zu manipulieren.
