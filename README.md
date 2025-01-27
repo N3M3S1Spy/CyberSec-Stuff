@@ -1,6 +1,9 @@
 # TryHackMe Write-Ups, Zertifikate und Cheat Sheets
 
-Willkommen in meinem GitHub-Repository, das alles rund um TryHackMe und Cybersicherheit umfasst. Hier findest du eine Sammlung meiner Write-Ups, die ich für verschiedene TryHackMe-Räume erstellt habe, sowie die Zertifikate, die ich im Laufe der Zeit erworben habe. Zusätzlich findest du hier auch nützliche Cheat Sheets zu verschiedenen Themen im Bereich der Cybersicherheit.
+Willkommen in meinem GitHub-Repository, das alles rund um TryHackMe und Cybersicherheit umfasst. Hier findest du eine Sammlung meiner Write-Ups, die ich für verschiedene TryHackMe-Räume erstellt habe, sowie die Zertifikate, die ich im Laufe der Zeit erworben habe. Zusätzlich findest du hier auch nützliche Cheat Sheets zu verschiedenen Themen im Bereich der Cybersicherheit.  
+<html>
+  <img src="https://tryhackme-badges.s3.amazonaws.com/N3M3S1Spy.png" alt="Your Image Badge" />
+</html>
 
 ## Inhaltsverzeichnis
 
